@@ -6,10 +6,10 @@
 .env
 
 # Composer vendor directory
-/vendor/
+# /vendor/
 
 # Node modules
-/node_modules/
+# /node_modules/
 
 # IDE / Editor files
 *.swp
@@ -25,7 +25,7 @@ Thumbs.db
 .idea/
 
 # PHPUnit result cache
-.phpunit.result.cache
+# .phpunit.result.cache
 
 # Cache & writable files (CI4)
 writable/*
@@ -39,5 +39,5 @@ writable/session/*
 !writable/index.html
 
 # Ignore coverage reports
-coverage/
+# coverage/
 
