@@ -153,6 +153,10 @@ class DataPekerja extends BaseController
             $p['id_pekerja_encrypted'] = bin2hex($encrypt->encrypt($p['id_pekerja']));
         }
 
+        foreach ($modelDataPekerjaPensiun as &$row) {
+            $row['id_pekerja_encrypted'] = bin2hex($encrypt->encrypt($row['id_pekerja']));
+        }
+
         $nama_bulan = [
             '01' => 'Januari',
             '02' => 'Februari',
