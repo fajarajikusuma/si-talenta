@@ -1,43 +1,24 @@
-# =======================================
-# CodeIgniter 4 Git Ignore
-# =======================================
-
-# Environment file
+# Abaikan file konfigurasi sensitif
 .env
+public/.htaccess
+app/Config/App.php
 
-# Composer vendor directory
-# /vendor/
-
-# Node modules
-# /node_modules/
-
-# IDE / Editor files
-*.swp
-*.swo
-*.swn
-*.swm
-*.log
-*.tmp
-*.bak
-*.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-# PHPUnit result cache
-# .phpunit.result.cache
-
-# Cache & writable files (CI4)
+# Abaikan folder sementara dan sistem CI
 writable/*
 !writable/index.html
 
-# Session & logs (CI4 writable contents)
+# Abaikan cache dan logs
 writable/cache/*
-writable/debugbar/*
 writable/logs/*
-writable/session/*
-!writable/index.html
 
-# Ignore coverage reports
-# coverage/
+# Abaikan vendor jika kamu tidak ingin upload dependensi
+/vendor/
 
+# Abaikan file sistem lokal
+.idea/
+.vscode/
+*.log
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db
