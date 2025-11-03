@@ -33,14 +33,7 @@
                             echo $usia . ' tahun';
                             ?>
                         </td>
-                        <!-- <td>
-                            <?php
-                            $tanggalLahir = new DateTime($row['tanggal_lahir']);
-                            $tanggalPensiun = new DateTime($row['tanggal_pensiun']);
-                            $usia = $tanggalPensiun->diff($tanggalLahir)->y;
-                            echo $usia . ' tahun';
-                            ?>
-                        </td> -->
+                        
                         <td>
                             <?php
                             $tanggalPensiun = new DateTime($row['tanggal_pensiun']);
