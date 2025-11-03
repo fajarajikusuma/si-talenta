@@ -149,7 +149,7 @@ class DataPekerja extends BaseController
 
         $data_pensiun = $this->dataPekerjaModel->getDataPensiun($tahun_cari);
 
-        foreach ($data_pensiun as &$p) {
+        foreach ($data_pensiun as $p) {
             $p['id_pekerja_encrypted'] = bin2hex($encrypt->encrypt($p['id_pekerja']));
         }
 
@@ -186,7 +186,7 @@ class DataPekerja extends BaseController
             $data_bulanan[$bulan]['total']++;
             $data_bulanan[$bulan]['data'][] = $p;
         }
-
+        // dd($data_bulanan);
         $data = [
             'title' => 'Data Pekerja',
             'subtitle' => 'Tenaga Kerja Pensiun',
@@ -1086,41 +1086,23 @@ class DataPekerja extends BaseController
 
     public function ajaxDetailPensiun()
     {
-        // $bulan = $this->request->getGet('bulan');
+        $bulan = $this->request->getGet('bulan'); // ambil bulan dari parameter GET
         $tahun = $this->request->getGet('tahun');
 
-        // Ambil semua data pekerja yang akan pensiun di tahun ini
+        // Ambil semua data pensiun di tahun tersebut
         $data_pensiun = $this->dataPekerjaModel->getDataPensiun($tahun);
 
-        // $filtered = [];
+        // Filter berdasarkan bulan pensiun
+        $filtered = array_filter($data_pensiun, function ($p) use ($bulan) {
+            $bulan_pensiun = date('m', strtotime($p['tanggal_pensiun']));
+            return $bulan_pensiun == $bulan;
+        });
 
-        // foreach ($data_pensiun as $p) {
-        //     $tanggal_lahir = $p['tanggal_lahir'];
-
-        //     $tahun_lahir = date('Y', strtotime($tanggal_lahir));
-        //     $bulan_lahir = date('m', strtotime($tanggal_lahir));
-
-        //     $tahun_pensiun = $tahun_lahir + 58;
-        //     $bulan_pensiun = (int)$bulan_lahir + 1;
-        //     if ($bulan_pensiun > 12) {
-        //         $bulan_pensiun = 1;
-        //         $tahun_pensiun += 1;
-        //     }
-
-        //     $tanggal_pensiun = date('Y-m-d', strtotime("{$tahun_pensiun}-{$bulan_pensiun}-01"));
-        //     $p['tanggal_pensiun'] = $tanggal_pensiun;
-
-        //     // if ($bulan_lahir == $bulan && $tahun_pensiun == $tahun) {
-        //     $filtered[] = $p;
-        //     // }
-        // }
-
-
-        // dd($filtered);
-        // Urutkan berdasarkan tanggal pensiun
-        usort($data_pensiun, function ($a, $b) {
+        // Urutkan berdasarkan tanggal pensiun (opsional)
+        usort($filtered, function ($a, $b) {
             return strtotime($a['tanggal_pensiun']) - strtotime($b['tanggal_pensiun']);
         });
-        return view('data_pekerja/ajax_detail_pensiun', ['data' => $data_pensiun]);
+
+        return view('data_pekerja/ajax_detail_pensiun', ['data' => $filtered]);
     }
 }

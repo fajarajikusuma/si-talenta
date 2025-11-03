@@ -33,7 +33,7 @@
                             echo $usia . ' tahun';
                             ?>
                         </td>
-                        
+
                         <td>
                             <?php
                             $tanggalPensiun = new DateTime($row['tanggal_pensiun']);
