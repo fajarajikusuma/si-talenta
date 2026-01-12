@@ -37,6 +37,7 @@ class DataPekerja extends BaseController
             'subtitle' => 'Tenaga Kerja Aktif',
             'data_pekerja' => $modelDataPekerjaAktif,
         ];
+        // dd($data);
         return view('data_pekerja/data_pekerja', $data);
     }
 
@@ -550,19 +551,20 @@ class DataPekerja extends BaseController
                 'errors' => ['required' => '{field} Harus Diisi'],
             ],
             'ktp' => [
-                'rules' => 'max_size[ktp,2048]|ext_in[ktp,jpg,jpeg,png,pdf]',
+                'rules' => 'permit_empty|max_size[ktp,2048]|ext_in[ktp,jpg,jpeg,png,pdf]',
                 'errors' => [
                     'max_size' => '{field} Maksimal 2MB',
                     'ext_in' => '{field} Harus JPG, JPEG, PNG, atau PDF',
                 ],
             ],
             'ijasah' => [
-                'rules' => 'max_size[ijasah,2048]|ext_in[ijasah,jpg,jpeg,png,pdf]',
+                'rules' => 'permit_empty|max_size[ijasah,2048]|ext_in[ijasah,jpg,jpeg,png,pdf]',
                 'errors' => [
                     'max_size' => '{field} Maksimal 2MB',
                     'ext_in' => '{field} Harus JPG, JPEG, PNG, atau PDF',
                 ],
             ],
+
         ];
 
         // Tambahkan rules tambahan jika halaman aktif
@@ -842,6 +844,7 @@ class DataPekerja extends BaseController
         $autoID = 'PG' . $dateNow . $random_num_str;
 
         $file = $this->request->getFile('file_excel');
+        // dd($file);
         if ($file->isValid() && !$file->hasMoved()) {
             $newName = $file->getRandomName();
             $path = 'uploads/excel/data_pekerja/' . $newName;
@@ -854,6 +857,7 @@ class DataPekerja extends BaseController
                 if ($data == 0) {
                     continue;
                 }
+                // dd($row);
                 // skip nik yang sudah ada
                 $nik = $row[1];
                 $existing = $this->dataPekerjaModel->where('nik', $nik)->first();
@@ -864,7 +868,6 @@ class DataPekerja extends BaseController
                 if (empty($row[1] && $row[2] && $row[3] && $row[4] && $row[5] && $row[6] && $row[7] && $row[8] && $row[9] && $row[10] && $row[11] && $row[12] && $row[13])) {
                     continue;
                 }
-
                 // handle tanggal lahir menjadi format Y-m-d dengan trim
                 $tanggalLahir = trim($row[4]);
                 $tanggalLahirOk = strtotime($tanggalLahir);

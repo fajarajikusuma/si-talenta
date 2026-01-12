@@ -18,23 +18,23 @@ class App extends BaseConfig
      */
     public string $baseURL = 'http://localhost:8080/';
 
-    // public function __construct()
-    // {
-    //     parent::__construct();
+    public function __construct()
+    {
+        parent::__construct();
 
-    //     $protocol = 'http://';
-    //     if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['SERVER_PORT'] == 443)) {
-    //         $protocol = 'https://';
-    //     }
+        $protocol = 'http://';
+        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['SERVER_PORT'] == 443)) {
+            $protocol = 'https://';
+        }
 
-    //     // Gunakan fallback kalau HTTP_HOST tidak ada
-    //     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        // Gunakan fallback kalau HTTP_HOST tidak ada
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 
-    //     $this->baseURL = $protocol . $host . '/si-talenta/';
+        $this->baseURL = $protocol . $host . '/si-talenta/';
 
-    //     // Debug log kalau mau cek
-    //     // error_log("BaseURL: " . $this->baseURL);
-    // }
+        // Debug log kalau mau cek
+        // error_log("BaseURL: " . $this->baseURL);
+    }
 
 
     /**

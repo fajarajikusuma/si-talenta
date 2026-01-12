@@ -229,7 +229,7 @@ function formatTanggalHuruf($tanggal)
                                     <tr>
                                         <td></td>
                                         <td>Jabatan</td>
-                                        <td>: Pembina Utama Muda</td>
+                                        <td>: <?= esc($kepala['jabatan']) ?></td>
                                     </tr>
                                     <tr>
                                         <td></td>

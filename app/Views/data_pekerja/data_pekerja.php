@@ -111,7 +111,7 @@
                     <table class="table table-hover" id="tableDataPekerja">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th class="text-center">No</th>
                                 <th>Nama Pegawai</th>
                                 <th>Jenis Kelamin</th>
                                 <th>Pekerjaan</th>
@@ -135,7 +135,7 @@
                             <?php $no = 1;
                             foreach ($data_pekerja as $dp) : ?>
                                 <tr>
-                                    <td><?= $no++ ?></td>
+                                    <td class="text-center"><?= $no++ ?></td>
                                     <td><?= $dp['nama'] ?></td>
                                     <td><?= $dp['jenis_kelamin'] == 'L' ? 'Laki-Laki' : 'Perempuan' ?></td>
                                     <td><?= $dp['pekerjaan'] ?></td>

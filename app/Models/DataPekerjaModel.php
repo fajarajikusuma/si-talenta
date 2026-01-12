@@ -78,7 +78,6 @@ class DataPekerjaModel extends Model
             tb_nama_pekerjaan.pekerjaan,
             tb_unit_kerja.*
         ');
-
         // Join subquery sebagai latest_riwayat
         $builder->join('(' . $subquery_builder->getCompiledSelect() . ') as latest_riwayat', 'latest_riwayat.id_pekerja = tb_data_pekerja.id_pekerja');
 
@@ -97,6 +96,7 @@ class DataPekerjaModel extends Model
             $builder->where('tb_riwayat_pekerjaan.id_unit_kerja', $id_unit_kerja);
         }
 
+        // dd($builder->get()->getResultArray());
         $builder->where('DATE_ADD(tb_data_pekerja.tanggal_lahir, INTERVAL 58 YEAR) >= NOW()');
         // $builder->orderBy('tb_data_pekerja.created_at', 'ASC');
         // kelompokan perbidang 

@@ -147,4 +147,123 @@ class Laporan extends BaseController
         ];
         return view('laporan/cetak_pks', $data);
     }
+
+    public function cetak_spt_individu($id_pekerja_encrypted)
+    {
+        $encryption = \Config\Services::encrypter();
+        $id_pekerja = $encryption->decrypt(hex2bin($id_pekerja_encrypted));
+
+        // Ambil SEMUA pekerja aktif (array)
+        $daftarPekerja = $this->dataPekerjaModel->joinDataPekerjaanAktif();
+
+        // Cari pekerja berdasarkan ID
+        $pekerja = null;
+        foreach ($daftarPekerja as $row) {
+            if ($row['id_pekerja'] == $id_pekerja) {
+                $pekerja = $row;
+                break;
+            }
+        }
+
+        if (!$pekerja) {
+            return redirect()->back()->with('error', 'Data pekerja tidak ditemukan atau tidak aktif.');
+        }
+
+        // Ambil riwayat kerja
+        $riwayatKerja = $this->riwayatKerjaModel
+            ->where('id_pekerja', $id_pekerja)
+            ->orderBy('tmt_kerja', 'DESC')
+            ->findAll();
+
+        // Cek status MENUNGGU
+        foreach ($riwayatKerja as $riwayat) {
+            if (strtolower($riwayat['status']) === 'menunggu') {
+                return redirect()->back()->with(
+                    'error',
+                    'SPT tidak dapat dicetak karena masih ada riwayat kerja berstatus Menunggu.'
+                );
+            }
+        }
+
+        $data = [
+            'title' => 'Cetak SPT Individu',
+            'pekerja' => $pekerja,
+            'riwayatKerja' => $riwayatKerja,
+            'unitKerja' => $this->unitKerjaModel->findAll(),
+            'listPekerjaan' => $this->listPekerjaanModel->findAll(),
+            'daftarKepala' => $this->daftarKepalaModel->getDaftarKepala(),
+            'dasarHukum' => $this->dasarHukumModel
+                ->whereIn('status', ['Aktif 1', 'Aktif 2'])
+                ->orderBy("FIELD(status, 'Aktif 1', 'Aktif 2')", '', false)
+                ->findAll()
+        ];
+
+        return view('laporan/cetak_spt_individu', $data);
+    }
+
+    public function cetak_pks_individu($id_pekerja_encrypted)
+    {
+        $encryption = \Config\Services::encrypter();
+        $id_pekerja = $encryption->decrypt(hex2bin($id_pekerja_encrypted));
+
+        // Ambil SEMUA pekerja aktif (array)
+        $daftarPekerja = $this->dataPekerjaModel->joinDataPekerjaanAktif();
+
+        // Cari pekerja berdasarkan ID
+        $pekerja = null;
+        foreach ($daftarPekerja as $row) {
+            if ($row['id_pekerja'] == $id_pekerja) {
+                $pekerja = $row;
+                break;
+            }
+        }
+
+        if (!$pekerja) {
+            return redirect()->back()->with('error', 'Data pekerja tidak ditemukan atau tidak aktif.');
+        }
+
+        // Ambil semua riwayat kerja
+        $riwayatKerja = $this->riwayatKerjaModel
+            ->where('id_pekerja', $id_pekerja)
+            ->orderBy('tmt_kerja', 'DESC')
+            ->findAll();
+
+        // Cek status MENUNGGU
+        foreach ($riwayatKerja as $riwayat) {
+            if (strtolower($riwayat['status']) === 'menunggu') {
+                return redirect()->back()->with(
+                    'error',
+                    'PKS tidak dapat dicetak karena masih ada riwayat kerja berstatus Menunggu.'
+                );
+            }
+        }
+
+        // Hitung bulan kerja
+        if (!empty($pekerja['tmt_kerja']) && !empty($pekerja['tst_kerja'])) {
+            $tmt = strtotime($pekerja['tmt_kerja']);
+            $tst = strtotime($pekerja['tst_kerja']);
+            $pekerja['bulan_kerja'] = floor(($tst - $tmt) / (30 * 24 * 60 * 60));
+        } else {
+            $pekerja['bulan_kerja'] = 0;
+        }
+
+        // Ambil kepala unit kerja
+        $kepala = $this->daftarKepalaModel
+            ->where('id_unit_kerja', $pekerja['id_unit_kerja'])
+            ->first();
+
+        $pekerja['jabatan_short'] = $kepala['jabatan_short'] ?? 'Tidak Diketahui';
+        $pekerja['nama_kepala']   = $kepala['nama_kepala'] ?? 'Tidak Diketahui';
+
+        $data = [
+            'title' => 'Cetak PKS Individu',
+            'pekerja' => $pekerja,
+            'riwayatKerja' => $riwayatKerja,
+            'unitKerja' => $this->unitKerjaModel->findAll(),
+            'listPekerjaan' => $this->listPekerjaanModel->findAll(),
+            'daftarKepala' => $this->daftarKepalaModel->getDaftarKepala()
+        ];
+
+        return view('laporan/cetak_pks_individu', $data);
+    }
 }
