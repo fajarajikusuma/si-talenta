@@ -36,7 +36,14 @@ $routes->post('riwayat_kerja/hapus', 'RiwayatKerja::hapus');
 $routes->post('riwayat_kerja/input_gaji_uraian', 'RiwayatKerja::input_gaji_uraian');
 $routes->get('riwayat_kerja/detail/(:any)', 'RiwayatKerja::detail/$1');
 $routes->post('riwayat_kerja/getGajiUraian', 'RiwayatKerja::getGajiUraian');
-
+$routes->get(
+    'riwayat_kerja/edit/(:any)',
+    'RiwayatKerja::edit/$1'
+);
+$routes->put(
+    'riwayat_kerja/update/(:any)',
+    'RiwayatKerja::update/$1'
+);
 
 // Unit Kerja
 $routes->get('/unit_kerja', 'UnitKerja::index');
@@ -73,6 +80,7 @@ $routes->get('/cetak_usulan_tugas_baru', 'Penugasan::daftarPenugasan');
 $routes->get('/cetak_penugasan', 'Penugasan::cetakPenugasan');
 $routes->post('/verifikasi_penugasan', 'Penugasan::verifikasiPenugasan');
 $routes->post('/cetak_usulan_tugas_baru', 'Penugasan::daftarPenugasan');
+$routes->get('ajax/penugasan-badge', 'Ajax::penugasanBadge');
 
 // User Sistem
 $routes->get('/user_sistem', 'Auth::list_users');

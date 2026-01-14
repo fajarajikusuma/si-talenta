@@ -27,6 +27,7 @@ function countGenderActive($gender)
 
     return $builder->countAllResults();
 }
+// dd(countGenderActive('P'));
 
 function ageRangeActive()
 {

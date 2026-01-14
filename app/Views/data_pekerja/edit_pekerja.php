@@ -45,7 +45,7 @@
                     <div class="form-group">
                         <label for="input_Jenis_Kelamin">Jenis Kelamin</label>
                         <select class="form-control" id="input_Jenis_Kelamin" name="jenis_kelamin">
-                            <option disabled>Pilih Jenis Kelamin</option>
+                            <option disabled selected>Pilih Jenis Kelamin</option>
                             <option value="L" <?= $pekerja['jenis_kelamin'] === 'L' ? 'selected' : '' ?>>Laki-laki</option>
                             <option value="P" <?= $pekerja['jenis_kelamin'] === 'P' ? 'selected' : '' ?>>Perempuan</option>
                         </select>
@@ -211,6 +211,35 @@
                     document.getElementById('form-step-2').classList.add('d-none');
                     document.getElementById('form-step-1').classList.remove('d-none');
                 }
+
+                function kapitalSetiapKataAuto() {
+                    const ids = [
+                        'input_Alamat',
+                        'input_rt_rw',
+                        'input_desa',
+                        'input_kecamatan',
+                        'input_kota',
+                        'input_provinsi',
+                        'input_Tempat_Lahir'
+                    ];
+
+                    ids.forEach(function(id) {
+                        const el = document.getElementById(id);
+                        if (!el) return;
+
+                        el.addEventListener('input', function() {
+                            let val = this.value.toLowerCase();
+
+                            val = val.replace(/\b\w/g, function(char) {
+                                return char.toUpperCase();
+                            });
+
+                            this.value = val;
+                        });
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', kapitalSetiapKataAuto);
             </script>
         </div>
     </div>

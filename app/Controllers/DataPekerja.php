@@ -26,6 +26,20 @@ class DataPekerja extends BaseController
     public function index(): string
     {
         session()->set('page', 'aktif');
+        // Update Status Riwayat Kerja Otomatis
+        $tanggalSimulasi = date('Y-m-d');
+        // 🔧 SATU SUMBER TANGGAL
+        $today = $tanggalSimulasi ?: date('Y-m-d');
+        $lastRun = session()->get('update_riwayat_run');
+
+        if ($lastRun !== $today) {
+
+            $this->riwayatKerjaModel
+                ->updateStatusTidakAktifJikaKontrakHabis($today);
+
+            session()->set('update_riwayat_run', $today);
+        }
+        // End Update Status Riwayat Kerja Otomatis
         $modelDataPekerjaAktif = $this->dataPekerjaModel->joinDataPekerjaanAktif();
         $encrypt = \Config\Services::encrypter();
         foreach ($modelDataPekerjaAktif as &$row) {

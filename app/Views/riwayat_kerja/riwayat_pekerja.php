@@ -43,7 +43,7 @@
                                 <th>Status</th>
                                 <th>SPT</th>
                                 <th>PKS</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,50 +81,56 @@
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php
-                                        $encrypt = \Config\Services::encrypter();
-                                        $id_riwayat_kerja_encrypted = bin2hex($encrypt->encrypt($r['id']));
-                                        ?>
-                                        <div class="d-flex gap-2">
-                                            <!-- create detail button -->
-                                            <div class="btn-group d-flex">
-                                                <button type="button" class="btn btn-secondary btn-sm btn-gaji-uraian"
-                                                    data-id="<?= $r['id'] ?>"
-                                                    data-nama="<?= $r['nama'] ?>"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modalInputGajiUraian">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                                <a href="<?= site_url('riwayat_kerja/detail/' . $id_riwayat_kerja_encrypted) ?>" class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-eye mt-1"></i>
-                                                </a>
-                                            </div>
-                                            <!-- Example single danger button -->
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-danger dropdown-toggle rounded" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li class="dropdown-item">
-                                                        <?php if (session()->get('level') == 'admin') : ?>
-                                                            <button type="button" class="dropdown-item btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="all">
-                                                                <i class="fa fa-trash"></i> All
+                                        <div class="d-flex justify-content-center">
+                                            <?php
+                                            $encrypt = \Config\Services::encrypter();
+                                            $id_riwayat_kerja_encrypted = bin2hex($encrypt->encrypt($r['id']));
+                                            ?>
+                                            <div class="d-flex gap-2">
+                                                <!-- create detail button -->
+                                                <div class="btn-group d-flex">
+                                                    <button type="button" class="btn btn-secondary btn-sm btn-gaji-uraian"
+                                                        data-id="<?= $r['id'] ?>"
+                                                        data-nama="<?= $r['nama'] ?>"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalInputGajiUraian"
+                                                        title="Input Gaji dan Uraian Kerja">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                    <a href="<?= site_url('riwayat_kerja/detail/' . $id_riwayat_kerja_encrypted) ?>" class="btn btn-primary btn-sm" title="Detail Pekerjaan">
+                                                        <i class="fa fa-eye mt-1"></i>
+                                                    </a>
+                                                    <a href="<?= site_url('riwayat_kerja/edit/' . $id_riwayat_kerja_encrypted) ?>" class="btn btn-warning btn-sm" title="Ubah Riwayat Kerja">
+                                                        <i class="fa fa-edit mt-1"></i>
+                                                    </a>
+                                                </div>
+                                                <!-- Example single danger button -->
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-danger dropdown-toggle rounded" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li class="dropdown-item">
+                                                            <?php if (session()->get('level') == 'admin') : ?>
+                                                                <button type="button" class="dropdown-item btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="all">
+                                                                    <i class="fa fa-trash"></i> All
+                                                                </button>
+                                                            <?php endif; ?>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                            <!-- Hapus SPT -->
+                                                            <button type="button" class="dropdown-item btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="spt">
+                                                                <i class="fa fa-trash"></i> SPT
                                                             </button>
-                                                        <?php endif; ?>
-                                                    </li>
-                                                    <li class="dropdown-item">
-                                                        <!-- Hapus SPT -->
-                                                        <button type="button" class="dropdown-item btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="spt">
-                                                            <i class="fa fa-trash"></i> SPT
-                                                        </button>
-                                                    </li>
-                                                    <li class="dropdown-item">
-                                                        <!-- Hapus PKS -->
-                                                        <button type="button" class="dropdown-item btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="pks">
-                                                            <i class="fa fa-trash"></i> PKS
-                                                        </button>
-                                                    </li>
-                                                </ul>
+                                                        </li>
+                                                        <li class="dropdown-item">
+                                                            <!-- Hapus PKS -->
+                                                            <button type="button" class="dropdown-item btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="pks">
+                                                                <i class="fa fa-trash"></i> PKS
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>

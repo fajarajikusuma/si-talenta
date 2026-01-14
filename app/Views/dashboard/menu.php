@@ -59,7 +59,12 @@
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="collapse" href="#ui-daftar-pekerja" aria-expanded="false" aria-controls="ui-basic">
                 <i class="menu-icon mdi mdi-file-document"></i>
-                <span class="menu-title">Penugasan</span>
+                <span class="menu-title d-flex align-items-center gap-2">
+                    <span>Penugasan</span>
+                    <?php if (session()->get('level') == 'admin'): ?>
+                        <span id="badge-penugasan"></span>
+                    <?php endif; ?>
+                </span>
                 <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="ui-daftar-pekerja">
@@ -69,7 +74,7 @@
                         <li class="nav-item"> <a class="nav-link" href="<?= site_url('cetak_usulan_tugas_baru') ?>">Cetak Usulan</a></li>
                     <?php endif; ?>
                     <?php if (session()->get('level') == 'admin'): ?>
-                        <li class="nav-item"> <a class="nav-link" href="<?= site_url('cetak_usulan_tugas_baru') ?>">Verifikasi Pengajuan</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="<?= site_url('cetak_usulan_tugas_baru') ?>">Verifikasi Pengajuan <span id="badge-penugasan-sub"></a></li>
                     <?php endif; ?>
                 </ul>
             </div>

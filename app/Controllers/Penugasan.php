@@ -18,8 +18,22 @@ class Penugasan extends BaseController
 
     public function index()
     {
-        // cek masing masing data riwayat kerja jika sebelumnya tidak ada riwayat kerja maka jangan tampilkan pekerja tersebut
-        $dataPekerja = $this->dataPekerjaModel->dataPengajuanPekerjaan();
+        // Simulasi tanggal (hapus saat produksi)
+        $tanggalSimulasi = date('Y-m-d');
+        // 🔧 SATU SUMBER TANGGAL
+        $today = $tanggalSimulasi ?: date('Y-m-d');
+        $lastRun = session()->get('update_riwayat_run');
+
+        if ($lastRun !== $today) {
+
+            $this->riwayatKerjaModel
+                ->updateStatusTidakAktifJikaKontrakHabis($today);
+
+            session()->set('update_riwayat_run', $today);
+        }
+        $dataPekerja = $this->dataPekerjaModel
+            ->dataPengajuanPekerjaan($tanggalSimulasi);
+
         foreach ($dataPekerja as $key => $pekerja) {
             // cek apakah pekerja memiliki riwayat kerja
             $riwayat = $this->riwayatKerjaModel->where('id_pekerja', $pekerja['id_pekerja'])->findAll();

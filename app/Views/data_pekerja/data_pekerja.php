@@ -113,11 +113,11 @@
                             <tr>
                                 <th class="text-center">No</th>
                                 <th>Nama Pegawai</th>
-                                <th>Jenis Kelamin</th>
+                                <th class="text-center">Jenis Kelamin</th>
                                 <th>Pekerjaan</th>
-                                <th>Unit Kerja</th>
+                                <th class="text-center">Unit Kerja</th>
                                 <?php if (uri_string() == 'data_pekerja/aktif' || uri_string() == 'data_pekerja/pensiun') : ?>
-                                    <th>TMT Kerja</th>
+                                    <th class="text-center">TMT Kerja</th>
                                 <?php endif; ?>
                                 <?php if (uri_string() == 'data_pekerja/pensiun') : ?>
                                     <th>Tanggal Pensiun</th>
@@ -137,11 +137,11 @@
                                 <tr>
                                     <td class="text-center"><?= $no++ ?></td>
                                     <td><?= $dp['nama'] ?></td>
-                                    <td><?= $dp['jenis_kelamin'] == 'L' ? 'Laki-Laki' : 'Perempuan' ?></td>
+                                    <td class="text-center"><?= $dp['jenis_kelamin'] == 'L' ? 'Laki-Laki' : ($dp['jenis_kelamin'] == '' ? '-' : 'Perempuan') ?></td>
                                     <td><?= $dp['pekerjaan'] ?></td>
-                                    <td><?= $dp['unit_kerja'] ?></td>
+                                    <td class="text-center"><?= $dp['unit_kerja'] ?></td>
                                     <?php if (uri_string() == 'data_pekerja/aktif' || uri_string() == 'data_pekerja/pensiun') : ?>
-                                        <td><?= date('d-m-Y', strtotime($dp['tmt_kerja'])) ?></td>
+                                        <td class="text-center"><?= date('d-m-Y', strtotime($dp['tmt_kerja'])) ?></td>
                                     <?php endif; ?>
                                     <?php if (uri_string() == 'data_pekerja/pensiun') : ?>
                                         <td class="text-center"><?= date('d-m-Y', strtotime($dp['tanggal_pensiun'])) ?></td>

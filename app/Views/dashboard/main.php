@@ -44,6 +44,24 @@
       width: 100%;
       border-collapse: collapse !important;
     }
+
+    @keyframes pulseBadge {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.25);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .badge-animate {
+      animation: pulseBadge 0.6s ease-in-out;
+    }
   </style>
 </head>
 
@@ -310,7 +328,80 @@
   <!-- Custom JS -->
   <script src="custom/datatables.js"></script>
   <script src="custom/custom.js"></script>
+  <!-- BADGE PENUGASAN -->
+  <?php if (session()->get('level') == 'admin'): ?>
+    <script>
+      let lastCount = parseInt(localStorage.getItem('penugasanCount')) || 0;
+
+      function loadPenugasanBadge() {
+        fetch("<?= base_url('ajax/penugasan-badge') ?>")
+          .then(res => res.json())
+          .then(data => {
+
+            // ambil angka dari badge HTML
+            let temp = document.createElement('div');
+            temp.innerHTML = data.badge;
+            let badgeEl = temp.querySelector('.badge');
+            let currentCount = badgeEl ? parseInt(badgeEl.innerText) : 0;
+
+            // update badge
+            const main = document.getElementById('badge-penugasan');
+            const sub = document.getElementById('badge-penugasan-sub');
+            if (main) main.innerHTML = data.badge;
+            if (sub) sub.innerHTML = data.badge;
+
+            // 🔥 NOTIFIKASI HANYA ADMIN
+            if (currentCount > lastCount) {
+
+              // suara
+              const audio = document.getElementById('notif-sound');
+              if (audio) audio.play().catch(() => {});
+
+              // toast
+              const toastEl = document.getElementById('toastPenugasan');
+              if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+              }
+
+              // animasi badge
+              document.querySelectorAll('#badge-penugasan .badge, #badge-penugasan-sub .badge')
+                .forEach(el => {
+                  el.classList.add('badge-animate');
+                  setTimeout(() => el.classList.remove('badge-animate'), 600);
+                });
+            }
+
+            localStorage.setItem('penugasanCount', currentCount);
+            lastCount = currentCount;
+          });
+      }
+
+      loadPenugasanBadge();
+      setInterval(loadPenugasanBadge, 10000);
+    </script>
+  <?php endif; ?>
+
   <!-- End custom js for this page-->
+  <!-- Audio Notifikasi (ADMIN SAJA) -->
+  <?php if (session()->get('level') == 'admin'): ?>
+    <audio id="notif-sound"
+      src="<?= base_url('assets/sound/notif.mp3') ?>"
+      preload="auto">
+    </audio>
+  <?php endif; ?>
+  <!-- Toast -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="toastPenugasan" class="toast align-items-center text-bg-primary border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">
+          🔔 Ada penugasan baru yang perlu diverifikasi
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+  <!-- End Toast -->
 </body>
 
 </html>

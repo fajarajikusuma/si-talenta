@@ -184,6 +184,35 @@
                     document.getElementById('form-step-2').classList.add('d-none');
                     document.getElementById('form-step-1').classList.remove('d-none');
                 }
+
+                function kapitalSetiapKataAuto() {
+                    const ids = [
+                        'input_Alamat',
+                        'input_rt_rw',
+                        'input_desa',
+                        'input_kecamatan',
+                        'input_kota',
+                        'input_provinsi',
+                        'input_Tempat_Lahir'
+                    ];
+
+                    ids.forEach(function(id) {
+                        const el = document.getElementById(id);
+                        if (!el) return;
+
+                        el.addEventListener('input', function() {
+                            let val = this.value.toLowerCase();
+
+                            val = val.replace(/\b\w/g, function(char) {
+                                return char.toUpperCase();
+                            });
+
+                            this.value = val;
+                        });
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', kapitalSetiapKataAuto);
             </script>
         </div>
     </div>

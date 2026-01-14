@@ -25,7 +25,7 @@
                             </tr>
                             <tr>
                                 <th>Jenis Kelamin</th>
-                                <td><?= $pekerja['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
+                                <td><?= esc($pekerja['jenis_kelamin'] === 'L' ? 'Laki-laki' : ($pekerja['jenis_kelamin'] == '' ? '-' : 'Perempuan')) ?></td>
                             </tr>
                             <tr>
                                 <th>Alamat</th>
@@ -37,7 +37,12 @@
                             </tr>
                             <tr>
                                 <th>Pendidikan</th>
-                                <td><?= esc($pekerja['pendidikan']) ?> - <?= esc($pekerja['jurusan']) ?></td>
+                                <td>
+                                    <?= esc($pekerja['pendidikan']) ?>
+                                    <?= (!empty($pekerja['jurusan']) && $pekerja['jurusan'] !== '-')
+                                        ? ' - ' . esc($pekerja['jurusan'])
+                                        : '' ?>
+                                </td>
                             </tr>
                             <tr>
                                 <th>Gelar</th>

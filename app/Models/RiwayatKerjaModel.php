@@ -61,7 +61,31 @@ class RiwayatKerjaModel extends Model
     public function getRiwayatTerakhir($idPekerja)
     {
         return $this->where('id_pekerja', $idPekerja)
-            ->orderBy('tmt', 'DESC')
+            ->orderBy('tmt_kerja', 'DESC')
             ->first();
+    }
+
+    public function updateStatusTidakAktifJikaKontrakHabis($tanggalSimulasi = null)
+    {
+        $today = $tanggalSimulasi ?? date('Y-m-d');
+        $now   = date('Y-m-d H:i:s');
+
+        // 1️⃣ Nonaktifkan kontrak yang SUDAH HABIS
+        $this->where('status', 'Terverifikasi')
+            ->where('tst_kerja <', $today)
+            ->set([
+                'status'     => 'Tidak Aktif',
+                'updated_at' => $now,
+            ])
+            ->update();
+
+        // 2️⃣ Aktifkan kembali kontrak yang BELUM HABIS
+        $this->where('status', 'Tidak Aktif')
+            ->where('tst_kerja >=', $today)
+            ->set([
+                'status'     => 'Terverifikasi',
+                'updated_at' => $now,
+            ])
+            ->update();
     }
 }

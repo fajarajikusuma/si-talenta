@@ -480,4 +480,92 @@ class RiwayatKerja extends BaseController
             'uraian_pekerjaan' => $riwayat['uraian_pekerjaan']
         ]);
     }
+
+    public function edit($id_riwayat_encrypted)
+    {
+        $encrypt = \Config\Services::encrypter();
+        $id_riwayat = $encrypt->decrypt(hex2bin($id_riwayat_encrypted));
+        $riwayat = $this->riwayatKerjaModel->find($id_riwayat);
+
+        if (!$riwayat || $riwayat['id_pekerja'] == null) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
+        }
+
+        $data = [
+            'title' => 'Riwayat Pekerja',
+            'subtitle' => 'Riwayat Kerja',
+            'id_riwayat_encrypted' => $id_riwayat_encrypted,
+            'pekerjaan' => $this->listPekerjaanModel->findAll(),
+            'unit_kerja' => $this->unitKerjaModel->findAll(),
+            'pekerja' => $this->dataPekerjaModel->getDataPekerjaById($riwayat['id_pekerja']),
+            'id_pekerja_encrypted' => bin2hex($encrypt->encrypt($riwayat['id_pekerja'])),
+            'riwayat' => $riwayat,
+        ];
+        // dd($data);
+        return view('riwayat_kerja/edit_riwayat_kerja', $data);
+    }
+
+    public function update($id_riwayat_encrypted)
+    {
+        // validasi
+        $validasi = \Config\Services::validation();
+        $validasi->setRules([
+            'tmt_kerja' => 'required|valid_date[Y-m-d]',
+            'pekerjaan' => 'required',
+            'unit_kerja' => 'required',
+            'gaji' => 'required|numeric',
+            'uraian_pekerjaan' => 'required',
+        ]);
+
+        if (!$this->validate($validasi->getRules())) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $validasi->listErrors());
+        }
+
+        $encrypt = \Config\Services::encrypter();
+
+        // 🔐 decrypt id riwayat
+        $id_riwayat = $encrypt->decrypt(hex2bin($id_riwayat_encrypted));
+
+        // ambil data lama
+        $riwayatLama = $this->riwayatKerjaModel->find($id_riwayat);
+        if (!$riwayatLama) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
+        }
+
+        $id_pekerja = $riwayatLama['id_pekerja'];
+
+        // status otomatis
+        $status = (session()->get('level') === 'user')
+            ? 'Menunggu'
+            : 'Terverifikasi';
+
+        $tahunInput = $this->request->getVar('tahun');
+
+        $dataUpdate = [
+            'id_nama_pekerjaan' => $this->request->getVar('pekerjaan'),
+            'id_unit_kerja' => $this->request->getVar('unit_kerja'),
+            'tmt_kerja' => $this->request->getVar('tmt_kerja'),
+            'tst_kerja' => $this->request->getVar('tst_kerja'),
+            'tahun' => $tahunInput,
+            'jenis_pegawai' => $this->request->getVar('jenis_pegawai'),
+            'gaji' => $this->request->getVar('gaji'),
+            'uraian_pekerjaan' => $this->request->getVar('uraian_pekerjaan'),
+            'status' => ($tahunInput < date('Y')) ? 'Tidak Aktif' : $status,
+            'updated_at' => date('Y-m-d H:i:s'),
+            'penginput' => session()->get('nama_lengkap'),
+        ];
+
+        if ($this->riwayatKerjaModel->update($id_riwayat, $dataUpdate)) {
+            session()->setFlashdata('success', 'Data riwayat kerja berhasil diperbarui');
+        } else {
+            session()->setFlashdata('error', 'Data riwayat kerja gagal diperbarui');
+        }
+
+        // 🔐 encrypt kembali id pekerja untuk redirect
+        $id_pekerja_encrypted = bin2hex($encrypt->encrypt($id_pekerja));
+
+        return redirect()->to('/riwayat_kerja/riwayat/' . $id_pekerja_encrypted);
+    }
 }

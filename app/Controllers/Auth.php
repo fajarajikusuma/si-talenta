@@ -11,6 +11,7 @@ class Auth extends BaseController
     {
         $this->authModel = new \App\Models\AuthModel();
         $this->unitKerjaModel = new \App\Models\UnitKerjaModel();
+        $this->riwayatKerjaModel = new \App\Models\RiwayatKerjaModel();
     }
 
     public function index()
@@ -56,6 +57,19 @@ class Auth extends BaseController
                         'foto'       => $setUser['foto'],
                         'id_unit_kerja' => $setUser['id_unit_kerja'],
                     ]);
+                    // CEK: apakah sudah dijalankan hari ini?
+                    $tanggalSimulasi = date('Y-m-d');
+                    // 🔧 SATU SUMBER TANGGAL
+                    $today = $tanggalSimulasi ?: date('Y-m-d');
+                    $lastRun = session()->get('update_riwayat_run');
+
+                    if ($lastRun !== $today) {
+
+                        $this->riwayatKerjaModel
+                            ->updateStatusTidakAktifJikaKontrakHabis($today);
+
+                        session()->set('update_riwayat_run', $today);
+                    }
                     return redirect()->to(base_url('/'));
                 } else {
                     return redirect()->back()->withInput()->with('error', 'User is not active');

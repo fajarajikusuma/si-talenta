@@ -409,23 +409,22 @@ class DataPekerjaModel extends Model
         return $filtered;
     }
 
-
-    public function dataPengajuanPekerjaan()
+    public function dataPengajuanPekerjaan($tanggalSimulasi = null)
     {
-        $id_unit_kerja   = session()->get('id_unit_kerja');
-        $tahun_sekarang  = (int)date('Y');
-        $hasil           = [];
+        $id_unit_kerja  = session()->get('id_unit_kerja');
+        $today = $tanggalSimulasi ?? date('Y-m-d');
+        $hasil          = [];
 
-        // Ambil nama unit kerja dari id_unit_kerja
-        $unit_kerja_row = $this->db->table('tb_unit_kerja')
+        // Ambil nama unit kerja
+        $unit = $this->db->table('tb_unit_kerja')
             ->select('unit_kerja')
             ->where('id_unit_kerja', $id_unit_kerja)
             ->get()
             ->getRow();
 
-        $nama_unit_kerja = $unit_kerja_row->unit_kerja ?? '';
+        $nama_unit_kerja = strtolower($unit->unit_kerja ?? '');
 
-        // Ambil semua pegawai yang aktif dan terverifikasi
+        // Ambil semua pekerja aktif & terverifikasi
         $pegawai = $this->db->table('tb_data_pekerja')
             ->where('deleted_at', null)
             ->where('status_pekerja', 'Terverifikasi')
@@ -433,46 +432,74 @@ class DataPekerjaModel extends Model
             ->getResult();
 
         foreach ($pegawai as $p) {
-            $builder = $this->db->table('tb_riwayat_pekerjaan')
-                ->select('MAX(tahun) as tahun_terakhir')
-                ->where('id_pekerja', $p->id_pekerja)
-                ->where('deleted_at', null);
 
-            if (strtolower($nama_unit_kerja) !== 'dinas lingkungan hidup') {
-                $builder->where('id_unit_kerja', $id_unit_kerja);
+            // Ambil riwayat terakhir (AMAN UNTUK MUTASI OVERLAP)
+            $riwayatTerakhir = $this->db->table('tb_riwayat_pekerjaan')
+                ->where('id_pekerja', $p->id_pekerja)
+                ->where('deleted_at', null)
+                ->orderBy('tst_kerja', 'DESC')
+                ->orderBy('tmt_kerja', 'DESC')
+                ->orderBy('created_at', 'DESC')
+                ->limit(1)
+                ->get()
+                ->getRow();
+
+
+            if (strtotime($riwayatTerakhir->tst_kerja) >= strtotime($today)) {
+                continue;
+            }
+            // Jika belum punya riwayat → lewati
+            if (!$riwayatTerakhir || !$riwayatTerakhir->tst_kerja) {
+                continue;
             }
 
-            $row = $builder->get()->getRow();
-            $tahun_terakhir = (int)($row->tahun_terakhir ?? 0);
+            // KONTRAK BELUM HABIS → JANGAN MUNCUL
+            if (strtotime($riwayatTerakhir->tst_kerja) >= strtotime($today)) {
+                continue;
+            }
 
-            if ($tahun_terakhir < $tahun_sekarang) {
-                $dataQuery = $this->db->table('tb_data_pekerja')
-                    ->select('
-                        tb_data_pekerja.*,
-                        tb_riwayat_pekerjaan.status as status_terbaru,
-                        tb_nama_pekerjaan.pekerjaan,
-                        tb_unit_kerja.unit_kerja
-                ')
-                    ->join('tb_riwayat_pekerjaan', 'tb_riwayat_pekerjaan.id_pekerja = tb_data_pekerja.id_pekerja', 'left')
-                    ->join('tb_nama_pekerjaan', 'tb_nama_pekerjaan.id_nama_pekerjaan = tb_riwayat_pekerjaan.id_nama_pekerjaan', 'left')
-                    ->join('tb_unit_kerja', 'tb_unit_kerja.id_unit_kerja = tb_riwayat_pekerjaan.id_unit_kerja', 'left')
-                    ->where('tb_data_pekerja.id_pekerja', $p->id_pekerja)
-                    ->orderBy('tb_riwayat_pekerjaan.created_at', 'DESC')
-                    ->limit(1);
+            /**
+             * FILTER UNIT KERJA
+             * - DLH pusat → lihat semua
+             * - Selain DLH → hanya unit masing-masing
+             */
+            if (
+                $nama_unit_kerja !== 'dinas lingkungan hidup' &&
+                $riwayatTerakhir->id_unit_kerja != $id_unit_kerja
+            ) {
+                continue;
+            }
 
-                if (strtolower($nama_unit_kerja) !== 'dinas lingkungan hidup') {
-                    $dataQuery->where('tb_riwayat_pekerjaan.id_unit_kerja', $id_unit_kerja);
-                }
+            // Ambil data lengkap untuk ditampilkan
+            $data = $this->db->table('tb_data_pekerja')
+                ->select('
+                tb_data_pekerja.*,
+                tb_riwayat_pekerjaan.status AS status_terbaru,
+                tb_nama_pekerjaan.pekerjaan,
+                tb_unit_kerja.unit_kerja,
+                tb_riwayat_pekerjaan.tmt_kerja,
+                tb_riwayat_pekerjaan.tst_kerja
+            ')
+                ->join(
+                    'tb_riwayat_pekerjaan',
+                    'tb_riwayat_pekerjaan.id_pekerja = tb_data_pekerja.id_pekerja
+                 AND tb_riwayat_pekerjaan.id = ' . $riwayatTerakhir->id,
+                    'left'
+                )
+                ->join('tb_nama_pekerjaan', 'tb_nama_pekerjaan.id_nama_pekerjaan = tb_riwayat_pekerjaan.id_nama_pekerjaan', 'left')
+                ->join('tb_unit_kerja', 'tb_unit_kerja.id_unit_kerja = tb_riwayat_pekerjaan.id_unit_kerja', 'left')
+                ->where('tb_data_pekerja.id_pekerja', $p->id_pekerja)
+                ->get()
+                ->getRowArray();
 
-                $data = $dataQuery->get()->getRowArray();
-
-                if ($data) {
-                    $hasil[] = $data;
-                }
+            if ($data) {
+                $hasil[] = $data;
             }
         }
+
         return $hasil;
     }
+
 
     public function getDataPenugasanMenunggu()
     {
