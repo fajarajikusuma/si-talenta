@@ -14,8 +14,7 @@
                 </div>
             <?php endif; ?>
             <div class="d-flex justify-content-start mb-4 gap-2">
-                <a href="<?= site_url('cetak_spt') ?>" class="btn btn-primary">Cetak Surat Perintah Tugas Kolektif</a>
-                <a href="<?= site_url('cetak_pks') ?>" class="btn btn-secondary">Cetak Perjanjian Kerjasama Kolektif</a>
+                <a href="<?= site_url('cetak_pks') ?>" class="btn btn-secondary">Cetak Perjanjian Kerjasama Kolektif (SPK)</a>
             </div>
         </div>
     </div>

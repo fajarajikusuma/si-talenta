@@ -197,14 +197,15 @@ function formatTanggalHuruf($tanggal)
 
         return $tgl . ' ' . $bulanIndo[$bln] . ' ' . $thn;
     };
-    foreach ($daftarPekerja as $pekerja) : ?>
+    foreach ($daftarPekerja as $pekerja) :
+    ?>
         <div class="<?= $i > 0 ? 'page-break' : '' ?>">
             <img src="<?= base_url('assets/kop/dlh.png') ?>" alt="KOP SK" class="img-fluid mb-4">
             <div class="judul">PERJANJIAN KERJA</div>
             <div class="judul">ANTARA</div>
             <div class="judul">DINAS LINGKUNGAN HIDUP KOTA PEKALONGAN</div>
             <div class="judul">DENGAN</div>
-            <div class="judul">PEGAWAI NON PNS</div>
+            <div class="judul"><?= esc(strtoupper($pekerja['pekerjaan'])) ?></div>
 
             <div class="nomor">
                 Nomor : 800.1.2/ ...........
@@ -252,7 +253,7 @@ function formatTanggalHuruf($tanggal)
                                 <td style="width: 10px;">:</td>
                                 <td>
                                     <?= ($pekerja['gelar_depan'] != '-' ? $pekerja['gelar_depan'] . ' ' : '') .
-                                        $pekerja['nama'] .
+                                        strtoupper($pekerja['nama']) .
                                         ($pekerja['gelar_belakang'] != '-' ? ', ' . $pekerja['gelar_belakang'] : '') ?>
                                 </td>
                             </tr>
@@ -267,18 +268,6 @@ function formatTanggalHuruf($tanggal)
                                 <td style="white-space: nowrap;">Tempat, Tgl. Lahir</td>
                                 <td>:</td>
                                 <td><?= esc($pekerja['tempat_lahir']) ?>, <?= formatTanggalIndo($pekerja['tanggal_lahir']) ?></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Jenis Pegawai</td>
-                                <td>:</td>
-                                <td><?= esc($pekerja['jenis_pegawai'] == 'Kontrak Dinas' ? 'Tenaga Kegiatan' : $pekerja['jenis_pegawai']) ?></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>Jenis Penugasan</td>
-                                <td>:</td>
-                                <td><?= esc($pekerja['pekerjaan']) ?></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -315,7 +304,7 @@ function formatTanggalHuruf($tanggal)
             <div class="isi">
                 <ol class="custom-list">
                     <li>
-                        PIHAK KESATU memberi tugas/pekerjaan kepada PIHAK KEDUA dan PIHAK KEDUA setuju untuk menerima pekerjaan dari PIHAK KESATU sebagai Pegawai Non PNS di Dinas Lingkungan Hidup Pemerintah Kota Pekalongan dengan lingkup pekerjaan sebagai berikut:
+                        PIHAK KESATU memberi tugas/pekerjaan kepada PIHAK KEDUA dan PIHAK KEDUA setuju untuk menerima pekerjaan dari PIHAK KESATU sebagai <?= esc($pekerja['pekerjaan']) ?> di Dinas Lingkungan Hidup Pemerintah Kota Pekalongan dengan lingkup pekerjaan sebagai berikut:
                         <ul>
                             <?php
                             $uraians = explode(';', $pekerja['uraian_pekerjaan']);
@@ -328,7 +317,7 @@ function formatTanggalHuruf($tanggal)
                         </ul>
                     </li>
                     <li>
-                        Dalam melaksanakan pekerjaan tersebut dalam ayat (1), maka PIHAK KEDUA harus tunduk pada tata tertib serta perintah langsung atau tidak langsung dari PIHAK KESATU atau <?= strtoupper($pekerja['jabatan_short']) ?> sesuai dengan jenjang jabatan yang berlaku di Dinas Lingkungan Hidup Kota Pekalongan.
+                        Dalam melaksanakan pekerjaan tersebut dalam ayat (1), maka PIHAK KEDUA harus tunduk pada tata tertib serta perintah langsung atau tidak langsung dari PIHAK KESATU atau Sekretaris/Kepala Bidang/Kepala Sub Bagian sesuai dengan jenjang jabatan yang berlaku di Dinas Lingkungan Hidup Kota Pekalongan.
                     </li>
                 </ol>
             </div>
@@ -339,7 +328,7 @@ function formatTanggalHuruf($tanggal)
             <div class="isi">
                 <ol class="custom-list">
                     <li>PIHAK KESATU sebagai pimpinan unit kerja yang mengarahkan, membina, membimbing, dan mengawasi PIHAK KEDUA dalam melaksanakan penugasan sebagai <?= $pekerja['pekerjaan'] ?>.</li>
-                    <li>PIHAK KESATU dapat mendelegasikan tugasnya sebagaimana dimaksud dalam ayat 1) kepada <?= strtoupper($pekerja['jabatan_short']) ?> yang mempunyai tanggung jawab sebagai ATASAN LANGSUNG PIHAK KEDUA.</li>
+                    <li>PIHAK KESATU dapat mendelegasikan tugasnya sebagaimana dimaksud dalam ayat 1) kepada Sekretaris/Kepala Bidang/Kepala Sub Bagian.</li>
                     <li>PIHAK KESATU dapat menugaskan PIHAK KEDUA untuk ditempatkan di seluruh lingkungan Dinas Lingkungan Hidup Kota Pekalongan.</li>
                 </ol>
             </div>
@@ -374,7 +363,7 @@ function formatTanggalHuruf($tanggal)
                     <li>
                         Selama hubungan kerja berlangsung, PIHAK KEDUA mempunyai hak sebagai berikut:
                         <ul>
-                            <li> PIHAK KEDUA berhak menerima upah dari PIHAK KESATU;</li>
+                            <li> PIHAK KEDUA berhak menerima upah dari PIHAK KESATU sebesar Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>) /bulan;</li>
                             <li> Upah dibayarkan secara bulanan kepada PIHAK KEDUA setiap akhir bulan berjalan; dan</li>
                             <li> Hak lainnya dapat diberikan sesuai dengan ketentuan pengelolaan keuangan daerah Kota Pekalongan</li>
                         </ul>
@@ -407,7 +396,6 @@ function formatTanggalHuruf($tanggal)
             <div class="isi">
                 <ol class="custom-list">
                     <li>Perjanjian Kerja ini berlaku untuk jangka waktu <?= $pekerja['bulan_kerja'] ?> bulan terhitung mulai tanggal <?= formatTanggalIndo($pekerja['tmt_kerja']) ?> sampai dengan <?= formatTanggalIndo($pekerja['tst_kerja']) ?>.</li>
-                    <li>Pembayaran upah sebesar Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>) /bulan</li>
                     <li>Pembayaran dilakukan secara bulanan melalui Bank Pekalongan dengan mekanisme transfer ke rekening PIHAK KEDUA</li>
                 </ol>
                 <p>
@@ -451,7 +439,7 @@ function formatTanggalHuruf($tanggal)
                             <li> PIHAK KEDUA meninggal dunia;</li>
                             <li> Batas waktu Perjanjian Kerja berakhir;</li>
                             <li> PIHAK KEDUA mengundurkan diri;</li>
-                            <li> PIHAK KEDUA memasuki batas usia pensiun, maksimal 58 tahun;</li>
+                            <li> PIHAK KEDUA memasuki batas usia purna tugas, maksimal 58 tahun;</li>
                             <li> PIHAK KEDUA melanggar peraturan sebagaimana dimaksud dalam Pasal 6 ayat (1);</li>
                         </ul>
                     </li>
@@ -484,15 +472,6 @@ function formatTanggalHuruf($tanggal)
 
             <table style="width:100%; margin-top: 0px;">
                 <tr>
-                    <td style="text-align:center; width: 50%;">
-                        PIHAK KEDUA<br><br><br><br>
-                        <?=
-                        ($pekerja['gelar_depan'] != '-' ? $pekerja['gelar_depan'] . ' ' : '') .
-                            $pekerja['nama'] .
-                            ($pekerja['gelar_belakang'] != '-' ? ', ' . $pekerja['gelar_belakang'] : '')
-                        ?><br>
-                        &nbsp;
-                    </td>
                     <?php foreach ($daftarKepala as $kepala): ?>
                         <?php if (esc($kepala['unit_kerja']) == 'Dinas Lingkungan Hidup') : ?>
                             <td style="text-align:center;width: 50%;">
@@ -502,11 +481,21 @@ function formatTanggalHuruf($tanggal)
                             </td>
                         <?php endif; ?>
                     <?php endforeach; ?>
+                    <td style="text-align:center; width: 50%;">
+                        PIHAK KEDUA<br><br><br><br>
+                        <?=
+                        ($pekerja['gelar_depan'] != '-' ? $pekerja['gelar_depan'] . ' ' : '') .
+                            strtoupper($pekerja['nama']) .
+                            ($pekerja['gelar_belakang'] != '-' ? ', ' . $pekerja['gelar_belakang'] : '')
+                        ?><br>
+                        &nbsp;
+                    </td>
                 </tr>
             </table>
         </div>
     <?php $i++;
-    endforeach; ?>
+    endforeach;
+    ?>
 
     <script>
         window.print();
