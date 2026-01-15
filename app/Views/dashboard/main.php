@@ -62,6 +62,69 @@
     .badge-animate {
       animation: pulseBadge 0.6s ease-in-out;
     }
+
+    /* Saat sidebar ditutup (icon only) */
+    .sidebar-icon-only .sidebar .nav .nav-item .menu-title {
+      display: none !important;
+    }
+
+    /* Supaya icon tetap center */
+    .sidebar-icon-only .sidebar .nav .nav-item .nav-link {
+      justify-content: center;
+    }
+
+    .menu-title {
+      transition: opacity .2s ease;
+    }
+
+    .sidebar-icon-only .menu-title {
+      opacity: 0;
+    }
+
+    /* ===== ICON ONLY HOVER SUBMENU ===== */
+
+    .sidebar-icon-only .sidebar .nav .nav-item {
+      position: relative;
+    }
+
+    /* sembunyikan submenu normal */
+    .sidebar-icon-only .sidebar .nav .nav-item .collapse {
+      display: none !important;
+    }
+
+    /* tampilkan submenu saat hover */
+    .sidebar-icon-only .sidebar .nav .nav-item:hover .collapse {
+      display: block !important;
+      position: absolute;
+      left: 60px;
+      /* jarak dari sidebar */
+      top: 0;
+      min-width: 220px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+      padding: 8px 0;
+      z-index: 9999;
+    }
+
+    /* item submenu */
+    .sidebar-icon-only .sidebar .nav .sub-menu .nav-link {
+      padding: 10px 16px;
+      white-space: nowrap;
+    }
+
+    /* judul submenu (opsional) */
+    .sidebar-icon-only .sidebar .nav .nav-item:hover .menu-title {
+      display: block !important;
+      position: absolute;
+      left: 60px;
+      top: -36px;
+      background: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+    }
   </style>
 </head>
 
