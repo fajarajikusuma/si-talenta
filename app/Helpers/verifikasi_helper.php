@@ -1,33 +1,5 @@
 <?php
 
-// use App\Models\RiwayatPekerjaanModel;
-
-// if (!function_exists('badge_verifikasi')) {
-//     function badge_verifikasi($status)
-//     {
-//         $model = new RiwayatPekerjaanModel();
-
-//         $jumlah = $model
-//             ->where('status', $status)
-//             ->countAllResults();
-
-//         if ($jumlah <= 0) {
-//             return '';
-//         }
-
-//         // Warna otomatis
-//         if ($jumlah <= 3) {
-//             $warna = 'bg-warning text-dark';
-//         } else {
-//             $warna = 'bg-danger';
-//         }
-
-//         return '<span class="badge ' . $warna . ' ms-2">' . $jumlah . '</span>';
-//     }
-// }
-
-
-
 use App\Models\RiwayatKerjaModel;
 
 if (!function_exists('jumlah_penugasan_pending')) {
@@ -35,7 +7,14 @@ if (!function_exists('jumlah_penugasan_pending')) {
     {
         $model = new RiwayatKerjaModel();
 
-        return $model->where('status', 'Menunggu')->countAllResults();
+        return $model
+            ->join(
+                'tb_data_pekerja',
+                'tb_data_pekerja.id_pekerja = tb_riwayat_pekerjaan.id_pekerja'
+            )
+            ->where('tb_riwayat_pekerjaan.status', 'Menunggu')
+            ->where('tb_data_pekerja.status_pekerja', 'Terverifikasi')
+            ->countAllResults();
     }
 }
 
