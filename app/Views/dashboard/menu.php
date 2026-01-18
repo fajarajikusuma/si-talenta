@@ -33,6 +33,13 @@
                     <span class="menu-title">Dasar Hukum</span>
                 </a>
             </li>
+            <!-- Nomor SK -->
+            <li class="nav-item">
+                <a class="nav-link" href="<?= site_url('no-sk') ?>">
+                    <i class="menu-icon mdi mdi-numeric"></i>
+                    <span class="menu-title">Nomor SK</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="<?= site_url('user_sistem') ?>">
                     <i class="menu-icon mdi mdi-account-group"></i>

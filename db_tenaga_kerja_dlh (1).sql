@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 14 Jan 2026 pada 13.15
+-- Waktu pembuatan: 18 Jan 2026 pada 13.11
 -- Versi server: 10.6.22-MariaDB-0ubuntu0.22.04.1
 -- Versi PHP: 8.3.23
 
@@ -42,8 +42,10 @@ CREATE TABLE `tb_dasar_hukum` (
 --
 
 INSERT INTO `tb_dasar_hukum` (`id`, `nama_dasar_hukum`, `nomor`, `tahun`, `tentang`, `upload_dokumen`, `status`) VALUES
-(1, 'Peraturan Daerah', '11', '2024', 'Anggaran Pendapatan dan Belanja Daerah Kota Pekalongan Tahun Anggaran 2025', '1751359019_306d31cc6bcd2580bdf4.pdf', 'Aktif 1'),
-(2, 'Peraturan Wali Kota ', '47', '2024', 'Penjabaran Anggaran Pendapatan dan Belanja Daerah Kota Pekalongan Tahun Anggaran 2025', '1751359699_92de9d70a0ca4f65fef4.pdf', 'Aktif 2');
+(1, 'Peraturan Daerah', '11', '2024', 'Anggaran Pendapatan dan Belanja Daerah Kota Pekalongan Tahun Anggaran 2025', '1751359019_306d31cc6bcd2580bdf4.pdf', 'Tidak Aktif'),
+(2, 'Peraturan Wali Kota ', '47', '2024', 'Penjabaran Anggaran Pendapatan dan Belanja Daerah Kota Pekalongan Tahun Anggaran 2025', '1751359699_92de9d70a0ca4f65fef4.pdf', 'Tidak Aktif'),
+(3, 'Peraturan Daerah', '10', '2025', 'Anggaran Pendapatan dan Belanja Daerah Tahun Anggaran 2026', '1768443288_9cb448472f580f303124.pdf', 'Aktif 1'),
+(4, 'Peraturan Wali Kota', '48', '2025', 'Penjabaran Anggaran Pendapatan dan Belanja Daerah Tahun Anggaran 2026', '1768443338_defe668ea777941e5064.pdf', 'Aktif 2');
 
 -- --------------------------------------------------------
 
@@ -89,7 +91,7 @@ INSERT INTO `tb_data_pekerja` (`id_pekerja`, `nik`, `nama`, `tempat_lahir`, `tan
 ('PG260109252900', '3375030909670008', 'Amat Muhidin', '-', '1967-09-09', '', '-', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'SD', '-', '-', '-', NULL, 'Pensiun', '', '2026-01-09 03:42:22', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 ('PG260109252901', '3326160702960041', 'Muhammad Tomy Abdul Haris', 'Pekalongan', '1996-02-07', 'L', 'Pekuncen', '01/01', 'Pekuncen', 'Wiradesa', 'Pekalongan', 'Jawa Tengah', '51152', '', 'SMK', 'Teknik Kendaraan Ringan', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-14 01:29:16', '0000-00-00 00:00:00'),
 ('PG260109252902', '3375010107790150', 'Bambang Setiaji', 'Pekalongan ', '1979-07-01', 'L', 'Kergon Gg 5a - 3b', '05/15', 'Bendan Kergon', 'Pekalongan Barat', 'Pekalongan', 'Jawa Tengah', '51113', '', 'SMA', 'Mesin Tenaga', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-14 01:08:05', '0000-00-00 00:00:00'),
-('PG260109252903', '3326142604680003', 'Abd. Aziz', 'Pekalongan ', '1970-04-25', 'L', '-', '-', '-', '-', '-', '-', '-', '', 'SMP', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 02:25:28', '0000-00-00 00:00:00'),
+('PG260109252903', '3326142604680003', 'Abd. Aziz', 'Pekalongan ', '1970-04-25', 'L', '-', '-', '-', '-', '-', '-', '-', '', 'SMP', '-', '-', '-', '', 'Tidak Aktif', '', '2026-01-09 03:42:22', '2026-01-15 08:05:31', '0000-00-00 00:00:00'),
 ('PG260109252904', '3375017010920008', 'Friessanti Adi Valindyasari', 'Pekalongan', '1992-10-30', 'P', 'Jl. Berlian No.21', '01/09', 'Podosugih', 'Pekalongan Barat', 'Pekalongan', 'Jawa Tengah', '51111', '', 'S1', 'Sains', '-', 'S.Si.', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-14 00:48:55', '0000-00-00 00:00:00'),
 ('PG260109252905', '3375020710960003', 'Chafidh Rochmatullah', 'Pekalongan ', '1996-10-07', 'L', 'Klego Bantaran Gg 3 No 172', '03/07', 'Klego', 'Pekalongan Timur', 'Pekalongan', 'Jawa Tengah', '51124', '', 'SMP', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-14 01:01:28', '0000-00-00 00:00:00'),
 ('PG260109252906', '3375021405750003', 'Kalimin', 'Pekalongan ', '1975-05-13', 'L', 'Jl. Otto Iskandar Dinata Gg 4', '01/05', 'Sokorejo', 'Pekalongan Timur', 'Pekalongan', 'Jawa Tengah', '51129', '', 'SMP', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-14 08:12:51', '0000-00-00 00:00:00'),
@@ -144,7 +146,7 @@ INSERT INTO `tb_data_pekerja` (`id_pekerja`, `nik`, `nama`, `tempat_lahir`, `tan
 ('PG260109252956', '3375020708930005', 'Nurohman', 'Pekalongan', '1993-08-07', 'L', 'Jl. Hos Cokroaminoto Gang 23 No 11', '01/04', 'Kuripan Kertoharjo', 'Pekalongan Selatan', 'Pekalongan', 'Jawa Tengah', '51134', '', 'SD', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 03:23:38', '0000-00-00 00:00:00'),
 ('PG260109252957', '3375030312740003', 'Muhammad Ali', 'Tegal', '1974-12-03', 'L', 'Panjang Wetan Gg 2 No 6', '03/07', 'Panjang Wetan', 'Pekalongan Utara', 'Pekalongan', 'Jawa Tengah', '51144', '', 'SMP', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 03:08:39', '0000-00-00 00:00:00'),
 ('PG260109252958', '3375012403940004', 'Adi Kurniawan', 'Pekalongan', '1994-03-24', 'L', 'Jl. Kramatsari Ill Gg. 13 No 43', '01/11', 'Pasirkratonkramat', 'Pekalongan Barat', 'Pekalongan', 'Jawa Tengah', '51117', '', 'SMP', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 03:33:04', '0000-00-00 00:00:00'),
-('PG260109252959', '3375022009790003', 'M. Akrommudin', '-', '1979-09-20', '', '-', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'SMP', '-', '-', '-', NULL, 'Terverifikasi', '', '2026-01-09 03:42:22', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
+('PG260109252959', '3375022009790003', 'M. Akrommudin', '-', '1979-09-20', '', '-', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'SMP', '-', '-', '-', NULL, 'Tidak Aktif', '', '2026-01-09 03:42:22', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
 ('PG260109252960', '3375021001980005', 'Muhammad Romadhon', 'Pekalongan', '1998-01-10', 'L', 'Poncol Gumuk Asri No 6', '01/11', 'Poncol', 'Pekalongan Timur', 'Pekalongan', 'Jawa Tengah', '51122', '', 'SD', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 03:52:13', '0000-00-00 00:00:00'),
 ('PG260109252961', '3402061503780003', 'Supriyanto', 'Bantul', '1978-03-15', 'L', 'Kuripan Lor GG 4', '07/01', 'Kuripan Yosorejo', 'Pekalongan Selatan', 'Pekalongan', 'Jawa Tengah', '51135', '', 'SMP', '-', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 02:32:23', '0000-00-00 00:00:00'),
 ('PG260109252962', '3375012203890007', 'Nurul Khafidhin', 'Pekalongan', '1989-03-22', 'L', 'Kebulen GG 6 No 13', '01/13', 'Sapuro Kebulen', 'Pekalongan Barat', 'Pekalongan', 'Jawa Tengah', '51119', '', 'SMA', 'IPS', '-', '-', '', 'Terverifikasi', '', '2026-01-09 03:42:22', '2026-01-13 02:20:47', '0000-00-00 00:00:00');
@@ -221,6 +223,21 @@ INSERT INTO `tb_nama_pekerjaan` (`id_nama_pekerjaan`, `pekerjaan`, `uraian_kerja
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `tb_no_sk`
+--
+
+CREATE TABLE `tb_no_sk` (
+  `id_no_sk` int(11) NOT NULL,
+  `tahun` year(4) NOT NULL,
+  `kode_sk` text NOT NULL,
+  `nomor_utama` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `tb_perpanjangan_kontrak`
 --
 
@@ -264,12 +281,12 @@ CREATE TABLE `tb_riwayat_pekerjaan` (
 --
 
 INSERT INTO `tb_riwayat_pekerjaan` (`id`, `id_pekerja`, `id_nama_pekerjaan`, `jenis_pegawai`, `id_unit_kerja`, `tahun`, `tmt_kerja`, `tst_kerja`, `status`, `gaji`, `uraian_pekerjaan`, `sk_spt`, `sk_pks`, `penginput`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(404, 'PG260109252897', 114, 'Kontrak Dinas', 1, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '0', '-', '', '', 'Kuspriyono', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
+(404, 'PG260109252897', 114, 'Kontrak Dinas', 1, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '2050000', 'Melaksanakan urusan kearsipan dan dokumentasi;\r\nMelaksanakan pemeliharaan arsip dan dokumen;\r\nMelaksanakan pengelolaan ruang rapat, perpustakaan dan ruang audio visual;\r\nMelaksanakan pemeliharaan jaringan dan koneksi Internet, dan publikasi dinas;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaannya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau Sekretaris dalam pelaksanaan tugas;\r\nMelaksanakan tugas lain yang diberikan oleh atasan/pimpinan;', '', '', 'Kuspriyono', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (405, 'PG260109252898', 137, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '2007000', 'Menyapu badan jalan,bahu jalan dan trotoar pada  ruas jalan yang menjadi tanggung jawab penugasan;\r\nMembersihkan rumput yang tumbuh dibahu jalan dan trotoar;\r\nMembersihkan / menyapu sisa-sisa sampah yang berserakan di sekitar tempat sampah yang berada di trotoar jalan;\r\nMemelihara peralatan kerja / barang inventaris Dinas Lingkungan Hidup yang dalam penugasannya sesuai bidang tugas;\r\nMelaksanakan tugas lain yang diperintah atasan;', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (406, 'PG260109252899', 128, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '', '', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (407, 'PG260109252900', 130, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '', '', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (409, 'PG260109252902', 137, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Menyapu badan jalan,bahu jalan dan trotoar pada  ruas jalan yang menjadi tanggung jawab penugasan;\r\nMembersihkan rumput yang tumbuh dibahu jalan dan trotoar ;\r\nMembersihkan / menyapu sisa-sisa sampah yang berserakan di sekitar tempat sampah yang berada di trotoar jalan;\r\nMemelihara peralatan kerja / barang inventaris Dinas Lingkungan Hidup yang dalam penugasannya sesuai bidang tugas;\r\nMelaksanakan tugas lain yang diperintah atasan;', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
-(410, 'PG260109252903', 134, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '', '', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
+(410, 'PG260109252903', 134, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-01-15', 'Tidak Aktif', '', '', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-18 10:57:05', '0000-00-00 00:00:00'),
 (411, 'PG260109252904', 132, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1700000', 'Melaksanakan administrasi Bank Sampah Induk ;\r\nMelakukan pelayanan Bank Sampah Induk ;\r\nMelaksanakan kebersihan kantor Bank Sampah Induk dan lingkungannya ;\r\nMenjaga Aset Bank Sampah Induk ;\r\nMenjaga peralatan kerja /barang inventaris Dinas Lingkungan Hidup yang dalam penugasanya sesuai bidang ;\r\nMelaksanakan tugas lain yang diperintahkan atasan ;', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (412, 'PG260109252905', 138, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Membersihkan area tempat pembuangan sampah sementara (depo);\r\nMelakukan pemilahan sampah ;\r\nMelakukan pemeliharaan, perawatan dan perbaikan peralatan kebersihan dan   pengangkutan sampah;\r\nMembantu pemindahan sampah dari kendaraan sampah ke Armada Pengangkut sampah ;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaannya sesuai bidang tugas;\r\nMelaksanakan tugas lain yang diperintahkan atasan; ', '', '', 'Kurniyawati', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (413, 'PG260109252906', 137, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Menyapu badan jalan,bahu jalan dan trotoar pada  ruas jalan yang menjadi tanggung jawab penugasan ;\r\nMembersihkan rumput yang tumbuh dibahu jalan dan trotoar ;\r\nMembersihkan / menyapu sisa-sisa sampah yang berserakan di sekitar tempat sampah yang berada di trotoar jalan;\r\nMemelihara peralatan kerja / barang inventaris Dinas Lingkungan Hidup yang dalam penugasannya sesuai bidang ;\r\nMelaksanakan tugas lain yang diperintah atasan;\r\n', '', '', 'Fajar Aji Ku', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
@@ -325,11 +342,25 @@ INSERT INTO `tb_riwayat_pekerjaan` (`id`, `id_pekerja`, `id_nama_pekerjaan`, `je
 (464, 'PG260109252957', 116, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Menyiapkan kendaraan dan peralatan kerja sebelum melaksanakan pekerjaan;\r\nMelaksanakan tugas perapihan dan/ atau penebangan pohon yang masuk dalam kewenangan Dinas Lingkungan Hidup Kota Pekalongan;\r\nMelaksanakan tugas penanaman dan pemeliharaan tanaman/ pohon di sempadan jalan yang masuk dalam kewenangan Dinas Lingkungan Hidup Kota Pekalongan;\r\nMembersihkan lokasi setelah melaksanakan perapihan dan/ atau penebangan pohon;\r\nMembersihkan dan merawat kendaraan serta peralatan kerja setelah melaksanakan pekerjaan;\r\nMelaporkan kegiatan perapihan dan/ atau penebangan pohon setiap hari (lokasi dan jumlah pohon yang dirapihkan dan/ atau ditebang);\r\nMelaksanakan tugas penebangan pohon tumbang dan perapihan pohon di tempat rawan, diluar hari / jam dinas sesuai intruksi pimpinan;\r\nMenjaga peralatan kerja/ barang inventaris Dinas Lingkungan Hidup yang dalam tanggung jawabnya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau KEPALA BIDANG dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (465, 'PG260109252958', 116, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Menyiapkan kendaraan dan peralatan kerja sebelum melaksanakan pekerjaan;\r\nMelaksanakan tugas perapihan dan/ atau penebangan pohon yang masuk dalam kewenangan Dinas Lingkungan Hidup Kota Pekalongan;\r\nMelaksanakan tugas penanaman dan pemeliharaan tanaman/ pohon di sempadan jalan yang masuk dalam kewenangan Dinas Lingkungan Hidup Kota Pekalongan;\r\nMembersihkan lokasi setelah melaksanakan perapihan dan/ atau penebangan pohon;\r\nMembersihkan dan merawat kendaraan serta peralatan kerja setelah melaksanakan pekerjaan;\r\nMelaporkan kegiatan perapihan dan/ atau penebangan pohon setiap hari (lokasi dan jumlah pohon yang dirapihkan dan/ atau ditebang);\r\nMelaksanakan tugas penebangan pohon tumbang dan perapihan pohon di tempat rawan, diluar hari / jam dinas sesuai intruksi pimpinan;\r\nMenjaga peralatan kerja/ barang inventaris Dinas Lingkungan Hidup yang dalam tanggung jawabnya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau KEPALA BIDANG dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (466, 'PG260109252959', 144, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Menunggu', '1900000', 'Mengoperasikan Instalasi Pengolah Air Limbah dari awal sampai akhir pengolahan berjalan lancar;\r\nMembersihkan area IPAL dan merawat sarana prasarana IPAL setiap hari kerja;\r\nMencatat debit harian limbah cair yang dikeluarkan IPAL;\r\nMemastikan alat penghitung debit berjalan lancar dan melaporkan hasil pencatatan debit harian setiap bulan;\r\nMemastikan Instalasi Pengolah Air Limbah berjalan optimal dan melaporkan kerusakan atau hal yang mengganggu berjalannya operasional IPAL;\r\nMengetahui dan memahami fungsi kerja setiap unit pengolahan dan cara perawatannya;\r\nMelayani pengolahan limbah cair warga, mencatat dan melaporkan keatasan/ Dinas Lingkungan Hidup;\r\nMengamankan dan bertanggung jawab atas aset dan sarana prasarana yang ada di IPAL;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam tanggung jawabnya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau KEPALA BIDANG dalam pelaksanaan tugas.\r\n', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:10:20', '0000-00-00 00:00:00'),
-(467, 'PG260109252960', 146, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Sebagai tenaga analis laboratorium lingkungan Dinas Lingkungan Hidup Kota Pekalongan;\r\nMengadministrasi pelaksanaan rencana kegiatan pengelolaan laboratorium lingkungan sesuai dengan lingkup tugasnya;\r\nMenghimpun bahan penyusunan Dokumen Sistem Mutu Laboratorium, Standar Operasional Prosedur dan Standar Pelayanan laboratorium lingkungan DLH Kota Pekalongan;\r\nMenghimpun dan menyusun bahan perencanaan dan pemeliharaan perlengkapan dan peralatan laboratorium lingkungan;\r\nMenghimpun bahan penyusunan rencana dan pelaksanaan peningkatan mutu serta pengembangan pelayanan laboratorium lingkungan;\r\nMelaksanakan tugas pengambilan contoh uji dan pengujian sesuai dengan parameter yang menjadi tanggung jawabnya; \r\nMelaksanakan kegiatan stock opname kebutuhan bahan, reagen, perlengkapan pemeriksaaan/analisis dan peralatan laboratorium lingkungan;\r\nMelaksanakan pengkajian ulang sistem manajemen mutu laboratorium dan Audit Internal;\r\nMelaksanakan pemeliharaan peralatan dan perlengkapan laboratorium lingkungan;\r\nMelaksanakan pengelolaan limbah cair dan TPS limbah B3 laboratorium lingkungan;\r\nMenjaga kebersihan laboratorium lingkungan;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaannya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
-(468, 'PG260109252961', 142, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Membersihkan sampah di sungai baik yang berada di bantaran sungai atau di badan sungai;\r\nMelakukan pemilahan sampah anorganik laku jual, mencatat tiap minggunya dan melaporkan jumlah berat sampah terkurangi tiap bulanya;\r\nMencatat sampah terambil tiap hari dari sungai perkontainer/tond;\r\nMengambil sampah pada unit jaring jaring sampah yang telah terpasang;\r\nMerapikan pohon-pohon yang mengarah ke badan sungai.\r\nMelakukan patroli kebersihan, pembuangan air limbah di sepanjang aliran sungai;\r\nMelakukan perawatan kapal dan memastikan kapal dapat beroprasional;\r\nMengamankan dan bertanggung jawab atas aset/ sarana dan prasarana yang ada;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaanya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau atasan langsungnya dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00');
+(467, 'PG260109252960', 146, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Sebagai tenaga analis laboratorium lingkungan Dinas Lingkungan Hidup Kota Pekalongan;\r\nMengadministrasi pelaksanaan rencana kegiatan pengelolaan laboratorium lingkungan sesuai dengan lingkup tugasnya;\r\nMenghimpun bahan penyusunan Dokumen Sistem Mutu Laboratorium, Standar Operasional Prosedur dan Standar Pelayanan laboratorium lingkungan DLH Kota Pekalongan;\r\nMenghimpun dan menyusun bahan perencanaan dan pemeliharaan perlengkapan dan peralatan laboratorium lingkungan;\r\nMenghimpun bahan penyusunan rencana dan pelaksanaan peningkatan mutu serta pengembangan pelayanan laboratorium lingkungan;\r\nMelaksanakan tugas pengambilan contoh uji dan pengujian sesuai dengan parameter yang menjadi tanggung jawabnya; \r\nMelaksanakan kegiatan stock opname kebutuhan bahan, reagen, perlengkapan pemeriksaaan/analisis dan peralatan laboratorium lingkungan;\r\nMelaksanakan pengkajian ulang sistem manajemen mutu laboratorium dan Audit Internal;\r\nMelaksanakan pemeliharaan peralatan dan perlengkapan laboratorium lingkungan;\r\nMelaksanakan pengelolaan limbah cair dan TPS limbah B3 laboratorium lingkungan;\r\nMenjaga kebersihan laboratorium lingkungan;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaannya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00');
 INSERT INTO `tb_riwayat_pekerjaan` (`id`, `id_pekerja`, `id_nama_pekerjaan`, `jenis_pegawai`, `id_unit_kerja`, `tahun`, `tmt_kerja`, `tst_kerja`, `status`, `gaji`, `uraian_pekerjaan`, `sk_spt`, `sk_pks`, `penginput`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(468, 'PG260109252961', 142, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Membersihkan sampah di sungai baik yang berada di bantaran sungai atau di badan sungai;\r\nMelakukan pemilahan sampah anorganik laku jual, mencatat tiap minggunya dan melaporkan jumlah berat sampah terkurangi tiap bulanya;\r\nMencatat sampah terambil tiap hari dari sungai perkontainer/tond;\r\nMengambil sampah pada unit jaring jaring sampah yang telah terpasang;\r\nMerapikan pohon-pohon yang mengarah ke badan sungai.\r\nMelakukan patroli kebersihan, pembuangan air limbah di sepanjang aliran sungai;\r\nMelakukan perawatan kapal dan memastikan kapal dapat beroprasional;\r\nMengamankan dan bertanggung jawab atas aset/ sarana dan prasarana yang ada;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaanya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau atasan langsungnya dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (469, 'PG260109252962', 142, 'Kontrak Dinas', 5, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Membersihkan sampah di sungai baik yang berada di bantaran sungai atau di badan sungai;\r\nMelakukan pemilahan sampah anorganik laku jual, mencatat tiap minggunya dan melaporkan jumlah berat sampah terkurangi tiap bulanya;\r\nMencatat sampah terambil tiap hari dari sungai perkontainer/tond;\r\nMengambil sampah pada unit jaring jaring sampah yang telah terpasang;\r\nMerapikan pohon-pohon yang mengarah ke badan sungai.\r\nMelakukan patroli kebersihan, pembuangan air limbah di sepanjang aliran sungai;\r\nMelakukan perawatan kapal dan memastikan kapal dapat beroprasional;\r\nMengamankan dan bertanggung jawab atas aset/ sarana dan prasarana yang ada;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaanya sesuai bidang tugas PIHAK KEDUA;\r\nMelaksanakan koordinasi aktif dengan PIHAK KESATU atau atasan langsungnya dalam pelaksanaan tugas.', '', '', 'Faza Mustafid', '2026-01-09 03:42:22', '2026-01-14 13:07:25', '0000-00-00 00:00:00'),
 (472, 'PG260109252901', 138, 'Kontrak Dinas', 3, '2026', '2026-01-01', '2026-12-31', 'Terverifikasi', '1900000', 'Membersihkan area tempat pembuangan sampah sementara (depo);\r\nMelakukan pemilahan sampah ;\r\nMelakukan pemeliharaan, perawatan dan perbaikan peralatan kebersihan dan   pengangkutan sampah;\r\nMenjaga peralatan kerja/barang inventaris Dinas Lingkungan Hidup yang dalam penguasaannya sesuai bidang tugas ;\r\nMelaksanakan tugas lain yang diperintahkan atasan; ', '', '', 'Kurniyawati', '2026-01-12 08:27:31', '2026-01-14 13:07:25', '0000-00-00 00:00:00');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tb_sk`
+--
+
+CREATE TABLE `tb_sk` (
+  `id_sk` int(11) NOT NULL,
+  `id_pekerja` char(14) NOT NULL,
+  `id_no_sk` int(11) NOT NULL,
+  `nomor_sk` varchar(50) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -418,6 +449,13 @@ ALTER TABLE `tb_nama_pekerjaan`
   ADD PRIMARY KEY (`id_nama_pekerjaan`);
 
 --
+-- Indeks untuk tabel `tb_no_sk`
+--
+ALTER TABLE `tb_no_sk`
+  ADD PRIMARY KEY (`id_no_sk`),
+  ADD UNIQUE KEY `uk_tahun` (`tahun`);
+
+--
 -- Indeks untuk tabel `tb_perpanjangan_kontrak`
 --
 ALTER TABLE `tb_perpanjangan_kontrak`
@@ -432,6 +470,14 @@ ALTER TABLE `tb_riwayat_pekerjaan`
   ADD KEY `id_nama_pekerjaan` (`id_nama_pekerjaan`) USING BTREE,
   ADD KEY `id_unit_kerja` (`id_unit_kerja`) USING BTREE,
   ADD KEY `id_pekerja` (`id_pekerja`) USING BTREE;
+
+--
+-- Indeks untuk tabel `tb_sk`
+--
+ALTER TABLE `tb_sk`
+  ADD PRIMARY KEY (`id_sk`),
+  ADD UNIQUE KEY `id_pekerja` (`id_pekerja`),
+  ADD KEY `id_no_sk` (`id_no_sk`);
 
 --
 -- Indeks untuk tabel `tb_unit_kerja`
@@ -454,7 +500,7 @@ ALTER TABLE `tb_user`
 -- AUTO_INCREMENT untuk tabel `tb_dasar_hukum`
 --
 ALTER TABLE `tb_dasar_hukum`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `tb_kepala`
@@ -469,6 +515,12 @@ ALTER TABLE `tb_nama_pekerjaan`
   MODIFY `id_nama_pekerjaan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
 
 --
+-- AUTO_INCREMENT untuk tabel `tb_no_sk`
+--
+ALTER TABLE `tb_no_sk`
+  MODIFY `id_no_sk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT untuk tabel `tb_perpanjangan_kontrak`
 --
 ALTER TABLE `tb_perpanjangan_kontrak`
@@ -479,6 +531,12 @@ ALTER TABLE `tb_perpanjangan_kontrak`
 --
 ALTER TABLE `tb_riwayat_pekerjaan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=473;
+
+--
+-- AUTO_INCREMENT untuk tabel `tb_sk`
+--
+ALTER TABLE `tb_sk`
+  MODIFY `id_sk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=601;
 
 --
 -- AUTO_INCREMENT untuk tabel `tb_unit_kerja`
@@ -515,6 +573,13 @@ ALTER TABLE `tb_riwayat_pekerjaan`
   ADD CONSTRAINT `tb_riwayat_pekerjaan_ibfk_1` FOREIGN KEY (`id_pekerja`) REFERENCES `tb_data_pekerja` (`id_pekerja`),
   ADD CONSTRAINT `tb_riwayat_pekerjaan_ibfk_2` FOREIGN KEY (`id_nama_pekerjaan`) REFERENCES `tb_nama_pekerjaan` (`id_nama_pekerjaan`),
   ADD CONSTRAINT `tb_riwayat_pekerjaan_ibfk_3` FOREIGN KEY (`id_unit_kerja`) REFERENCES `tb_unit_kerja` (`id_unit_kerja`);
+
+--
+-- Ketidakleluasaan untuk tabel `tb_sk`
+--
+ALTER TABLE `tb_sk`
+  ADD CONSTRAINT `tb_sk_ibfk_1` FOREIGN KEY (`id_pekerja`) REFERENCES `tb_data_pekerja` (`id_pekerja`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tb_sk_ibfk_2` FOREIGN KEY (`id_no_sk`) REFERENCES `tb_no_sk` (`id_no_sk`);
 
 --
 -- Ketidakleluasaan untuk tabel `tb_user`

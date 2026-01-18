@@ -209,7 +209,7 @@ function formatTanggalHuruf($tanggal)
             <div class="judul"><?= esc(strtoupper($pekerja['pekerjaan'])) ?></div>
 
             <div class="nomor">
-                Nomor : 800.1.2/ ...........
+                Nomor : <?= esc($pekerja['kode_sk']) ?>/<?= esc($pekerja['nomor_sk']) ?>
             </div>
             <ol class="isi">
                 <!-- <li> -->

@@ -76,7 +76,9 @@ class DataPekerjaModel extends Model
             tb_data_pekerja.*,
             tb_riwayat_pekerjaan.*,
             tb_nama_pekerjaan.pekerjaan,
-            tb_unit_kerja.*
+            tb_unit_kerja.*,
+            tb_sk.nomor_sk,
+            tb_no_sk.kode_sk
         ');
         // Join subquery sebagai latest_riwayat
         $builder->join('(' . $subquery_builder->getCompiledSelect() . ') as latest_riwayat', 'latest_riwayat.id_pekerja = tb_data_pekerja.id_pekerja');
@@ -85,6 +87,8 @@ class DataPekerjaModel extends Model
         $builder->join('tb_riwayat_pekerjaan', 'tb_riwayat_pekerjaan.id = latest_riwayat.id', 'left');
         $builder->join('tb_nama_pekerjaan', 'tb_nama_pekerjaan.id_nama_pekerjaan = tb_riwayat_pekerjaan.id_nama_pekerjaan', 'left');
         $builder->join('tb_unit_kerja', 'tb_unit_kerja.id_unit_kerja = tb_riwayat_pekerjaan.id_unit_kerja', 'left');
+        $builder->join('tb_sk', 'tb_sk.id_pekerja = tb_data_pekerja.id_pekerja', 'left');
+        $builder->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'left');
 
         $builder->where('tb_data_pekerja.deleted_at', null);
         $builder->where('tb_data_pekerja.status_pekerja', 'Terverifikasi');
@@ -101,7 +105,7 @@ class DataPekerjaModel extends Model
         // $builder->orderBy('tb_data_pekerja.created_at', 'ASC');
         // kelompokan perbidang 
         $builder->groupBy('tb_riwayat_pekerjaan.id_unit_kerja, tb_data_pekerja.id_pekerja');
-
+        // dd($builder->get()->getResultArray());
         return $builder->get()->getResultArray();
     }
 

@@ -101,17 +101,22 @@
                         </tbody>
                     </table>
                 </div>
-
+                <?php if (session()->getFlashdata('error')) : ?>
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        <?= session()->getFlashdata('error') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
                 <div class="mt-3">
                     <a href="<?= site_url('data_pekerja') . '/' . session()->get('page') ?>" class="btn btn-secondary">Kembali</a>
                     <!-- show modal verikasi -->
                     <?php if ((session()->get('page') != 'pensiun') && (session()->get('level') == 'admin')) : ?>
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#verifikasiModal">Verifikasi</button>
                         <!-- Cetak SPK -->
-                        <a href="<?= site_url('laporan/cetak_spk/' . $id_pekerja_encrypted) ?>" class="btn btn-primary" target="_blank">Cetak SPK</a>
+                        <a href="<?= site_url('laporan/cetak_spk/' . $id_pekerja_encrypted) ?>" class="btn btn-primary">Cetak SPK</a>
                     <?php endif; ?>
                     <?php if ((session()->get('page') == 'new') && (session()->get('level') == 'user')) : ?>
-                        <a href="<?= site_url('data_pekerja/cetak_usulan/' . $id_pekerja_encrypted) ?>" class="btn btn-primary" target="_blank">Cetak Usulan</a>
+                        <a href="<?= site_url('data_pekerja/cetak_usulan/' . $id_pekerja_encrypted) ?>" class="btn btn-primary">Cetak Usulan</a>
                     <?php endif; ?>
                 </div>
             </div>

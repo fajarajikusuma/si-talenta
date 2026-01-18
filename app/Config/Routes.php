@@ -111,3 +111,14 @@ $routes->post('/dasar_hukum/change_status', 'DasarHukum::change_status');
 $routes->get('/dasar_hukum/edit/(:any)', 'DasarHukum::edit/$1');
 $routes->post('/dasar_hukum/update/(:any)', 'DasarHukum::update/$1');
 $routes->get('/dasar_hukum/delete/(:any)', 'DasarHukum::delete/$1');
+
+// Nomor SK
+$routes->get('no-sk', 'NomorSk::index');
+$routes->get('no-sk/create', 'NomorSk::create');
+$routes->post('no-sk/store', 'NomorSk::store');
+$routes->get('no-sk/edit/(:any)', 'NomorSk::edit/$1');
+$routes->post('no-sk/update/(:any)', 'NomorSk::update/$1');
+$routes->get('no-sk/delete/(:any)', 'NomorSk::delete/$1');
+$routes->get('no-sk/detail/(:any)', 'NomorSk::detail/$1');
+$routes->get('no-sk/generate/(:any)', 'NomorSk::generate/$1');
+$routes->get('no-sk/hapus-semua/(:any)', 'NomorSk::hapusSemua/$1');

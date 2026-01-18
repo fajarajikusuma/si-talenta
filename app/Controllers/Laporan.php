@@ -16,6 +16,7 @@ class Laporan extends BaseController
         $this->listPekerjaanModel = model('App\Models\ListPekerjaanModel');
         $this->daftarKepalaModel = model('App\Models\DaftarKepalaModel');
         $this->dasarHukumModel = model('App\Models\DasarHukumModel');
+        $this->skModel = model('App\Models\SkModel');
     }
 
     public function index()
@@ -79,6 +80,22 @@ class Laporan extends BaseController
     public function cetak_pks()
     {
         $jumlahPekerjaAktif = $this->dataPekerjaModel->joinDataPekerjaanAktif();
+
+        $noSk = model('App\Models\NoSkModel')
+            ->where('tahun', date('Y'))
+            ->first();
+
+        if (!$noSk) {
+            return redirect()->back()->with('error', 'Nomor SK tahun ini belum dibuat. Hubungi admin.');
+        }
+
+        $cekSK = $this->skModel
+            ->where('id_no_sk', $noSk['id_no_sk'])
+            ->countAllResults();
+
+        if ($cekSK === 0) {
+            return redirect()->back()->with('error', 'Nomor SK belum digenerate.');
+        }
 
         if (count($jumlahPekerjaAktif) == 0) {
             return redirect()->back()->with('error', 'Tidak ada data pekerja dengan status Aktif. Tidak dapat mencetak PKS.');
@@ -205,6 +222,23 @@ class Laporan extends BaseController
     {
         $encryption = \Config\Services::encrypter();
         $id_pekerja = $encryption->decrypt(hex2bin($id_pekerja_encrypted));
+        // Cek apakah nomor SK sudah digenerate untuk tahun berjalan
+        $noSk = model('App\Models\NoSkModel')
+            ->where('tahun', date('Y'))
+            ->first();
+
+        if (!$noSk) {
+            return redirect()->back()->with('error', 'Nomor SK tahun ini belum dibuat. Hubungi admin.');
+        }
+
+        $cekSK = $this->skModel
+            ->where('id_no_sk', $noSk['id_no_sk'])
+            ->countAllResults();
+
+        if ($cekSK === 0) {
+            return redirect()->back()->with('error', 'Nomor SK belum digenerate.');
+        }
+
 
         // Ambil SEMUA pekerja aktif (array)
         $daftarPekerja = $this->dataPekerjaModel->joinDataPekerjaanAktif();
