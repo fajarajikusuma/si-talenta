@@ -12,7 +12,8 @@ class NoSkModel extends Model
     protected $allowedFields = [
         'tahun',
         'kode_sk',
-        'nomor_utama'
+        'nomor_utama',
+        'awalan_nomor'
     ];
 
     protected $useTimestamps = true;

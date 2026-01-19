@@ -27,6 +27,7 @@
                         <th>Tahun</th>
                         <th>Kode SK</th>
                         <th>Nomor Utama</th>
+                        <th>Awalan Nomor</th>
                         <th width="120">Aksi</th>
                     </tr>
                 </thead>
@@ -36,6 +37,7 @@
                             <td><?= esc($row['tahun']) ?></td>
                             <td><?= esc($row['kode_sk']) ?></td>
                             <td><?= esc($row['nomor_utama']) ?></td>
+                            <td><?= esc($row['awalan_nomor']) ?></td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <a href="<?= site_url('no-sk/detail/' . $row['id_no_sk_encrypted']) ?>"

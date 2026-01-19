@@ -70,7 +70,8 @@ class NomorSk extends BaseController
         $this->noSkModel->insert([
             'tahun'       => $tahun,
             'kode_sk'     => $this->request->getPost('kode_sk'),
-            'nomor_utama' => $this->request->getPost('nomor_utama')
+            'nomor_utama' => $this->request->getPost('nomor_utama'),
+            'awalan_nomor' => $this->request->getPost('awalan_nomor')
         ]);
 
         return redirect()->to('no-sk')->with('success', 'Nomor SK berhasil disimpan');
@@ -115,7 +116,8 @@ class NomorSk extends BaseController
         $this->noSkModel->update($id, [
             'tahun'       => $this->request->getPost('tahun'),
             'kode_sk'     => $this->request->getPost('kode_sk'),
-            'nomor_utama' => $this->request->getPost('nomor_utama')
+            'nomor_utama' => $this->request->getPost('nomor_utama'),
+            'awalan_nomor' => $this->request->getPost('awalan_nomor')
         ]);
 
         return redirect()->to('no-sk')->with('success', 'Nomor SK berhasil diperbarui');
@@ -210,13 +212,18 @@ class NomorSk extends BaseController
         });
 
         // 2️⃣ GENERATE NOMOR SK
-        $no = 0;
+        $awalan = (int) $noSk['awalan_nomor'];
+        $no = $awalan;
 
-        foreach ($pegawaiAktif as $p) {
+        foreach ($pegawaiAktif as $index => $p) {
 
-            $nomorSk = ($no === 0)
-                ? $noSk['nomor_utama']
-                : $noSk['nomor_utama'] . '.' . $no;
+            // jika awalan 0 dan index pertama → tanpa revisi
+            if ($awalan === 0 && $index === 0) {
+                $nomorSk = $noSk['nomor_utama'];
+            } else {
+                // selain itu selalu pakai .nomor
+                $nomorSk = $noSk['nomor_utama'] . '.' . $no;
+            }
 
             $skModel->insert([
                 'id_no_sk'   => $id_no_sk,

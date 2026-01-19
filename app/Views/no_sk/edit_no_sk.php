@@ -29,11 +29,21 @@
                 </div>
 
                 <div class="form-group mb-3">
+                    <label>Awalan Nomor</label>
+                    <input type="number"
+                        name="awalan_nomor"
+                        class="form-control"
+                        value="<?= esc($data['awalan_nomor']) ?>"
+                        required>
+                </div>
+
+                <div class="form-group mb-3">
                     <label>Tahun</label>
                     <input type="number"
                         name="tahun"
                         class="form-control"
                         value="<?= esc($data['tahun']) ?>"
+                        placeholder="Contoh: 2025"
                         required>
                 </div>
 

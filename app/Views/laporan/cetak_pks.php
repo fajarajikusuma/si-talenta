@@ -24,9 +24,10 @@
 
         .isi {
             text-align: justify;
-            /* buat spasi menjadi 1.25 */
             line-height: 1.25;
             margin-bottom: 1em;
+            hyphens: auto;
+            /* Membantu pemenggalan kata agar spasi tidak terlalu lebar */
         }
 
         .data {
@@ -44,7 +45,8 @@
 
         .pasal {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 10px;
+            /* Diubah dari 20px menjadi 10px */
         }
 
         .lingkup {
@@ -90,6 +92,38 @@
             .page-break {
                 page-break-before: always;
             }
+        }
+
+        /* 1. Hapus atau komentari 'break-inside: avoid' yang sebelumnya saya sarankan 
+      agar teks bisa mengalir ke halaman selanjutnya secara alami */
+        .isi,
+        .custom-list>li {
+            break-inside: auto;
+            /* Izinkan teks terpotong */
+        }
+
+        /* 2. Gunakan aturan minimal baris (Widows & Orphans) */
+        p,
+        li,
+        .isi {
+            /* Minimal 3 baris tertinggal di bawah atau terbawa ke atas */
+            orphans: 3;
+            widows: 3;
+        }
+
+        /* 3. Khusus untuk Judul Pasal, tetap gunakan 'avoid' agar tidak terpisah dari isinya */
+        .pasal,
+        .lingkup {
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        /* 4. Optimasi spasi justify agar tidak renggang berlebihan */
+        .isi {
+            text-align: justify;
+            line-height: 1.25;
+            word-spacing: -1px;
+            /* Merapatkan sedikit jarak antar kata */
         }
     </style>
 </head>

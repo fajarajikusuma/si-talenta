@@ -32,10 +32,19 @@
                 </div>
 
                 <div class="form-group mb-3">
+                    <label>Awalan Nomor</label>
+                    <input type="number"
+                        name="awalan_nomor"
+                        class="form-control"
+                        placeholder="Isikan 0 jika tidak ada awalan"
+                        required>
+                </div>
+
+                <div class="form-group mb-3">
                     <label>Tahun</label>
                     <input type="number"
                         name="tahun"
-                        class="form-control"
+                        class="form-control" placeholder="Contoh: 2025"
                         required>
                 </div>
 
