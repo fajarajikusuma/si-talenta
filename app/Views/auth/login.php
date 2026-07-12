@@ -103,7 +103,7 @@
                         </div>
 
                         <div class="flex flex-row gap-3">
-                            <a id="back-home-btn"
+                            <a id="back-home-btn" href="<?= base_url() ?>"
                                 class="flex items-center justify-center w-14 h-14 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all active:scale-90">
                                 <i class="ti-arrow-left text-lg"></i>
                             </a>
@@ -131,11 +131,11 @@
         </div>
     </div>
 
-    <script>
+    <!-- <script>
         const backBtn = document.getElementById('back-home-btn');
         const baseUrl = window.location.origin;
         backBtn.href = baseUrl;
-    </script>
+    </script> -->
 </body>
 
 </html>

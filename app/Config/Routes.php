@@ -5,7 +5,11 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+// Landing Page (Public)
+$routes->get('/', 'LandingPage::index');
+
+// Dashboard (Setelah Login)
+$routes->get('/dashboard', 'Home::index');
 
 // Data Pekerja
 $routes->get('/data_pekerja/aktif', 'DataPekerja::index');

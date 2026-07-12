@@ -17,7 +17,7 @@ class Auth extends BaseController
     public function index()
     {
         if (session()->get('isLoggedIn')) {
-            return redirect()->to(base_url('/'));
+            return redirect()->to(base_url('dashboard'));
         }
 
         $data = [
@@ -70,7 +70,7 @@ class Auth extends BaseController
 
                         session()->set('update_riwayat_run', $today);
                     }
-                    return redirect()->to(base_url('/'));
+                    return redirect()->to(base_url('dashboard'));
                 } else {
                     return redirect()->back()->withInput()->with('error', 'User is not active');
                 }
@@ -83,14 +83,14 @@ class Auth extends BaseController
     public function logout()
     {
         session()->destroy();
-        return redirect()->to(base_url('login'))->with('success', 'You have been logged out successfully.');
+        return redirect()->to(base_url('/'))->with('success', 'You have been logged out successfully.');
     }
 
     public function list_users()
     {
         session()->set('page', 'user_sistem');
         if (session()->get('level') !== 'admin') {
-            return redirect()->to(base_url('/'))->with('error', 'Access denied');
+            return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
 
         $encrypter = \Config\Services::encrypter();
@@ -111,7 +111,7 @@ class Auth extends BaseController
     public function add_user()
     {
         if (session()->get('level') !== 'admin') {
-            return redirect()->to(base_url('/'))->with('error', 'Access denied');
+            return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
 
         $data = [
@@ -253,7 +253,7 @@ class Auth extends BaseController
     public function delete_user($id)
     {
         if (session()->get('level') !== 'admin') {
-            return redirect()->to(base_url('/'))->with('error', 'Access denied');
+            return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
         $encrypter = \Config\Services::encrypter();
         $id_decrypted = $encrypter->decrypt(hex2bin($id));

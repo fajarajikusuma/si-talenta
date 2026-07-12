@@ -157,7 +157,7 @@
           </button>
         </div>
         <div>
-          <a class="navbar-brand brand-logo" href="<?= site_url('/') ?>">
+          <a class="navbar-brand brand-logo" href="<?= site_url('dashboard') ?>">
             <h2 class="text-primary m-0 mb-1"><b><span class="text-dark">Si</span>-Talenta</b></h2>
           </a>
           <!-- <a class="navbar-brand brand-logo-mini" href="#">
