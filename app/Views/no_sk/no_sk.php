@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($list as $row): ?>
+                    <?php foreach (isset($list) && is_array($list) ? $list : [] as $row): ?>
                         <tr>
                             <td><?= esc($row['tahun']) ?></td>
                             <td><?= esc($row['kode_sk']) ?></td>
