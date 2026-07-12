@@ -120,6 +120,25 @@ class Laporan extends BaseController
                 $pekerja['jabatan_short'] = 'Tidak Diketahui';
                 $pekerja['nama_kepala'] = 'Tidak Diketahui';
             }
+            
+            // 🔧 PERBAIKAN: Ambil tanggal penetapan SK dari tb_sk dengan JOIN ke tb_no_sk
+            // untuk memastikan nomor SK masih valid (tidak terhapus)
+            $skData = $this->skModel
+                ->select('tb_sk.*, tb_no_sk.id_no_sk')
+                ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
+                ->where('tb_sk.id_pekerja', $pekerja['id_pekerja'])
+                ->where('tb_sk.id_no_sk', $noSk['id_no_sk'])
+                ->where('tb_no_sk.tahun', date('Y'))
+                ->first();
+            
+            if ($skData && isset($skData['tanggal_penetapan'])) {
+                $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
+            } else {
+                // Jika tidak ada data SK yang valid, skip pegawai ini
+                $pekerja['skip'] = true;
+                continue;
+            }
+            
             // Ambil semua riwayat kerja untuk satu pegawai
             $semuaRiwayat = $this->riwayatKerjaModel
                 ->where('id_pekerja', $pekerja['id_pekerja'])
@@ -162,6 +181,7 @@ class Laporan extends BaseController
             'listPekerjaan' => $this->listPekerjaanModel->findAll(),
             'daftarKepala' => $this->daftarKepalaModel->getDaftarKepala()
         ];
+        // dd($data);
         return view('laporan/cetak_pks', $data);
     }
 
@@ -279,6 +299,23 @@ class Laporan extends BaseController
             $pekerja['bulan_kerja'] = floor(($tst - $tmt) / (30 * 24 * 60 * 60));
         } else {
             $pekerja['bulan_kerja'] = 0;
+        }
+
+        // 🔧 PERBAIKAN: Ambil tanggal penetapan SK dari tb_sk dengan JOIN ke tb_no_sk
+        // untuk memastikan nomor SK masih valid (tidak terhapus)
+        $skData = $this->skModel
+            ->select('tb_sk.*, tb_no_sk.id_no_sk')
+            ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
+            ->where('tb_sk.id_pekerja', $id_pekerja)
+            ->where('tb_sk.id_no_sk', $noSk['id_no_sk'])
+            ->where('tb_no_sk.tahun', date('Y'))
+            ->first();
+        
+        if ($skData && isset($skData['tanggal_penetapan'])) {
+            $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
+        } else {
+            // Jika tidak ada data SK yang valid, kembalikan error
+            return redirect()->back()->with('error', 'Data nomor SK tidak valid atau sudah dihapus. Silakan generate ulang nomor SK.');
         }
 
         // Ambil kepala unit kerja

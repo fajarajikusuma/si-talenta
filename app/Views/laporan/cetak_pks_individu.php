@@ -95,7 +95,8 @@
 </head>
 
 <?php
-$tanggalsk = date('Y') - 1 . '-12-31';
+// 🔧 PERBAIKAN: Gunakan tanggal penetapan SK dari data pegawai yang dinamis
+$tanggalsk = isset($pekerja['tanggal_penetapan_sk']) ? $pekerja['tanggal_penetapan_sk'] : date('Y-m-d');
 $harisk = date('D', strtotime($tanggalsk));
 
 function getHariIndo($hariInggris)

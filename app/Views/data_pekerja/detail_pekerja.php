@@ -6,6 +6,12 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Detail Data <?= $subtitle ?></h4>
+                <?php if (session()->getFlashdata('error')) : ?>
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                        <?= session()->getFlashdata('error') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
                 <p class="card-description">Informasi lengkap data pekerja</p>
 
                 <div class="overflow-auto">
@@ -101,12 +107,7 @@
                         </tbody>
                     </table>
                 </div>
-                <?php if (session()->getFlashdata('error')) : ?>
-                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                        <?= session()->getFlashdata('error') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
+                
                 <div class="mt-3">
                     <a href="<?= site_url('data_pekerja') . '/' . session()->get('page') ?>" class="btn btn-secondary">Kembali</a>
                     <!-- show modal verikasi -->

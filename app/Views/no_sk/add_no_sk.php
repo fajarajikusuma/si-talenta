@@ -5,6 +5,10 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Tambah Nomor SK</h4>
+            <p class="card-description">
+                Buat nomor SK baru berdasarkan nomor buku surat keluar dinas. 
+                <strong>Setiap tanggal penetapan harus menggunakan nomor utama yang berbeda.</strong>
+            </p>
             <?php if (session()->getFlashdata('error')) : ?>
                 <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                     <?= session()->getFlashdata('error') ?>
@@ -23,12 +27,15 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label>Nomor Utama</label>
+                    <label>Nomor Utama <span class="text-danger">*</span></label>
                     <input type="text"
                         name="nomor_utama"
                         class="form-control"
-                        placeholder="Contoh: 123"
+                        placeholder="Contoh: 0237 (sesuai buku surat keluar)"
                         required>
+                    <small class="form-text text-muted">
+                        Isikan nomor urut dari <strong>buku surat keluar</strong> dinas untuk tanggal penetapan ini.
+                    </small>
                 </div>
 
                 <div class="form-group mb-3">
@@ -36,15 +43,32 @@
                     <input type="number"
                         name="awalan_nomor"
                         class="form-control"
-                        placeholder="Isikan 0 jika tidak ada awalan"
+                        placeholder="Isikan 0 jika tidak ada awalan (untuk nomor pertama)"
+                        value="0"
                         required>
+                    <small class="form-text text-muted">
+                        Awalan nomor akan otomatis ter-update saat generate SK. Isi 0 untuk SK pertama kali.
+                    </small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Tanggal Penetapan SK</label>
+                    <input type="date"
+                        name="tanggal_penetapan"
+                        class="form-control"
+                        required>
+                    <small class="form-text text-muted">
+                        ⚠️ <strong>PENTING:</strong> Satu tanggal penetapan = Satu nomor utama (dari buku surat keluar)
+                    </small>
                 </div>
 
                 <div class="form-group mb-3">
                     <label>Tahun</label>
                     <input type="number"
                         name="tahun"
-                        class="form-control" placeholder="Contoh: 2025"
+                        class="form-control" 
+                        placeholder="Contoh: 2026"
+                        value="<?= date('Y') ?>"
                         required>
                 </div>
 

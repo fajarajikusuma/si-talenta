@@ -129,9 +129,6 @@
 </head>
 
 <?php
-$tanggalsk = date('Y') - 1 . '-12-31';
-$harisk = date('D', strtotime($tanggalsk));
-
 function getHariIndo($hariInggris)
 {
     $hari = [
@@ -233,6 +230,9 @@ function formatTanggalHuruf($tanggal)
             return $tgl . ' ' . $bulanIndo[$bln] . ' ' . $thn;
         };
         foreach ($daftarPekerja as $pekerja) :
+            // 🔧 PERBAIKAN: Gunakan tanggal penetapan SK dari data pegawai yang dinamis per pekerja
+            $tanggalsk = isset($pekerja['tanggal_penetapan_sk']) ? $pekerja['tanggal_penetapan_sk'] : 'Tanggal Belum Ditetapkan';
+            $harisk = date('D', strtotime($tanggalsk));
         ?>
             <div class="<?= $i > 0 ? 'page-break' : '' ?>">
                 <img src="<?= base_url('assets/kop/dlh.png') ?>" alt="KOP SK" class="img-fluid mb-4">

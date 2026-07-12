@@ -13,7 +13,8 @@ class NoSkModel extends Model
         'tahun',
         'kode_sk',
         'nomor_utama',
-        'awalan_nomor'
+        'awalan_nomor',
+        'tanggal_penetapan'
     ];
 
     protected $useTimestamps = true;

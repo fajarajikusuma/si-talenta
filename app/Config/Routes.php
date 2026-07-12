@@ -120,5 +120,7 @@ $routes->get('no-sk/edit/(:any)', 'NomorSk::edit/$1');
 $routes->post('no-sk/update/(:any)', 'NomorSk::update/$1');
 $routes->get('no-sk/delete/(:any)', 'NomorSk::delete/$1');
 $routes->get('no-sk/detail/(:any)', 'NomorSk::detail/$1');
-$routes->get('no-sk/generate/(:any)', 'NomorSk::generate/$1');
-$routes->get('no-sk/hapus-semua/(:any)', 'NomorSk::hapusSemua/$1');
+// 🔧 PERBAIKAN: Ubah route generate menjadi form, dan tambahkan route process
+$routes->get('no-sk/form-generate/(:any)', 'NomorSk::formGenerate/$1');
+$routes->post('no-sk/generate-process/(:any)', 'NomorSk::generate/$1');
+$routes->post('no-sk/hapus-semua/(:any)', 'NomorSk::hapusSemua/$1');
