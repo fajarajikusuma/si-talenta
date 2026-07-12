@@ -117,7 +117,6 @@
                         <input type="file" class="form-control" id="input_ijasah" name="ijasah" accept=".jpg,.jpeg,.png,.pdf" value="<?= old('upload_ijasah') ?>">
                         <small class="form-text text-muted">File berupa JPG, PNG, atau PDF. Maksimal 2MB.</small>
                     </div>
-                    <!-- ... (lanjutkan isi sesuai form sebelumnya) -->
                     <button type="button" class="btn btn-primary" onclick="nextStep()">Selanjutnya</button>
                     <a href="<?= site_url('data_pekerja/new') ?>" class="btn btn-dark">Batal</a>
                 </div>

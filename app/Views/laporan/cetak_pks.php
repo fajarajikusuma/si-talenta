@@ -92,6 +92,37 @@
             .page-break {
                 page-break-before: always;
             }
+            
+            /* Hindari page break di tengah elemen penting */
+            .pasal, .lingkup, table {
+                page-break-inside: avoid;
+            }
+            
+            /* Pastikan tanda tangan tidak terpotong */
+            .signature-section {
+                page-break-inside: avoid;
+                margin-top: 20px;
+            }
+            
+            /* Grup paragraf penutup + tanda tangan agar tidak terpisah */
+            .closing-group {
+                page-break-inside: avoid;
+            }
+            
+            /* Atur orphans dan widows untuk mencegah 1 baris terisolasi */
+            p, li, .isi {
+                orphans: 2;
+                widows: 2;
+            }
+        }
+        
+        .signature-section {
+            margin-top: 20px;
+            padding-top: 10px;
+        }
+        
+        .closing-group {
+            margin-top: 5px;
         }
 
         /* 1. Hapus atau komentari 'break-inside: avoid' yang sebelumnya saya sarankan 
@@ -398,7 +429,13 @@ function formatTanggalHuruf($tanggal)
                         <li>
                             Selama hubungan kerja berlangsung, PIHAK KEDUA mempunyai hak sebagai berikut:
                             <ul>
-                                <li> PIHAK KEDUA berhak menerima upah dari PIHAK KESATU sebesar Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>) perbulan;</li>
+                                <?php if (isset($pekerja['status_pegawai']) && $pekerja['status_pegawai'] == 'Percobaan'): ?>
+                                    <li>PIHAK KEDUA berstatus <strong>MASA PERCOBAAN</strong> selama 3 (tiga) bulan terhitung mulai tanggal <?= formatTanggalIndo($pekerja['masa_percobaan_mulai'] ?? $pekerja['tmt_kerja']) ?> sampai dengan <?= formatTanggalIndo($pekerja['masa_percobaan_selesai'] ?? date('Y-m-d', strtotime($pekerja['tmt_kerja'] . ' +3 months'))) ?>;</li>
+                                    <li>Selama masa percobaan, PIHAK KEDUA berhak menerima upah dari PIHAK KESATU sebesar <strong>80% (delapan puluh persen)</strong> dari gaji pokok yaitu Rp. <?= number_format((float) $pekerja['gaji'], 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' Rupiah' ?>) perbulan, dari gaji pokok Rp. <?= number_format((float) ($pekerja['gaji_pokok'] ?? $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji_pokok'] ?? $pekerja['gaji']) . ' Rupiah' ?>);</li>
+                                    <li>Setelah masa percobaan selesai dan dinyatakan lulus, PIHAK KEDUA akan menerima upah penuh sebesar <strong>100% (seratus persen)</strong> dari gaji pokok;</li>
+                                <?php else: ?>
+                                    <li>PIHAK KEDUA berhak menerima upah dari PIHAK KESATU sebesar Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>) perbulan;</li>
+                                <?php endif; ?>
                                 <li> Upah dibayarkan secara bulanan kepada PIHAK KEDUA setiap akhir bulan berjalan; dan</li>
                                 <li> Hak lainnya dapat diberikan sesuai dengan ketentuan pengelolaan keuangan daerah Kota Pekalongan</li>
                             </ul>
@@ -503,29 +540,34 @@ function formatTanggalHuruf($tanggal)
                     </ol>
                 </div>
 
-                <p>Demikian Perjanjian Kerja Waktu Tertentu ini dibuat oleh PIHAK KESATU dan PIHAK KEDUA dalam keadaan sadar tanpa ada paksaan dari pihak manapun.</p>
+                <div class="closing-group">
+                    <p>Demikian Perjanjian Kerja Waktu Tertentu ini dibuat oleh PIHAK KESATU dan PIHAK KEDUA dalam keadaan sadar tanpa ada paksaan dari pihak manapun.</p>
 
-                <table style="width:100%; margin-top: 0px;">
-                    <tr>
-                        <?php foreach ($daftarKepala as $kepala): ?>
-                            <?php if (esc($kepala['unit_kerja']) == 'Dinas Lingkungan Hidup') : ?>
-                                <td style="text-align:center;width: 50%;">
-                                    PIHAK KESATU<br><br><br><br><br><br>
-                                    <u><?= esc($kepala['nama_kepala']) ?></u><br>
-                                    NIP. <?= esc($kepala['nip']) ?><br>
+                    <div class="signature-section">
+                        <table style="width:100%; margin-top: 0px;">
+                            <tr>
+                                <?php foreach ($daftarKepala as $kepala): ?>
+                                    <?php if (esc($kepala['unit_kerja']) == 'Dinas Lingkungan Hidup') : ?>
+                                        <td style="text-align:center;width: 50%;">
+                                            PIHAK KESATU<br><br><br><br><br><br>
+                                            <u><?= esc($kepala['nama_kepala']) ?></u><br>
+                                            NIP. <?= esc($kepala['nip']) ?><br>
+                                        </td>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                                <td style="text-align:center; width: 50%;">
+                                    PIHAK KEDUA<br><br><br><br><br><br>
+                                    <?=
+                                    ($pekerja['gelar_depan'] != '-' ? $pekerja['gelar_depan'] . ' ' : '') .
+                                        strtoupper($pekerja['nama']) .
+                                        ($pekerja['gelar_belakang'] != '-' ? ', ' . $pekerja['gelar_belakang'] : '')
+                                    ?><br>
+                                    &nbsp;
                                 </td>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                        <td style="text-align:center; width: 50%;">
-                            PIHAK KEDUA<br><br><br><br><br><br>
-                            <?=
-                            ($pekerja['gelar_depan'] != '-' ? $pekerja['gelar_depan'] . ' ' : '') .
-                                strtoupper($pekerja['nama']) .
-                                ($pekerja['gelar_belakang'] != '-' ? ', ' . $pekerja['gelar_belakang'] : '')
-                            ?><br>
-                            &nbsp;
-                        </td>
-                    </tr>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
                 </table>
             </div>
         <?php $i++;

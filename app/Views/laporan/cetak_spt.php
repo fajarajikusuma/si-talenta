@@ -42,6 +42,23 @@
             .page-break {
                 page-break-before: always;
             }
+            
+            /* Hindari page break di tengah elemen penting */
+            table {
+                page-break-inside: avoid;
+            }
+            
+            /* Pastikan tanda tangan tidak terpotong */
+            .signature-section {
+                page-break-inside: avoid;
+                margin-top: 30px;
+                min-height: 150px; /* Minimal tinggi untuk tanda tangan */
+            }
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            padding-top: 20px;
         }
     </style>
 </head>
@@ -210,7 +227,11 @@ foreach ($daftarPekerja as $pekerja) : ?>
                         <td class="colon">:</td>
                         <td>
                             <ol style="margin: 0; padding-left: 18px; margin-right: 15px;">
-                                <li class="me-3">Melaksanakan tugas sebagai <?= esc($pekerja['pekerjaan']) ?> Pada <?= esc($pekerja['detail']) ?> dengan diberi Upah Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>), terhitung mulai tanggal <?= formatTanggalIndo($pekerja['tmt_kerja']) ?> s/d <?= formatTanggalIndo($pekerja['tst_kerja']) ?>.</li>
+                                <?php if (isset($pekerja['status_pegawai']) && $pekerja['status_pegawai'] == 'Percobaan'): ?>
+                                    <li class="me-3">Melaksanakan tugas sebagai <?= esc($pekerja['pekerjaan']) ?> Pada <?= esc($pekerja['detail']) ?> dengan status <strong>MASA PERCOBAAN</strong> selama 3 (tiga) bulan dan diberi Upah sebesar <strong>80% (delapan puluh persen)</strong> dari gaji pokok yaitu Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>) perbulan, terhitung mulai tanggal <?= formatTanggalIndo($pekerja['tmt_kerja']) ?> s/d <?= formatTanggalIndo($pekerja['tst_kerja']) ?>.</li>
+                                <?php else: ?>
+                                    <li class="me-3">Melaksanakan tugas sebagai <?= esc($pekerja['pekerjaan']) ?> Pada <?= esc($pekerja['detail']) ?> dengan diberi Upah Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>), terhitung mulai tanggal <?= formatTanggalIndo($pekerja['tmt_kerja']) ?> s/d <?= formatTanggalIndo($pekerja['tst_kerja']) ?>.</li>
+                                <?php endif; ?>
                                 <li>Melaporkan hasil pelaksanaan tugas kepada pejabat pemberi tugas, melalui Atasan langsung sesuai bidang tugasnya.</li>
                             </ol>
                         </td>
@@ -224,7 +245,7 @@ foreach ($daftarPekerja as $pekerja) : ?>
             </p>
             <?php foreach ($daftarKepala as $kepala): ?>
                 <?php if (esc($kepala['unit_kerja']) == 'Dinas Lingkungan Hidup') : ?>
-                    <div class="w-100 mt-1">
+                    <div class="signature-section">
                         <div class="d-flex justify-content-end">
                             <div style="width: 400px;">
                                 <p class="mb-0 ms-5">Ditetapkan di Pekalongan</p>

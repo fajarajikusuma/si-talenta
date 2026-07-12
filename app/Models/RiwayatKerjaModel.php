@@ -12,7 +12,7 @@ class RiwayatKerjaModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['id', 'id_pekerja', 'id_nama_pekerjaan', 'jenis_pegawai', 'id_unit_kerja', 'tahun', 'tmt_kerja', 'tst_kerja', 'status', 'gaji', 'uraian_pekerjaan', 'sk_spt', 'sk_pks', 'penginput', 'created_at', 'updated_at', 'deleted_at'];
+    protected $allowedFields    = ['id', 'id_pekerja', 'id_nama_pekerjaan', 'jenis_pegawai', 'status_pegawai', 'id_unit_kerja', 'tahun', 'tmt_kerja', 'tst_kerja', 'status', 'gaji_pokok', 'gaji', 'masa_percobaan_mulai', 'masa_percobaan_selesai', 'uraian_pekerjaan', 'sk_spt', 'sk_pks', 'penginput', 'created_at', 'updated_at', 'deleted_at'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -70,21 +70,24 @@ class RiwayatKerjaModel extends Model
         $today = $tanggalSimulasi ?? date('Y-m-d');
         $now   = date('Y-m-d H:i:s');
 
-        // 1️⃣ Nonaktifkan kontrak yang SUDAH HABIS
+        // 1️⃣ Nonaktifkan kontrak yang SUDAH HABIS (tst_kerja < today)
         $this->where('status', 'Terverifikasi')
             ->where('tst_kerja <', $today)
             ->set([
-                'status'     => 'Tidak Aktif',
-                'updated_at' => $now,
+                'status'         => 'Tidak Aktif',
+                'updated_at'     => $now,
             ])
             ->update();
 
-        // 2️⃣ Aktifkan kembali kontrak yang BELUM HABIS
+        // 2️⃣ Aktifkan kembali kontrak yang BELUM HABIS (tst_kerja >= today)
+        // Hanya untuk kontrak yang salah dinonaktifkan
         $this->where('status', 'Tidak Aktif')
+            ->where('status_pegawai', 'Tidak Aktif')
             ->where('tst_kerja >=', $today)
             ->set([
-                'status'     => 'Terverifikasi',
-                'updated_at' => $now,
+                'status'         => 'Terverifikasi',
+                'status_pegawai' => 'Aktif',
+                'updated_at'     => $now,
             ])
             ->update();
     }

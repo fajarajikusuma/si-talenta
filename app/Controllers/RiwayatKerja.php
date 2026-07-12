@@ -73,8 +73,16 @@ class RiwayatKerja extends BaseController
                     'required' => '{field} tidak boleh kosong',
                 ],
             ],
-            'gaji' => [
-                'label' => 'Gaji',
+            'status_pegawai' => [
+                'label' => 'Status Pegawai',
+                'rules' => 'required|in_list[Percobaan,Aktif]',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                    'in_list' => '{field} harus dipilih antara Percobaan atau Aktif',
+                ],
+            ],
+            'gaji_pokok' => [
+                'label' => 'Gaji Pokok',
                 'rules' => 'required|numeric',
                 'errors' => [
                     'numeric' => '{field} harus berupa angka',
@@ -145,17 +153,43 @@ class RiwayatKerja extends BaseController
             $status = 'Terverifikasi';
         }
 
+        // Hitung gaji berdasarkan status pegawai
+        $statusPegawai = $this->request->getVar('status_pegawai');
+        $gajiPokok = $this->request->getVar('gaji_pokok');
+        
+        // Jika percobaan: gaji = 80% dari gaji pokok
+        // Jika aktif: gaji = 100% dari gaji pokok
+        $gajiDiterima = ($statusPegawai == 'Percobaan') ? ($gajiPokok * 0.8) : $gajiPokok;
+        
+        // Hitung masa percobaan jika status pegawai adalah Percobaan
+        $masaPercobaanMulai = null;
+        $masaPercobaanSelesai = null;
+        $tstKerja = date('Y-m-d', strtotime($this->request->getVar('tst_kerja')));
+        
+        if ($statusPegawai == 'Percobaan') {
+            $masaPercobaanMulai = $tmtBaru;
+            // Masa percobaan 3 bulan dari TMT
+            $masaPercobaanSelesai = date('Y-m-d', strtotime($tmtBaru . ' +3 months'));
+            
+            // PENTING: TST Kerja untuk percobaan = masa_percobaan_selesai
+            $tstKerja = $masaPercobaanSelesai;
+        }
+
         // Simpan data baru
         $data = [
             'id_pekerja' => $id_pekerja,
             'id_nama_pekerjaan' => $pekerjaanBaru,
             'id_unit_kerja' => $unitKerjaBaru,
             'tmt_kerja' => $tmtBaru,
-            'tst_kerja' => date('Y-m-d', strtotime($this->request->getVar('tst_kerja'))),
+            'tst_kerja' => $tstKerja, // TST = masa percobaan selesai jika percobaan
             'tahun' => $this->request->getVar('tahun'),
             'jenis_pegawai' => $this->request->getVar('jenis_pegawai'),
+            'status_pegawai' => $statusPegawai,
             'status' => ($this->request->getVar('tahun') < date('Y')) ? 'Tidak Aktif' : $status,
-            'gaji' => $this->request->getVar('gaji'),
+            'gaji_pokok' => $gajiPokok,
+            'gaji' => $gajiDiterima,
+            'masa_percobaan_mulai' => $masaPercobaanMulai,
+            'masa_percobaan_selesai' => $masaPercobaanSelesai,
             'uraian_pekerjaan' => $this->request->getVar('uraian_pekerjaan'),
             'created_at' => date('Y-m-d H:i:s'),
             'penginput' => session()->get('nama_lengkap'),
@@ -513,7 +547,8 @@ class RiwayatKerja extends BaseController
             'tmt_kerja' => 'required|valid_date[Y-m-d]',
             'pekerjaan' => 'required',
             'unit_kerja' => 'required',
-            'gaji' => 'required|numeric',
+            'status_pegawai' => 'required|in_list[Percobaan,Aktif]',
+            'gaji_pokok' => 'required|numeric',
             'uraian_pekerjaan' => 'required',
         ]);
 
@@ -543,14 +578,40 @@ class RiwayatKerja extends BaseController
 
         $tahunInput = $this->request->getVar('tahun');
 
+        // Hitung gaji berdasarkan status pegawai
+        $statusPegawai = $this->request->getVar('status_pegawai');
+        $gajiPokok = $this->request->getVar('gaji_pokok');
+        
+        // Jika percobaan: gaji = 80% dari gaji pokok
+        // Jika aktif: gaji = 100% dari gaji pokok
+        $gajiDiterima = ($statusPegawai == 'Percobaan') ? ($gajiPokok * 0.8) : $gajiPokok;
+        
+        // Hitung masa percobaan jika status pegawai adalah Percobaan
+        $masaPercobaanMulai = null;
+        $masaPercobaanSelesai = null;
+        $tstKerja = $this->request->getVar('tst_kerja');
+        
+        if ($statusPegawai == 'Percobaan') {
+            $masaPercobaanMulai = $this->request->getVar('tmt_kerja');
+            // Masa percobaan 3 bulan dari TMT
+            $masaPercobaanSelesai = date('Y-m-d', strtotime($masaPercobaanMulai . ' +3 months'));
+            
+            // PENTING: TST Kerja untuk percobaan = masa_percobaan_selesai
+            $tstKerja = $masaPercobaanSelesai;
+        }
+
         $dataUpdate = [
             'id_nama_pekerjaan' => $this->request->getVar('pekerjaan'),
             'id_unit_kerja' => $this->request->getVar('unit_kerja'),
             'tmt_kerja' => $this->request->getVar('tmt_kerja'),
-            'tst_kerja' => $this->request->getVar('tst_kerja'),
+            'tst_kerja' => $tstKerja, // TST = masa percobaan selesai jika percobaan
             'tahun' => $tahunInput,
             'jenis_pegawai' => $this->request->getVar('jenis_pegawai'),
-            'gaji' => $this->request->getVar('gaji'),
+            'status_pegawai' => $statusPegawai,
+            'gaji_pokok' => $gajiPokok,
+            'gaji' => $gajiDiterima,
+            'masa_percobaan_mulai' => $masaPercobaanMulai,
+            'masa_percobaan_selesai' => $masaPercobaanSelesai,
             'uraian_pekerjaan' => $this->request->getVar('uraian_pekerjaan'),
             'status' => ($tahunInput < date('Y')) ? 'Tidak Aktif' : $status,
             'updated_at' => date('Y-m-d H:i:s'),

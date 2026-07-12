@@ -68,7 +68,7 @@
                             </tr>
                             <tr>
                                 <td>Status</td>
-                                <td><?= $riwayat['status'] ?></td>
+                                <td><?= $riwayat['status'] . ($riwayat['status_pegawai'] == 'Percobaan' ? ' - Dalam Masa Percobaan' : '') ?></td>
                             </tr>
                             <tr>
                                 <td>Gaji</td>

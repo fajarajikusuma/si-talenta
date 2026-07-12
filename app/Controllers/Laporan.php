@@ -43,13 +43,22 @@ class Laporan extends BaseController
                 ->orderBy('tmt_kerja', 'DESC') // Urutkan berdasarkan TMT terbaru
                 ->findAll();
 
+            // 🔧 VALIDASI: Cek status Terverifikasi DAN Menunggu
             $adaStatusMenunggu = false;
+            $adaStatusTerverifikasi = false;
 
             foreach ($semuaRiwayat as $riwayat) {
                 if (strtolower($riwayat['status']) === 'menunggu') {
                     $adaStatusMenunggu = true;
-                    break;
                 }
+                if (strtolower($riwayat['status']) === 'terverifikasi') {
+                    $adaStatusTerverifikasi = true;
+                }
+            }
+
+            // Jika TIDAK ADA status 'Terverifikasi', skip pegawai ini
+            if (!$adaStatusTerverifikasi) {
+                continue;
             }
 
             // Jika ada status 'Menunggu', skip pegawai ini
@@ -57,7 +66,7 @@ class Laporan extends BaseController
                 continue;
             }
 
-            // Jika tidak ada 'Menunggu', masukkan ke daftar
+            // Jika lolos semua validasi, masukkan ke daftar
             $daftarPekerjaBersih[] = $pekerja;
         }
 
@@ -81,20 +90,15 @@ class Laporan extends BaseController
     {
         $jumlahPekerjaAktif = $this->dataPekerjaModel->joinDataPekerjaanAktif();
 
-        $noSk = model('App\Models\NoSkModel')
-            ->where('tahun', date('Y'))
-            ->first();
-
-        if (!$noSk) {
-            return redirect()->back()->with('error', 'Nomor SK tahun ini belum dibuat. Hubungi admin.');
-        }
-
-        $cekSK = $this->skModel
-            ->where('id_no_sk', $noSk['id_no_sk'])
+        // 🔧 PERBAIKAN: Cek apakah ada SK yang sudah digenerate untuk tahun ini (tidak perlu ambil id_no_sk spesifik)
+        $cekSKTahunIni = $this->skModel
+            ->select('tb_sk.*')
+            ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
+            ->where('tb_no_sk.tahun', date('Y'))
             ->countAllResults();
 
-        if ($cekSK === 0) {
-            return redirect()->back()->with('error', 'Nomor SK belum digenerate.');
+        if ($cekSKTahunIni === 0) {
+            return redirect()->back()->with('error', 'Nomor SK untuk tahun ini belum digenerate.');
         }
 
         if (count($jumlahPekerjaAktif) == 0) {
@@ -121,14 +125,14 @@ class Laporan extends BaseController
                 $pekerja['nama_kepala'] = 'Tidak Diketahui';
             }
             
-            // 🔧 PERBAIKAN: Ambil tanggal penetapan SK dari tb_sk dengan JOIN ke tb_no_sk
-            // untuk memastikan nomor SK masih valid (tidak terhapus)
+            // 🔧 PERBAIKAN: Ambil SK berdasarkan id_pekerja dan tahun saja (TIDAK filter id_no_sk spesifik)
+            // Karena bisa ada multiple id_no_sk untuk tahun yang sama dengan tanggal penetapan berbeda
             $skData = $this->skModel
-                ->select('tb_sk.*, tb_no_sk.id_no_sk')
+                ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun')
                 ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
                 ->where('tb_sk.id_pekerja', $pekerja['id_pekerja'])
-                ->where('tb_sk.id_no_sk', $noSk['id_no_sk'])
                 ->where('tb_no_sk.tahun', date('Y'))
+                ->orderBy('tb_sk.tanggal_penetapan', 'DESC') // Ambil yang tanggal penetapan terbaru
                 ->first();
             
             if ($skData && isset($skData['tanggal_penetapan'])) {
@@ -145,12 +149,16 @@ class Laporan extends BaseController
                 ->orderBy('tmt_kerja', 'DESC') // Urutkan berdasarkan TMT terbaru
                 ->findAll();
 
+            // 🔧 VALIDASI: Cek status Terverifikasi DAN Menunggu
             $adaStatusMenunggu = false;
+            $adaStatusTerverifikasi = false;
 
             foreach ($semuaRiwayat as $riwayat) {
                 if (strtolower($riwayat['status']) === 'menunggu') {
                     $adaStatusMenunggu = true;
-                    break;
+                }
+                if (strtolower($riwayat['status']) === 'terverifikasi') {
+                    $adaStatusTerverifikasi = true;
                 }
             }
 
@@ -164,12 +172,17 @@ class Laporan extends BaseController
                 $pekerja['bulan_kerja'] = 0; // Atur ke 0 jika tidak ada data TMT atau TST
             }
 
+            // Jika TIDAK ADA status 'Terverifikasi', skip pegawai ini
+            if (!$adaStatusTerverifikasi) {
+                continue;
+            }
+
             // Jika ada status 'Menunggu', skip pegawai ini
             if ($adaStatusMenunggu) {
                 continue;
             }
 
-            // Jika tidak ada 'Menunggu', masukkan ke daftar
+            // Jika lolos semua validasi, masukkan ke daftar
             $daftarPekerjaBersih[] = $pekerja;
         }
 
@@ -212,14 +225,33 @@ class Laporan extends BaseController
             ->orderBy('tmt_kerja', 'DESC')
             ->findAll();
 
-        // Cek status MENUNGGU
+        // 🔧 VALIDASI: Cek apakah ada status Terverifikasi yang aktif
+        $adaTerverifikasi = false;
+        $adaMenunggu = false;
+
         foreach ($riwayatKerja as $riwayat) {
-            if (strtolower($riwayat['status']) === 'menunggu') {
-                return redirect()->back()->with(
-                    'error',
-                    'SPT tidak dapat dicetak karena masih ada riwayat kerja berstatus Menunggu.'
-                );
+            if (strtolower($riwayat['status']) === 'terverifikasi') {
+                $adaTerverifikasi = true;
             }
+            if (strtolower($riwayat['status']) === 'menunggu') {
+                $adaMenunggu = true;
+            }
+        }
+
+        // Jika tidak ada status Terverifikasi, tidak bisa cetak SPT
+        if (!$adaTerverifikasi) {
+            return redirect()->back()->with(
+                'error',
+                'SPT tidak dapat dicetak karena tidak ada riwayat kerja dengan status Terverifikasi.'
+            );
+        }
+
+        // Jika masih ada status Menunggu
+        if ($adaMenunggu) {
+            return redirect()->back()->with(
+                'error',
+                'SPT tidak dapat dicetak karena masih ada riwayat kerja berstatus Menunggu.'
+            );
         }
 
         $data = [
@@ -242,24 +274,6 @@ class Laporan extends BaseController
     {
         $encryption = \Config\Services::encrypter();
         $id_pekerja = $encryption->decrypt(hex2bin($id_pekerja_encrypted));
-        // Cek apakah nomor SK sudah digenerate untuk tahun berjalan
-        $noSk = model('App\Models\NoSkModel')
-            ->where('tahun', date('Y'))
-            ->first();
-
-        if (!$noSk) {
-            return redirect()->back()->with('error', 'Nomor SK tahun ini belum dibuat. Hubungi admin.');
-        }
-
-        $cekSK = $this->skModel
-            ->where('id_no_sk', $noSk['id_no_sk'])
-            ->countAllResults();
-
-        if ($cekSK === 0) {
-            return redirect()->back()->with('error', 'Nomor SK belum digenerate.');
-        }
-
-
         // Ambil SEMUA pekerja aktif (array)
         $daftarPekerja = $this->dataPekerjaModel->joinDataPekerjaanAktif();
 
@@ -282,14 +296,33 @@ class Laporan extends BaseController
             ->orderBy('tmt_kerja', 'DESC')
             ->findAll();
 
-        // Cek status MENUNGGU
+        // 🔧 VALIDASI: Cek apakah ada status Terverifikasi yang aktif
+        $adaTerverifikasi = false;
+        $adaMenunggu = false;
+
         foreach ($riwayatKerja as $riwayat) {
-            if (strtolower($riwayat['status']) === 'menunggu') {
-                return redirect()->back()->with(
-                    'error',
-                    'PKS tidak dapat dicetak karena masih ada riwayat kerja berstatus Menunggu.'
-                );
+            if (strtolower($riwayat['status']) === 'terverifikasi') {
+                $adaTerverifikasi = true;
             }
+            if (strtolower($riwayat['status']) === 'menunggu') {
+                $adaMenunggu = true;
+            }
+        }
+
+        // Jika tidak ada status Terverifikasi, tidak bisa cetak PKS
+        if (!$adaTerverifikasi) {
+            return redirect()->back()->with(
+                'error',
+                'PKS tidak dapat dicetak karena tidak ada riwayat kerja dengan status Terverifikasi.'
+            );
+        }
+
+        // Jika masih ada status Menunggu
+        if ($adaMenunggu) {
+            return redirect()->back()->with(
+                'error',
+                'PKS tidak dapat dicetak karena masih ada riwayat kerja berstatus Menunggu.'
+            );
         }
 
         // Hitung bulan kerja
@@ -301,16 +334,15 @@ class Laporan extends BaseController
             $pekerja['bulan_kerja'] = 0;
         }
 
-        // 🔧 PERBAIKAN: Ambil tanggal penetapan SK dari tb_sk dengan JOIN ke tb_no_sk
-        // untuk memastikan nomor SK masih valid (tidak terhapus)
+        // 🔧 PERBAIKAN: Ambil SK berdasarkan id_pekerja dan tahun saja (TIDAK filter id_no_sk spesifik)
+        // Karena bisa ada multiple id_no_sk untuk tahun yang sama dengan tanggal penetapan berbeda
         $skData = $this->skModel
-            ->select('tb_sk.*, tb_no_sk.id_no_sk')
+            ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun')
             ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
             ->where('tb_sk.id_pekerja', $id_pekerja)
-            ->where('tb_sk.id_no_sk', $noSk['id_no_sk'])
             ->where('tb_no_sk.tahun', date('Y'))
+            ->orderBy('tb_sk.tanggal_penetapan', 'DESC') // Ambil yang tanggal penetapan terbaru
             ->first();
-        
         if ($skData && isset($skData['tanggal_penetapan'])) {
             $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
         } else {

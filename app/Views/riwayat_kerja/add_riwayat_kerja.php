@@ -38,6 +38,19 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="input_status_pegawai">Status Pegawai <span class="text-danger">*</span></label>
+                        <select class="form-control" id="input_status_pegawai" name="status_pegawai" required>
+                            <option value="" disabled selected>-- Pilih Status Pegawai --</option>
+                            <option value="Percobaan">Percobaan (3 Bulan, Gaji 80%)</option>
+                            <option value="Aktif">Aktif (Gaji 100%)</option>
+                        </select>
+                        <small class="form-text text-muted">
+                            <strong>Percobaan:</strong> Masa percobaan 3 bulan dengan gaji 80% dari gaji pokok<br>
+                            <strong>Aktif:</strong> Pegawai aktif dengan gaji 100%
+                        </small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="input_unit_kerja">Unit Kerja</label>
                         <select class="form-control" id="input_unit_kerja" name="unit_kerja" required>
                             <option value="" disabled selected>-- Pilih Unit Kerja --</option>
@@ -55,10 +68,41 @@
                         </select>
                     </div>
 
-                    <!-- inputan gaji -->
+                    <!-- inputan gaji pokok -->
                     <div class="form-group">
-                        <label for="input_gaji">Gaji</label>
-                        <input type="number" class="form-control" id="input_gaji" name="gaji" placeholder="Masukkan Gaji" value="<?= old('gaji') ?>" required>
+                        <label for="input_gaji_pokok">Gaji Pokok (100%) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="input_gaji_pokok" name="gaji_pokok" placeholder="Contoh: 2050000" value="<?= old('gaji_pokok') ?>" required>
+                        <small class="form-text text-muted">
+                            Gaji pokok 100% yang akan diterima pegawai aktif<br>
+                            <strong>Format:</strong> Angka saja tanpa titik/koma. Contoh: 2050000 untuk Rp 2.050.000
+                        </small>
+                    </div>
+
+                    <!-- Display gaji yang diterima (read-only) -->
+                    <div class="form-group">
+                        <label for="display_gaji_diterima">Gaji Yang Diterima</label>
+                        <input type="text" class="form-control bg-light" id="display_gaji_diterima" readonly placeholder="Akan dihitung otomatis">
+                        <small class="form-text text-muted">
+                            <span id="info_gaji_percobaan" style="display:none;" class="text-warning">
+                                <i class="mdi mdi-alert-circle"></i> Masa percobaan: Gaji 80% dari gaji pokok
+                            </span>
+                            <span id="info_gaji_aktif" style="display:none;" class="text-success">
+                                <i class="mdi mdi-check-circle"></i> Pegawai aktif: Gaji 100% dari gaji pokok
+                            </span>
+                        </small>
+                    </div>
+
+                    <!-- Info masa percobaan (hanya tampil jika status Percobaan) -->
+                    <div class="form-group" id="info_masa_percobaan" style="display:none;">
+                        <div class="alert alert-info">
+                            <strong><i class="mdi mdi-information"></i> Informasi Masa Percobaan:</strong><br>
+                            <small>
+                                • Durasi: 3 bulan dari TMT Kerja<br>
+                                • Mulai: <span id="masa_percobaan_mulai">-</span><br>
+                                • Selesai: <span id="masa_percobaan_selesai">-</span><br>
+                                • Setelah masa percobaan selesai, status dapat diubah menjadi Aktif dengan gaji 100%
+                            </small>
+                        </div>
                     </div>
 
                     <!-- inputan uraian kerja -->
@@ -80,6 +124,11 @@
                     <div class="form-group">
                         <label for="input_tst">TST Kerja</label>
                         <input type="date" class="form-control" id="input_tst" name="tst_kerja" value="<?= date('Y') . '-12-31' ?>" max="<?= date('Y') . '-12-31' ?>" required>
+                        <small class="form-text text-muted" id="info_tst">
+                            <span id="info_tst_percobaan" style="display:none;" class="text-warning">
+                                <i class="mdi mdi-alert-circle"></i> Untuk pegawai percobaan, TST akan otomatis disesuaikan dengan masa percobaan selesai (3 bulan)
+                            </span>
+                        </small>
                     </div>
 
                     <button type="submit" class="btn btn-success">Simpan</button>
@@ -91,5 +140,105 @@
 </div>
 
 
+
+<script>
+// Hitung gaji yang diterima berdasarkan status pegawai dan gaji pokok
+function hitungGajiDiterima() {
+    const statusPegawai = document.getElementById('input_status_pegawai').value;
+    let gajiPokokInput = document.getElementById('input_gaji_pokok').value;
+    
+    // Hapus semua karakter non-digit (titik, koma, dll)
+    gajiPokokInput = gajiPokokInput.replace(/\D/g, '');
+    
+    const gajiPokok = parseFloat(gajiPokokInput) || 0;
+    const displayGaji = document.getElementById('display_gaji_diterima');
+    const infoPercobaanEl = document.getElementById('info_gaji_percobaan');
+    const infoAktifEl = document.getElementById('info_gaji_aktif');
+    const infoMasaPercobaan = document.getElementById('info_masa_percobaan');
+    
+    // Update input dengan nilai yang sudah dibersihkan
+    if (gajiPokokInput) {
+        document.getElementById('input_gaji_pokok').value = gajiPokokInput;
+    }
+    
+    if (gajiPokok > 0 && statusPegawai) {
+        let gajiDiterima = gajiPokok;
+        
+        if (statusPegawai === 'Percobaan') {
+            gajiDiterima = gajiPokok * 0.8;
+            infoPercobaanEl.style.display = 'inline';
+            infoAktifEl.style.display = 'none';
+            infoMasaPercobaan.style.display = 'block';
+            hitungMasaPercobaan();
+        } else if (statusPegawai === 'Aktif') {
+            gajiDiterima = gajiPokok;
+            infoPercobaanEl.style.display = 'none';
+            infoAktifEl.style.display = 'inline';
+            infoMasaPercobaan.style.display = 'none';
+        }
+        
+        displayGaji.value = 'Rp ' + gajiDiterima.toLocaleString('id-ID');
+    } else {
+        displayGaji.value = '';
+        infoPercobaanEl.style.display = 'none';
+        infoAktifEl.style.display = 'none';
+        infoMasaPercobaan.style.display = 'none';
+    }
+}
+
+// Hitung masa percobaan (3 bulan dari TMT)
+function hitungMasaPercobaan() {
+    const tmtKerja = document.getElementById('input_tmt').value;
+    const tstInput = document.getElementById('input_tst');
+    const infoTstPercobaan = document.getElementById('info_tst_percobaan');
+    
+    if (tmtKerja) {
+        const tmtDate = new Date(tmtKerja);
+        const selesaiDate = new Date(tmtDate);
+        selesaiDate.setMonth(selesaiDate.getMonth() + 3);
+        
+        // Format tanggal untuk input date (YYYY-MM-DD)
+        const selesaiFormatted = selesaiDate.toISOString().split('T')[0];
+        
+        // Format tanggal untuk display
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('masa_percobaan_mulai').textContent = tmtDate.toLocaleDateString('id-ID', options);
+        document.getElementById('masa_percobaan_selesai').textContent = selesaiDate.toLocaleDateString('id-ID', options);
+        
+        // Set TST otomatis = masa percobaan selesai
+        tstInput.value = selesaiFormatted;
+        tstInput.readOnly = true; // Readonly untuk percobaan
+        infoTstPercobaan.style.display = 'inline';
+    }
+}
+
+// Update TST handler
+function updateTstStatus() {
+    const statusPegawai = document.getElementById('input_status_pegawai').value;
+    const tstInput = document.getElementById('input_tst');
+    const infoTstPercobaan = document.getElementById('info_tst_percobaan');
+    
+    if (statusPegawai === 'Percobaan') {
+        // Jika percobaan, calculate TST dari TMT
+        hitungMasaPercobaan();
+    } else {
+        // Jika aktif, TST bisa diinput manual
+        tstInput.readOnly = false;
+        infoTstPercobaan.style.display = 'none';
+    }
+}
+
+// Event listeners
+document.getElementById('input_status_pegawai').addEventListener('change', function() {
+    hitungGajiDiterima();
+    updateTstStatus();
+});
+document.getElementById('input_gaji_pokok').addEventListener('input', hitungGajiDiterima);
+document.getElementById('input_tmt').addEventListener('change', function() {
+    if (document.getElementById('input_status_pegawai').value === 'Percobaan') {
+        hitungMasaPercobaan();
+    }
+});
+</script>
 
 <?= $this->endSection() ?>

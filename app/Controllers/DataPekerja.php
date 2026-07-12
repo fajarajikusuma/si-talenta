@@ -209,7 +209,7 @@ class DataPekerja extends BaseController
             'tahun_cari' => $tahun_cari,
             'data_pekerja' => $modelDataPekerjaPensiun,
         ];
-
+        // dd($modelDataPekerjaPensiun);
         return view('data_pekerja/data_pekerja', $data);
     }
 
@@ -766,25 +766,32 @@ class DataPekerja extends BaseController
             ->first();
 
         if ($status == 'Tidak Aktif') {
-            //     if ($riwayatKerja) {
-            //         $dataRiwayat = [
-            //             'id_pekerja'        => $id_decrypt,
-            //             'id_nama_pekerjaan' => $riwayatKerja['id_nama_pekerjaan'],
-            //             'jenis_pegawai'     => $riwayatKerja['jenis_pegawai'],
-            //             'id_unit_kerja'     => $riwayatKerja['id_unit_kerja'],
-            //             'tahun'             => $riwayatKerja['tahun'],
-            //             'tmt_kerja'         => date('Y-m-d'),
-            //             'tst_kerja'         => date('Y') . '-12-31',
-            //             'status'            => 'Terverifikasi',
-            //             'penginput'         => 'Admin',
-            //             'created_at'        => date('Y-m-d H:i:s'),
-            //         ];
-            //         $this->riwayatKerjaModel->insert($dataRiwayat);
-            //     }
-            // } else {
+            // Ketika status diubah menjadi Tidak Aktif, set TST ke tanggal hari ini
             if ($riwayatKerja) {
                 $this->riwayatKerjaModel->update($riwayatKerja['id'], [
                     'tst_kerja' => date('Y-m-d'),
+                    'status' => 'Tidak Aktif',
+                ]);
+            }
+        } elseif ($status == 'Terverifikasi') {
+            // Ketika status diubah menjadi Terverifikasi (aktif kembali)
+            if ($riwayatKerja) {
+                // Ambil tahun dari TST yang lama (tahun ketika dinonaktifkan)
+                $tstLama = $riwayatKerja['tst_kerja'];
+                $tahunTst = date('Y', strtotime($tstLama));
+                $tahunSekarang = date('Y');
+                
+                // Gunakan tahun yang lebih kecil antara tahun TST lama dan tahun sekarang
+                // Ini memastikan jika salah nonaktif di 2026 dan aktifkan di 2027, tetap pakai 2026
+                $tahunBerlaku = min($tahunTst, $tahunSekarang);
+                
+                // Set TST ke 31 Desember tahun yang dipilih
+                $tstBaru = $tahunBerlaku . '-12-31';
+                
+                $this->riwayatKerjaModel->update($riwayatKerja['id'], [
+                    'tst_kerja' => $tstBaru,
+                    'status' => 'Terverifikasi',
+                    'status_pegawai' => 'Aktif',
                 ]);
             }
         }

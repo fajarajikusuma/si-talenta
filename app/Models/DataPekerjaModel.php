@@ -128,8 +128,7 @@ class DataPekerjaModel extends Model
             tb_data_pekerja.*,
             tb_riwayat_pekerjaan.*,
             tb_nama_pekerjaan.pekerjaan,
-            tb_unit_kerja.unit_kerja,
-            DATE_ADD(tb_data_pekerja.tanggal_lahir, INTERVAL 58 YEAR) AS tanggal_pensiun
+            tb_unit_kerja.unit_kerja
         ');
 
         // Join subquery sebagai latest_riwayat
@@ -150,7 +149,30 @@ class DataPekerjaModel extends Model
         }
         // $builder->where('DATE_ADD(tb_data_pekerja.tanggal_lahir, INTERVAL 58 YEAR) >= NOW()');
         $builder->orderBy('tb_data_pekerja.created_at', 'ASC');
-        return $builder->get()->getResultArray();
+        
+        $result = $builder->get()->getResultArray();
+        
+        // Hitung tanggal pensiun yang benar untuk setiap pegawai
+        foreach ($result as &$row) {
+            $tanggal_lahir = $row['tanggal_lahir'];
+            $bulan_lahir = date('m', strtotime($tanggal_lahir));
+            $tahun_lahir = date('Y', strtotime($tanggal_lahir));
+            
+            // Hitung tahun pensiun
+            $tahun_pensiun = $tahun_lahir + 58;
+            $bulan_pensiun = (int)$bulan_lahir + 1;
+            
+            // Jika bulan pensiun lebih dari 12, reset ke Januari dan tambah 1 tahun
+            if ($bulan_pensiun > 12) {
+                $bulan_pensiun = 1;
+                $tahun_pensiun += 1;
+            }
+            
+            // Format tanggal pensiun: YYYY-MM-01
+            $row['tanggal_pensiun'] = sprintf('%04d-%02d-01', $tahun_pensiun, $bulan_pensiun);
+        }
+        
+        return $result;
     }
 
     public function joinDataPekerjaanTidakAktif()
@@ -273,21 +295,100 @@ class DataPekerjaModel extends Model
 
     public function updateStatusPensiunOtomatis()
     {
+        // 1. Proses pegawai yang BARU memasuki usia pensiun (belum berstatus Pensiun)
         $builder = $this->db->table('tb_data_pekerja');
-        $builder->select('tb_data_pekerja.id_pekerja');
-        $builder->join('tb_riwayat_pekerjaan', 'tb_riwayat_pekerjaan.id_pekerja = tb_data_pekerja.id_pekerja', 'left');
+        $builder->select('
+            tb_data_pekerja.id_pekerja,
+            tb_data_pekerja.tanggal_lahir,
+            DATE_ADD(tb_data_pekerja.tanggal_lahir, INTERVAL 58 YEAR) as tanggal_ulang_tahun_ke_58
+        ');
         $builder->where('DATE_ADD(tb_data_pekerja.tanggal_lahir, INTERVAL 58 YEAR) <= CURDATE()');
         $builder->where('tb_data_pekerja.deleted_at', null);
-        $builder->where('tb_riwayat_pekerjaan.status !=', 'Tidak Aktif');
-        $builder->where('tb_data_pekerja.status_pekerja !=', 'Tidak Aktif');
+        $builder->where('tb_data_pekerja.status_pekerja !=', 'Pensiun'); // Hanya yang belum pensiun
         $builder->groupBy('tb_data_pekerja.id_pekerja'); // supaya id_pekerja unik
 
         $result = $builder->get()->getResult();
 
         foreach ($result as $row) {
-            $this->db->table('tb_data_pekerja')
+            $this->prosesStatusPensiun($row->id_pekerja, $row->tanggal_lahir);
+        }
+        
+        // 2. Perbaiki data pegawai yang SUDAH berstatus Pensiun tapi riwayat kerja masih belum diupdate
+        $builderPensiun = $this->db->table('tb_data_pekerja');
+        $builderPensiun->select('
+            tb_data_pekerja.id_pekerja,
+            tb_data_pekerja.tanggal_lahir
+        ');
+        $builderPensiun->where('tb_data_pekerja.deleted_at', null);
+        $builderPensiun->where('tb_data_pekerja.status_pekerja', 'Pensiun'); // Yang sudah pensiun
+        $builderPensiun->groupBy('tb_data_pekerja.id_pekerja');
+        
+        $resultPensiun = $builderPensiun->get()->getResult();
+        
+        foreach ($resultPensiun as $row) {
+            // Cek apakah riwayat kerja terakhir masih aktif
+            $riwayatTerakhir = $this->db->table('tb_riwayat_pekerjaan')
                 ->where('id_pekerja', $row->id_pekerja)
-                ->update(['status_pekerja' => 'Pensiun']);
+                ->where('deleted_at', null)
+                ->orderBy('id', 'DESC')
+                ->limit(1)
+                ->get()
+                ->getRow();
+            
+            // Jika riwayat kerja masih aktif (bukan "Tidak Aktif"), perbaiki
+            if ($riwayatTerakhir && $riwayatTerakhir->status_pegawai != 'Tidak Aktif') {
+                $this->prosesStatusPensiun($row->id_pekerja, $row->tanggal_lahir);
+            }
+        }
+    }
+    
+    /**
+     * Helper function untuk memproses status pensiun pegawai
+     */
+    private function prosesStatusPensiun($id_pekerja, $tanggal_lahir)
+    {
+        // Hitung tanggal pensiun: bulan berikutnya setelah ulang tahun ke-58, tanggal 1
+        $bulan_lahir = date('m', strtotime($tanggal_lahir));
+        $tahun_lahir = date('Y', strtotime($tanggal_lahir));
+        
+        // Tahun pensiun adalah tahun lahir + 58 tahun
+        $tahun_pensiun = $tahun_lahir + 58;
+        $bulan_pensiun = (int)$bulan_lahir + 1;
+        
+        // Jika bulan pensiun lebih dari 12, reset ke Januari dan tambah 1 tahun
+        if ($bulan_pensiun > 12) {
+            $bulan_pensiun = 1;
+            $tahun_pensiun += 1;
+        }
+        
+        // Format tanggal pensiun: YYYY-MM-01
+        $tanggal_pensiun = sprintf('%04d-%02d-01', $tahun_pensiun, $bulan_pensiun);
+        
+        // Update status pekerja menjadi Pensiun
+        $this->db->table('tb_data_pekerja')
+            ->where('id_pekerja', $id_pekerja)
+            ->update([
+                'status_pekerja' => 'Pensiun',
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        
+        // Update riwayat kerja terakhir: set status_pegawai = Tidak Aktif dan tst_kerja = tanggal pensiun
+        $riwayatTerakhir = $this->db->table('tb_riwayat_pekerjaan')
+            ->where('id_pekerja', $id_pekerja)
+            ->where('deleted_at', null)
+            ->orderBy('id', 'DESC')
+            ->limit(1)
+            ->get()
+            ->getRow();
+        
+        if ($riwayatTerakhir) {
+            $this->db->table('tb_riwayat_pekerjaan')
+                ->where('id', $riwayatTerakhir->id)
+                ->update([
+                    'status' => 'Tidak Aktif',
+                    'tst_kerja' => $tanggal_pensiun,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
         }
     }
 
@@ -355,15 +456,27 @@ class DataPekerjaModel extends Model
 
     public function getDataPensiun($tahun = null)
     {
+        // Subquery untuk mengambil riwayat terakhir berdasarkan id terbesar
+        $subquery = $this->db->table('tb_riwayat_pekerjaan')
+            ->select('id_pekerja, MAX(id) as max_id')
+            ->where('deleted_at', null)
+            ->groupBy('id_pekerja');
+
         $builder = $this->db->table('tb_data_pekerja');
         $builder->select('
             tb_data_pekerja.*,
             tb_nama_pekerjaan.pekerjaan,
             tb_unit_kerja.unit_kerja
         ');
-        $builder->join('tb_riwayat_pekerjaan AS riwayat_terakhir', 'riwayat_terakhir.id_pekerja = tb_data_pekerja.id_pekerja AND riwayat_terakhir.status = "Terverifikasi"', 'left');
+        
+        // Join dengan subquery untuk mendapatkan riwayat terakhir
+        $builder->join('(' . $subquery->getCompiledSelect() . ') as latest_riwayat', 'latest_riwayat.id_pekerja = tb_data_pekerja.id_pekerja', 'left');
+        $builder->join('tb_riwayat_pekerjaan AS riwayat_terakhir', 'riwayat_terakhir.id = latest_riwayat.max_id', 'left');
         $builder->join('tb_nama_pekerjaan', 'tb_nama_pekerjaan.id_nama_pekerjaan = riwayat_terakhir.id_nama_pekerjaan', 'left');
         $builder->join('tb_unit_kerja', 'tb_unit_kerja.id_unit_kerja = riwayat_terakhir.id_unit_kerja', 'left');
+        
+        $builder->where('tb_data_pekerja.deleted_at', null);
+        $builder->where('tb_data_pekerja.status_pekerja', 'Terverifikasi'); // Hanya pegawai yang masih AKTIF (belum pensiun)
 
         // Tambahkan kondisi untuk unit kerja
         $unit_kerja_nama = strtolower(session()->get('unitKerja'));

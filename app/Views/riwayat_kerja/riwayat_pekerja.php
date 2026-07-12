@@ -40,7 +40,7 @@
                                 <th>Unit Kerja</th>
                                 <th>TMT</th>
                                 <th>TST</th>
-                                <th>Status</th>
+                                <th class="text-center">Status Riwayat Pekerjaan</th>
                                 <th>SPT</th>
                                 <th>PKS</th>
                                 <th class="text-center">Aksi</th>
@@ -55,11 +55,11 @@
                                     <td><?= esc($r['unit_kerja']) ?></td>
                                     <td><?= date('d-m-Y', strtotime($r['tmt_kerja'])) ?></td>
                                     <td><?= $r['tst_kerja'] ? date('d-m-Y', strtotime($r['tst_kerja'])) : '-' ?></td>
-                                    <td>
+                                    <td class="text-center">
                                         <?php if ($r['status'] == 'Terverifikasi') : ?>
-                                            <span class="badge bg-success rounded-1">Aktif</span>
+                                            <span class="badge bg-success rounded-1">Terverifikasi</span>
                                         <?php elseif ($r['status'] == 'Tidak Aktif') : ?>
-                                            <span class="badge bg-secondary rounded-1">Nonaktif</span>
+                                            <span class="badge bg-secondary rounded-1">Tidak Aktif</span>
                                         <?php else : ?>
                                             <span class="badge bg-warning text-dark rounded-1"><?= esc($r['status']) ?></span>
                                         <?php endif; ?>
@@ -67,17 +67,23 @@
                                     <td>
                                         <?php if ($r['sk_spt']): ?>
                                             <a href="<?= base_url('uploads/spt/' . $r['sk_spt']) ?>" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-file"></i></a>
-                                        <?php else: ?>
-                                            <!-- buatkan tombol untuk upload memanggil modal -->
+                                        <?php elseif ($r['status'] == 'Terverifikasi'): ?>
+                                            <!-- Tombol upload hanya muncul jika status Terverifikasi -->
                                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal" data-id="<?= $r['id'] ?>" data-type="spt"><i class="fa fa-upload"></i></button>
+                                        <?php else: ?>
+                                            <!-- Jika status bukan Terverifikasi, tampilkan disabled button atau pesan -->
+                                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Hanya bisa upload jika status Terverifikasi"><i class="fa fa-ban"></i></button>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php if ($r['sk_pks']): ?>
                                             <a href="<?= base_url('uploads/pks/' . $r['sk_pks']) ?>" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-file"></i></a>
-                                        <?php else: ?>
-                                            <!-- buatkan tombol untuk upload memanggil modal -->
+                                        <?php elseif ($r['status'] == 'Terverifikasi'): ?>
+                                            <!-- Tombol upload hanya muncul jika status Terverifikasi -->
                                             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModal" data-id="<?= $r['id'] ?>" data-type="pks"><i class="fa fa-upload"></i></button>
+                                        <?php else: ?>
+                                            <!-- Jika status bukan Terverifikasi, tampilkan disabled button atau pesan -->
+                                            <button type="button" class="btn btn-secondary btn-sm" disabled title="Hanya bisa upload jika status Terverifikasi"><i class="fa fa-ban"></i></button>
                                         <?php endif; ?>
                                     </td>
                                     <td>
