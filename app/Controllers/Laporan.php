@@ -366,7 +366,7 @@ class Laporan extends BaseController
             'listPekerjaan' => $this->listPekerjaanModel->findAll(),
             'daftarKepala' => $this->daftarKepalaModel->getDaftarKepala()
         ];
-
+        
         return view('laporan/cetak_pks_individu', $data);
     }
 }

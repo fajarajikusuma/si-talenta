@@ -73,8 +73,8 @@
                     <!-- Tanggal Penetapan SK -->
                     <div class="col-md-6 mb-3">
                         <label for="tanggal_penetapan" class="form-label mb-2"><strong>Tanggal Penetapan SK</strong></label>
-                        <input type="date" class="form-control" id="tanggal_penetapan" name="tanggal_penetapan" 
-                               value="<?= date('Y-m-d') ?>" required>
+                        <input type="date" class="form-control bg-light" id="tanggal_penetapan" name="tanggal_penetapan" 
+                               value="<?= $noSk['tanggal_penetapan'] ?>" required readonly>
                         <small class="form-text text-muted">Nomor SK akan dikelompokkan berdasarkan tanggal ini</small>
                     </div>
                 </div>
