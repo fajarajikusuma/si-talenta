@@ -90,35 +90,39 @@
             .page-break {
                 page-break-before: always;
             }
-            
+
             /* Hindari page break di tengah elemen penting */
-            .pasal, .lingkup, table {
+            .pasal,
+            .lingkup,
+            table {
                 page-break-inside: avoid;
             }
-            
+
             /* Pastikan tanda tangan tidak terpotong */
             .signature-section {
                 page-break-inside: avoid;
                 margin-top: 20px;
             }
-            
+
             /* Grup paragraf penutup + tanda tangan agar tidak terpisah */
             .closing-group {
                 page-break-inside: avoid;
             }
-            
+
             /* Atur orphans dan widows untuk mencegah 1 baris terisolasi */
-            p, li, .isi {
+            p,
+            li,
+            .isi {
                 orphans: 2;
                 widows: 2;
             }
         }
-        
+
         .signature-section {
             margin-top: 20px;
             padding-top: 10px;
         }
-        
+
         .closing-group {
             margin-top: 5px;
         }
@@ -397,9 +401,10 @@ function formatTanggalHuruf($tanggal)
                         Selama hubungan kerja berlangsung, PIHAK KEDUA mempunyai hak sebagai berikut:
                         <ul>
                             <?php if (isset($pekerja['status_pegawai']) && $pekerja['status_pegawai'] == 'Percobaan'): ?>
-                                <li>PIHAK KEDUA berstatus <strong>MASA PERCOBAAN</strong> selama 3 (tiga) bulan terhitung mulai tanggal <?= formatTanggalIndo($pekerja['masa_percobaan_mulai'] ?? $pekerja['tmt_kerja']) ?> sampai dengan <?= formatTanggalIndo($pekerja['masa_percobaan_selesai'] ?? date('Y-m-d', strtotime($pekerja['tmt_kerja'] . ' +3 months'))) ?>;</li>
+                                <!-- <li>PIHAK KEDUA berstatus <strong>MASA PERCOBAAN</strong> selama 3 (tiga) bulan terhitung mulai tanggal <?= formatTanggalIndo($pekerja['masa_percobaan_mulai'] ?? $pekerja['tmt_kerja']) ?> sampai dengan <?= formatTanggalIndo($pekerja['masa_percobaan_selesai'] ?? date('Y-m-d', strtotime($pekerja['tmt_kerja'] . ' +3 months'))) ?>;</li>
                                 <li>Selama masa percobaan, PIHAK KEDUA berhak menerima upah dari PIHAK KESATU sebesar <strong>80% (delapan puluh persen)</strong> dari gaji pokok yaitu Rp. <?= number_format((float) $pekerja['gaji'], 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' Rupiah' ?>) perbulan, dari gaji pokok Rp. <?= number_format((float) ($pekerja['gaji_pokok'] ?? $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji_pokok'] ?? $pekerja['gaji']) . ' Rupiah' ?>);</li>
-                                <li>Setelah masa percobaan selesai dan dinyatakan lulus, PIHAK KEDUA akan menerima upah penuh sebesar <strong>100% (seratus persen)</strong> dari gaji pokok;</li>
+                                <li>Setelah masa percobaan selesai dan dinyatakan lulus, PIHAK KEDUA akan menerima upah penuh sebesar <strong>100% (seratus persen)</strong> dari gaji pokok;</li> -->
+                                <li>PIHAK KEDUA berhak menerima upah dari PIHAK KESATU 80% dari upah pokok Rp. <?= number_format((float) ($pekerja['gaji_pokok'] ?? $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji_pokok'] ?? $pekerja['gaji']) . ' Rupiah' ?>) sebesar Rp. <?= number_format((float) $pekerja['gaji'], 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' Rupiah' ?>) perbulan;</li>
                             <?php else: ?>
                                 <li>PIHAK KEDUA berhak menerima upah dari PIHAK KESATU sebesar Rp. <?= number_format((float) str_replace(['Rp', '.', ','], '', $pekerja['gaji']), 0, ',', '.') ?>,- (<?= terbilang($pekerja['gaji']) . ' ' . 'Rupiah' ?>) perbulan;</li>
                             <?php endif; ?>
