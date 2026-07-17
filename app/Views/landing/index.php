@@ -753,5 +753,25 @@
             });
         });
     </script>
+
+    <!-- Floating Button: Back to Portal -->
+    <a href="https://portaldlh.web.id" 
+       class="fixed bottom-8 right-8 z-50 group flex items-center"
+       title="Kembali ke Portal Utama">
+        <!-- Main Button -->
+        <div class="glass-nav bg-white/70 dark:bg-white/10 backdrop-blur-md border-2 border-primary-400 dark:border-primary-500 rounded-full w-14 h-14 flex items-center justify-center shadow-xl dark:shadow-[0_0_25px_rgba(56,189,248,0.4)] hover:scale-110 hover:rotate-12 transition-all duration-300 hover:border-primary-500 dark:hover:border-primary-400">
+            <i class="fas fa-home text-2xl text-primary-600 dark:text-primary-400 group-hover:text-primary-700 dark:group-hover:text-primary-300"></i>
+        </div>
+        
+        <!-- Hover Text -->
+        <div class="absolute right-16 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 pointer-events-none">
+            <div class="glass-nav bg-white/90 dark:bg-slate-800/90 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-200 dark:border-white/20 shadow-lg dark:shadow-[0_0_15px_rgba(0,0,0,0.3)] whitespace-nowrap">
+                <span class="text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center">
+                    <i class="fas fa-arrow-left mr-2 text-primary-500 dark:text-primary-400"></i>
+                    Portal Utama
+                </span>
+            </div>
+        </div>
+    </a>
 </body>
 </html>
