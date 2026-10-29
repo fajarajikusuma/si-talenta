@@ -23,11 +23,11 @@
                     <i class="mdi mdi-auto-fix"></i> Generate Nomor SK
                 </a>
 
-                <form action="<?= site_url('no-sk/hapus-semua/' . $id_enc) ?>" method="POST" 
-                      onsubmit="return confirm('Yakin hapus SEMUA nomor SK? Tindakan ini tidak bisa dibatalkan!')"
+                <form action="<?= site_url('no-sk/hapus-semua/' . $id_enc) ?>" method="POST"
+                      id="form-hapus-semua"
                       class="d-inline">
                     <?= csrf_field() ?>
-                    <button type="submit" class="btn btn-danger w-100">
+                    <button type="button" class="btn btn-danger w-100" id="btn-hapus-semua">
                         <i class="mdi mdi-delete"></i> Hapus Semua Nomor SK
                     </button>
                 </form>
@@ -78,5 +78,26 @@
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('btn-hapus-semua').addEventListener('click', function () {
+    Swal.fire({
+        title: 'Hapus Semua Nomor SK?',
+        html: 'Seluruh nomor SK pada daftar ini akan dihapus permanen.<br><strong>Tindakan ini tidak bisa dibatalkan!</strong>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="mdi mdi-delete"></i> Ya, Hapus Semua',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        focusCancel: true,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            document.getElementById('form-hapus-semua').submit();
+        }
+    });
+});
+</script>
 
 <?= $this->endSection() ?>

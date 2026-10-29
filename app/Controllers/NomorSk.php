@@ -276,31 +276,37 @@ class NomorSk extends BaseController
 
         $skModel = new \App\Models\SkModel();
         $pegawaiModel = new \App\Models\DataPekerjaModel();
+        $riwayatModel = new \App\Models\RiwayatKerjaModel();
 
         // Ambil semua pegawai aktif
         $pegawaiAktif = $pegawaiModel->where('status_pekerja', 'Terverifikasi')->findAll();
 
-        // 🔧 PERBAIKAN UTAMA: Filter berdasarkan tahun yang sama
-        // Jika tahun SK sama, maka cek apakah pegawai sudah punya nomor SK di tahun itu
-        // Jika sudah punya, maka jangan tampilkan lagi
-        $tahunNoSk = $noSk['tahun'];
+        // 🔧 PERBAIKAN UTAMA: Filter berdasarkan riwayat aktif yang BELUM punya SK
+        // Bukan lagi berdasarkan pegawai+tahun, tapi per riwayat kerja
+        $riwayatModel = new \App\Models\RiwayatKerjaModel();
         $pegawaiBelumAdaSk = [];
         
         foreach ($pegawaiAktif as $p) {
-            // Cek apakah pegawai sudah punya SK di tahun yang sama
-            $cekSudahAdaDiTahunIni = $skModel
-                ->select('tb_sk.*, tb_no_sk.tahun')
-                ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk')
-                ->where('tb_sk.id_pekerja', $p['id_pekerja'])
-                ->where('tb_no_sk.tahun', $tahunNoSk)
-                ->where('tb_sk.nomor_sk IS NOT NULL')
-                ->where('tb_sk.nomor_sk !=', '')
+            // Ambil riwayat aktif (Terverifikasi) pegawai ini
+            $riwayatAktif = $riwayatModel
+                ->where('id_pekerja', $p['id_pekerja'])
+                ->where('status', 'Terverifikasi')
+                ->where('deleted_at', null)
+                ->orderBy('tmt_kerja', 'DESC')
                 ->first();
-            
-            // Hanya tampilkan pegawai yang belum punya nomor SK di tahun ini
-            if (!$cekSudahAdaDiTahunIni) {
-                $p['sudah_ada_sk'] = false;
-                $p['nomor_sk_sekarang'] = null;
+
+            if (!$riwayatAktif) continue;
+
+            // Cek apakah riwayat INI sudah punya SK (bukan pegawai secara umum)
+            $cekSkRiwayat = $skModel
+                ->where('id_riwayat', $riwayatAktif['id'])
+                ->where('nomor_sk IS NOT NULL')
+                ->where('nomor_sk !=', '')
+                ->first();
+
+            if (!$cekSkRiwayat) {
+                $p['id_riwayat'] = $riwayatAktif['id'];
+                $p['tmt_kerja']  = $riwayatAktif['tmt_kerja'];
                 $pegawaiBelumAdaSk[] = $p;
             }
         }
@@ -334,8 +340,9 @@ class NomorSk extends BaseController
 
         $skModel = new \App\Models\SkModel();
         $pegawaiModel = new \App\Models\DataPekerjaModel();
+        $riwayatModel = new \App\Models\RiwayatKerjaModel();
 
-        // 🔧 PERBAIKAN 1: Ambil parameter mode dan pilihan pegawai (untuk mode selektif)
+        // 🔧 Ambil parameter mode dan pilihan pegawai (untuk mode selektif)
         $mode = $this->request->getPost('mode') ?? 'otomatis'; // otomatis atau selektif
         $selectedPegawai = $this->request->getPost('selected_pegawai') ?? []; // array id_pekerja
         $tanggalPenetapan = $this->request->getPost('tanggal_penetapan') ?? date('Y-m-d'); // tanggal penetapan SK
@@ -360,36 +367,33 @@ class NomorSk extends BaseController
             // Mode Selektif: Hanya pegawai yang dipilih
             foreach ($pegawaiAktif as $p) {
                 if (in_array($p['id_pekerja'], $selectedPegawai)) {
-                    // Cek apakah sudah ada nomor SK di tahun yang sama
-                    $cekSudahAdaDiTahunIni = $skModel
-                        ->select('tb_sk.*, tb_no_sk.tahun')
-                        ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk')
-                        ->where('tb_sk.id_pekerja', $p['id_pekerja'])
-                        ->where('tb_no_sk.tahun', $tahunNoSk)
-                        ->where('tb_sk.nomor_sk IS NOT NULL')
-                        ->where('tb_sk.nomor_sk !=', '')
+                    $riwayatAktif = $riwayatModel
+                        ->where('id_pekerja', $p['id_pekerja'])
+                        ->where('status', 'Terverifikasi')
+                        ->where('deleted_at', null)
+                        ->orderBy('tmt_kerja', 'DESC')
                         ->first();
-                    
-                    // Hanya tambahkan jika BELUM memiliki nomor SK di tahun yang sama
-                    if (!$cekSudahAdaDiTahunIni) {
+                    if (!$riwayatAktif) continue;
+                    $cekSk = $skModel->where('id_riwayat', $riwayatAktif['id'])->first();
+                    if (!$cekSk) {
+                        $p['id_riwayat'] = $riwayatAktif['id'];
                         $pegawaiYangAkanDigenerate[] = $p;
                     }
                 }
             }
         } else {
-            // Mode Otomatis: Hanya pegawai yang BELUM memiliki nomor SK di tahun yang sama (IMMUTABLE)
+            // Mode Otomatis: semua riwayat aktif yang belum punya SK
             foreach ($pegawaiAktif as $p) {
-                $cekSudahAdaDiTahunIni = $skModel
-                    ->select('tb_sk.*, tb_no_sk.tahun')
-                    ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk')
-                    ->where('tb_sk.id_pekerja', $p['id_pekerja'])
-                    ->where('tb_no_sk.tahun', $tahunNoSk)
-                    ->where('tb_sk.nomor_sk IS NOT NULL')
-                    ->where('tb_sk.nomor_sk !=', '')
+                $riwayatAktif = $riwayatModel
+                    ->where('id_pekerja', $p['id_pekerja'])
+                    ->where('status', 'Terverifikasi')
+                    ->where('deleted_at', null)
+                    ->orderBy('tmt_kerja', 'DESC')
                     ->first();
-                
-                // Hanya tambahkan jika BELUM memiliki nomor SK di tahun yang sama
-                if (!$cekSudahAdaDiTahunIni) {
+                if (!$riwayatAktif) continue;
+                $cekSk = $skModel->where('id_riwayat', $riwayatAktif['id'])->first();
+                if (!$cekSk) {
+                    $p['id_riwayat'] = $riwayatAktif['id'];
                     $pegawaiYangAkanDigenerate[] = $p;
                 }
             }
@@ -445,10 +449,10 @@ class NomorSk extends BaseController
                 $no++;
             }
 
-            // 🔧 PERBAIKAN 7: Tambahkan tanggal_penetapan ke data SK
             $dataInsert = [
                 'id_no_sk'          => $id_no_sk,
                 'id_pekerja'        => $p['id_pekerja'],
+                'id_riwayat'        => $p['id_riwayat'],   // ikat ke riwayat spesifik
                 'nomor_sk'          => $nomorSk,
                 'tanggal_penetapan' => $tanggalPenetapan
             ];

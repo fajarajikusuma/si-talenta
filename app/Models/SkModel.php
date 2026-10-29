@@ -11,9 +11,10 @@ class SkModel extends Model
 
     protected $allowedFields = [
         'id_pekerja',
+        'id_riwayat',
         'id_no_sk',
         'nomor_sk',
-        'tanggal_penetapan'  // 🔧 PERBAIKAN: Tambahkan field tanggal_penetapan
+        'tanggal_penetapan'
     ];
 
     protected $useTimestamps = false;

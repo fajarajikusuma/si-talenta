@@ -36,7 +36,7 @@
                 <?php endif; ?>
 
                 <div class="table-responsive">
-                    <table class="table table-hover" id="tableDataPekerja">
+                    <table class="table table-hover" id="tableRiwayatKerja">
                         <thead>
                             <tr>
                                 <th>Tahun</th>
@@ -45,6 +45,7 @@
                                 <th>Unit Kerja</th>
                                 <th>TMT</th>
                                 <th>TST</th>
+                                <th class="text-center">Nomor SK</th>
                                 <th class="text-center">Status Riwayat Pekerjaan</th>
                                 <th>SPT</th>
                                 <th>PKS</th>
@@ -60,6 +61,15 @@
                                     <td><?= esc($r['unit_kerja']) ?></td>
                                     <td><?= date('d-m-Y', strtotime($r['tmt_kerja'])) ?></td>
                                     <td><?= $r['tst_kerja'] ? date('d-m-Y', strtotime($r['tst_kerja'])) : '-' ?></td>
+                                    <td class="text-center">
+                                        <?php if (!empty($r['nomor_sk'])): ?>
+                                            <span class="badge bg-dark rounded-1" title="Tanggal Penetapan: <?= !empty($r['tanggal_penetapan_sk']) ? date('d-m-Y', strtotime($r['tanggal_penetapan_sk'])) : '-' ?>">
+                                                <?= esc($r['kode_sk'] ?? '') ?>/<?= esc($r['nomor_sk']) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-light text-muted rounded-1">Belum di-generate</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="text-center">
                                         <?php
                                         $statusClass = match($r['status']) {
@@ -353,16 +363,20 @@
 </script>
 
 <script>
-// ── Tombol Kembali: bawa search term yang tersimpan ──────────────────────────
-(function () {
-    const search = sessionStorage.getItem('dataPekerja_search') || '';
-    const btn    = document.getElementById('btn-kembali');
-    if (btn && search) {
-        // Tampilkan label search di tombol supaya user tahu akan kembali ke filter apa
-        btn.innerHTML = '<i class="fa fa-arrow-left"></i> Kembali <span class="badge bg-secondary ms-1">' +
-                        search.replace(/</g, '&lt;') + '</span>';
+// ── Tombol Kembali: hanya panah, tidak ada badge search ──────────────────────
+// sessionStorage tetap hidup agar halaman data pekerja bisa restore search-nya
+
+// ── Inisialisasi DataTable untuk tabel riwayat kerja ─────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+    if (document.getElementById('tableRiwayatKerja')) {
+        new DataTable('#tableRiwayatKerja', {
+            responsive: true,
+            ordering: false,
+            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
+            pageLength: 10,
+        });
     }
-})();
+});
 
 // ── Edit Status Riwayat Kerja (Admin only) ────────────────────────────────
 $(document).on('click', '.btn-pilih-status', function (e) {

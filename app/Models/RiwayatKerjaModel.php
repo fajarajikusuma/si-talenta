@@ -47,13 +47,14 @@ class RiwayatKerjaModel extends Model
     public function getRiwayatKerjaById($id_pekerja)
     {
         $builder = $this->db->table('tb_riwayat_pekerjaan');
-        $builder->select('tb_riwayat_pekerjaan.*, tb_nama_pekerjaan.pekerjaan, tb_unit_kerja.unit_kerja, tb_data_pekerja.nama');
+        $builder->select('tb_riwayat_pekerjaan.*, tb_nama_pekerjaan.pekerjaan, tb_unit_kerja.unit_kerja, tb_data_pekerja.nama, tb_sk.nomor_sk, tb_sk.tanggal_penetapan as tanggal_penetapan_sk, tb_no_sk.kode_sk');
         $builder->join('tb_nama_pekerjaan', 'tb_nama_pekerjaan.id_nama_pekerjaan = tb_riwayat_pekerjaan.id_nama_pekerjaan', 'left');
         $builder->join('tb_unit_kerja', 'tb_unit_kerja.id_unit_kerja = tb_riwayat_pekerjaan.id_unit_kerja', 'left');
         $builder->join('tb_data_pekerja', 'tb_data_pekerja.id_pekerja = tb_riwayat_pekerjaan.id_pekerja', 'left');
+        $builder->join('tb_sk', 'tb_sk.id_riwayat = tb_riwayat_pekerjaan.id', 'left');
+        $builder->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'left');
         $builder->where('tb_riwayat_pekerjaan.deleted_at', null);
         $builder->where('tb_riwayat_pekerjaan.id_pekerja', $id_pekerja);
-        // Sort by tmt_kerja in descending order
         $builder->orderBy('tb_riwayat_pekerjaan.tahun', 'ASC');
         return $builder->get()->getResultArray();
     }

@@ -545,6 +545,11 @@ class RiwayatKerja extends BaseController
             'pekerjaan' => $this->listPekerjaanModel->find($riwayat['id_nama_pekerjaan']),
             'unit_kerja' => $this->unitKerjaModel->find($riwayat['id_unit_kerja']),
             'id_riwayat_encrypted' => $id,
+            'sk' => (new \App\Models\SkModel())
+                ->select('tb_sk.nomor_sk, tb_sk.tanggal_penetapan, tb_no_sk.kode_sk')
+                ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'left')
+                ->where('tb_sk.id_riwayat', $riwayat['id'])
+                ->first(),
         ];
         return view('riwayat_kerja/detail_riwayat', $data);
     }

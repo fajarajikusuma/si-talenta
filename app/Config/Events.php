@@ -63,7 +63,7 @@ Events::on('pre_system', static function (): void {
  * memperlambat response ke user.
  * Backup lama otomatis dihapus oleh script backup_db.sh.
  */
-Events::on('post_controller', static function (): void {
+Events::on('post_system', static function (): void {
     // Hanya trigger pada request yang mengubah data (bukan GET/HEAD)
     $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
     if (! in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
@@ -89,7 +89,8 @@ Events::on('post_controller', static function (): void {
         return;
     }
 
-    // Jalankan di background — tidak menunggu selesai
-    // Output dibuang ke /dev/null agar tidak mengganggu response
-    shell_exec("bash " . escapeshellarg($script) . " >> /dev/null 2>&1 &");
+    // Jalankan di background — exec() dengan redirect output agar non-blocking
+    if (function_exists('exec')) {
+        exec('bash ' . escapeshellarg($script) . ' > /dev/null 2>&1 &');
+    }
 });

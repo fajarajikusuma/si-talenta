@@ -125,51 +125,55 @@ class Laporan extends BaseController
                 $pekerja['nama_kepala'] = 'Tidak Diketahui';
             }
             
-            // 🔧 PERBAIKAN: Ambil SK berdasarkan id_pekerja dan tahun saja (TIDAK filter id_no_sk spesifik)
-            // Karena bisa ada multiple id_no_sk untuk tahun yang sama dengan tanggal penetapan berbeda
-            $skData = $this->skModel
-                ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun')
-                ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
-                ->where('tb_sk.id_pekerja', $pekerja['id_pekerja'])
-                ->where('tb_no_sk.tahun', date('Y'))
-                ->orderBy('tb_sk.tanggal_penetapan', 'DESC') // Ambil yang tanggal penetapan terbaru
-                ->first();
-            
-            if ($skData && isset($skData['tanggal_penetapan'])) {
-                $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
-            } else {
-                // Jika tidak ada data SK yang valid, skip pegawai ini
-                $pekerja['skip'] = true;
-                continue;
-            }
-            
-            // Ambil semua riwayat kerja untuk satu pegawai
+            // Ambil riwayat aktif (Terverifikasi, tmt terbaru) pegawai ini
             $semuaRiwayat = $this->riwayatKerjaModel
                 ->where('id_pekerja', $pekerja['id_pekerja'])
-                ->orderBy('tmt_kerja', 'DESC') // Urutkan berdasarkan TMT terbaru
+                ->orderBy('tmt_kerja', 'DESC')
                 ->findAll();
 
+            $riwayatAktif = null;
+            foreach ($semuaRiwayat as $r) {
+                if (strtolower($r['status']) === 'terverifikasi') {
+                    $riwayatAktif = $r;
+                    break;
+                }
+            }
+
+            // Ambil SK yang terikat ke riwayat aktif, bukan semua SK pegawai di tahun ini
+            $skData = null;
+            if ($riwayatAktif) {
+                $skData = $this->skModel
+                    ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun')
+                    ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
+                    ->where('tb_sk.id_riwayat', $riwayatAktif['id'])
+                    ->first();
+            }
+
+            if (!$skData) {
+                // Skip pegawai yang riwayat aktifnya belum punya SK
+                continue;
+            }
+
+            $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
+            $pekerja['nomor_sk']             = $skData['nomor_sk'];
+            $pekerja['kode_sk']              = $skData['kode_sk'] ?? '';
+
+            // Hitung bulan kerja dari riwayat aktif
+            if (!empty($riwayatAktif['tmt_kerja']) && !empty($riwayatAktif['tst_kerja'])) {
+                $tmt = strtotime($riwayatAktif['tmt_kerja']);
+                $tst = strtotime($riwayatAktif['tst_kerja']);
+                $pekerja['bulan_kerja'] = floor(($tst - $tmt) / (30 * 24 * 60 * 60));
+            } else {
+                $pekerja['bulan_kerja'] = 0;
+            }
+
             // 🔧 VALIDASI: Cek status Terverifikasi DAN Menunggu
-            $adaStatusMenunggu = false;
+            $adaStatusMenunggu  = false;
             $adaStatusTerverifikasi = false;
 
             foreach ($semuaRiwayat as $riwayat) {
-                if (strtolower($riwayat['status']) === 'menunggu') {
-                    $adaStatusMenunggu = true;
-                }
-                if (strtolower($riwayat['status']) === 'terverifikasi') {
-                    $adaStatusTerverifikasi = true;
-                }
-            }
-
-            // hitung berapa bulan tmt kerja hingga tst kerja masing-masing pegawai
-            if (isset($pekerja['tmt_kerja']) && isset($pekerja['tst_kerja'])) {
-                $tmt = strtotime($pekerja['tmt_kerja']);
-                $tst = strtotime($pekerja['tst_kerja']);
-                $bulanKerja = floor(($tst - $tmt) / (30 * 24 * 60 * 60)); // Hitung selisih dalam bulan
-                $pekerja['bulan_kerja'] = $bulanKerja;
-            } else {
-                $pekerja['bulan_kerja'] = 0; // Atur ke 0 jika tidak ada data TMT atau TST
+                if (strtolower($riwayat['status']) === 'menunggu')      $adaStatusMenunggu = true;
+                if (strtolower($riwayat['status']) === 'terverifikasi') $adaStatusTerverifikasi = true;
             }
 
             // Jika TIDAK ADA status 'Terverifikasi', skip pegawai ini
@@ -325,30 +329,41 @@ class Laporan extends BaseController
             );
         }
 
-        // Hitung bulan kerja
-        if (!empty($pekerja['tmt_kerja']) && !empty($pekerja['tst_kerja'])) {
-            $tmt = strtotime($pekerja['tmt_kerja']);
-            $tst = strtotime($pekerja['tst_kerja']);
+        // Ambil riwayat aktif (Terverifikasi, tmt terbaru)
+        $riwayatAktif = null;
+        foreach ($riwayatKerja as $r) {
+            if (strtolower($r['status']) === 'terverifikasi') {
+                $riwayatAktif = $r;
+                break; // sudah diurutkan DESC, ambil yang pertama
+            }
+        }
+
+        // Hitung bulan kerja dari riwayat aktif
+        if ($riwayatAktif && !empty($riwayatAktif['tmt_kerja']) && !empty($riwayatAktif['tst_kerja'])) {
+            $tmt = strtotime($riwayatAktif['tmt_kerja']);
+            $tst = strtotime($riwayatAktif['tst_kerja']);
             $pekerja['bulan_kerja'] = floor(($tst - $tmt) / (30 * 24 * 60 * 60));
         } else {
             $pekerja['bulan_kerja'] = 0;
         }
 
-        // 🔧 PERBAIKAN: Ambil SK berdasarkan id_pekerja dan tahun saja (TIDAK filter id_no_sk spesifik)
-        // Karena bisa ada multiple id_no_sk untuk tahun yang sama dengan tanggal penetapan berbeda
-        $skData = $this->skModel
-            ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun')
-            ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
-            ->where('tb_sk.id_pekerja', $id_pekerja)
-            ->where('tb_no_sk.tahun', date('Y'))
-            ->orderBy('tb_sk.tanggal_penetapan', 'DESC') // Ambil yang tanggal penetapan terbaru
-            ->first();
-        if ($skData && isset($skData['tanggal_penetapan'])) {
-            $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
-        } else {
-            // Jika tidak ada data SK yang valid, kembalikan error
-            return redirect()->back()->with('error', 'Data nomor SK tidak valid atau sudah dihapus. Silakan generate ulang nomor SK.');
+        // Ambil SK yang terikat ke riwayat aktif ini (bukan semua SK pegawai)
+        $skData = null;
+        if ($riwayatAktif) {
+            $skData = $this->skModel
+                ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun, tb_no_sk.kode_sk, tb_no_sk.nomor_utama')
+                ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
+                ->where('tb_sk.id_riwayat', $riwayatAktif['id'])
+                ->first();
         }
+
+        if (!$skData) {
+            return redirect()->back()->with('error', 'Nomor SK untuk kontrak aktif ini belum di-generate. Silakan generate nomor SK terlebih dahulu.');
+        }
+
+        $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
+        $pekerja['nomor_sk']             = $skData['nomor_sk'];
+        $pekerja['kode_sk']              = $skData['kode_sk'] ?? '';
 
         // Ambil kepala unit kerja
         $kepala = $this->daftarKepalaModel

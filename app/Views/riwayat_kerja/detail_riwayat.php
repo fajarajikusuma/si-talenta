@@ -71,6 +71,19 @@
                                 <td><?= $riwayat['status'] . ($riwayat['status_pegawai'] == 'Percobaan' ? ' - Dalam Masa Percobaan' : '') ?></td>
                             </tr>
                             <tr>
+                                <td>Nomor SK</td>
+                                <td>
+                                    <?php if (!empty($sk['nomor_sk'])): ?>
+                                        <strong><?= esc(($sk['kode_sk'] ?? '') . '/' . $sk['nomor_sk']) ?></strong>
+                                        <?php if (!empty($sk['tanggal_penetapan'])): ?>
+                                            <small class="text-muted ms-2">(ditetapkan <?= date('d-m-Y', strtotime($sk['tanggal_penetapan'])) ?>)</small>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="text-muted">Belum di-generate</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>Gaji</td>
                                 <td><?= number_format(floatval($riwayat['gaji']), 0, ',', '.') ?></td>
                             </tr>
