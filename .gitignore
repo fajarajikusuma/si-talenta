@@ -22,3 +22,7 @@ writable/logs/*
 *.tmp
 .DS_Store
 Thumbs.db
+
+# Backup log — tidak perlu di-commit, hanya file SQL backup yang di-push
+backups/backup.log
+backups/*.gz
