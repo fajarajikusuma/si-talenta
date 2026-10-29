@@ -64,21 +64,21 @@
                                 <tr>
                                     <th>Bulan</th>
                                     <th>Total</th>
-                                    <th>Aksi</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php foreach ($data_bulanan as $bulan => $info): ?>
                                     <tr>
-                                        <td><?= $info['nama_bulan'] ?></td>
-                                        <td><?= $info['total'] ?></td>
+                                        <td><?= esc($info['nama_bulan']) ?></td>
+                                        <td><?= esc($info['total']) ?></td>
                                         <td>
                                             <?php
                                             if ($info['total'] > 0): ?>
                                                 <button class="btn btn-primary btn-sm btn-lihat-pensiun"
                                                     data-bulan="<?= $bulan ?>"
                                                     data-tahun="<?= $tahun_cari == NULL ? date('Y') : $tahun_cari ?>"
-                                                    data-nama="<?= $info['nama_bulan'] ?>">
+                                                    data-nama="<?= esc($info['nama_bulan']) ?>">
                                                     Lihat
                                                 </button>
                                             <?php else: ?>
@@ -101,12 +101,6 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title"><?= 'Tabel ' . $subtitle ?></h4>
-                <?php if (session()->getFlashdata('success')) : ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
                 <div class="table-responsive">
                     <table class="table table-hover" id="tableDataPekerja">
                         <thead>
@@ -128,7 +122,7 @@
                                 <?php if (uri_string() == 'data_pekerja/new') : ?>
                                     <th>Tanggal Input</th>
                                 <?php endif; ?>
-                                <th>Aksi</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,10 +130,10 @@
                             foreach ($data_pekerja as $dp) : ?>
                                 <tr>
                                     <td class="text-center"><?= $no++ ?></td>
-                                    <td><?= $dp['nama'] ?></td>
+                                    <td><?= esc($dp['nama']) ?></td>
                                     <td class="text-center"><?= $dp['jenis_kelamin'] == 'L' ? 'Laki-Laki' : ($dp['jenis_kelamin'] == '' ? '-' : 'Perempuan') ?></td>
-                                    <td><?= $dp['pekerjaan'] ?></td>
-                                    <td class="text-center"><?= $dp['unit_kerja'] ?></td>
+                                    <td><?= esc($dp['pekerjaan']) ?></td>
+                                    <td class="text-center"><?= esc($dp['unit_kerja']) ?></td>
                                     <?php if (uri_string() == 'data_pekerja/aktif' || uri_string() == 'data_pekerja/pensiun') : ?>
                                         <td class="text-center"><?= date('d-m-Y', strtotime($dp['tmt_kerja'])) ?></td>
                                     <?php endif; ?>
@@ -149,11 +143,11 @@
                                     <?php if (uri_string() == 'data_pekerja/aktif' || uri_string() == 'data_pekerja/new' || uri_string() == 'data_pekerja/out') : ?>
                                         <td class="text-center">
                                             <?php if ($dp['status_pekerja'] == 'Terverifikasi') : ?>
-                                                <span class="badge bg-success rounded-1"><?= $dp['status_pekerja'] ?></span>
+                                                <span class="badge bg-success rounded-1"><?= esc($dp['status_pekerja']) ?></span>
                                             <?php elseif ($dp['status_pekerja'] == 'Tidak Aktif') : ?>
-                                                <span class="badge bg-danger rounded-1"><?= $dp['status_pekerja'] ?></span>
+                                                <span class="badge bg-danger rounded-1"><?= esc($dp['status_pekerja']) ?></span>
                                             <?php elseif ($dp['status_pekerja'] == 'Menunggu') : ?>
-                                                <span class="badge bg-warning text-dark rounded-1"><?= $dp['status_pekerja'] ?></span>
+                                                <span class="badge bg-warning text-dark rounded-1"><?= esc($dp['status_pekerja']) ?></span>
                                                 <!-- jika usia lebih dari sama dengan 58 maka tampilkan badge status_pekerja pensiun -->
                                             <?php elseif ($dp['tanggal_pensiun'] <= date('Y-m-d')) : ?>
                                                 <span class="badge bg-danger rounded-1">Pensiun</span>
@@ -164,10 +158,10 @@
                                         <td class="text-center"><?= date('d-m-Y', strtotime($dp['created_at'])) ?></td>
                                     <?php endif; ?>
                                     <td>
-                                        <div class="d-flex btn-group">
-                                            <a href="<?= site_url('data_pekerja/detail/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>
+                                        <div class="d-flex justify-content-center" style="gap:2px;">
+                                            <a href="<?= site_url('data_pekerja/detail/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-info btn-sm rounded-pill px-2"><i class="fa fa-eye"></i></a>
                                             <?php if ($dp['status_pekerja'] != 'Menunggu') : ?>
-                                                <a href="<?= site_url('riwayat_kerja/riwayat/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-primary btn-sm"><i class="fa fa-history"></i></a>
+                                                <a href="<?= site_url('riwayat_kerja/riwayat/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-primary btn-sm rounded-pill px-2"><i class="fa fa-history"></i></a>
                                             <?php endif; ?>
                                             <?php
                                             $status = strtolower(trim($dp['status_pekerja']));
@@ -175,18 +169,24 @@
                                             ?>
 
                                             <?php if ($status == 'menunggu' || $status == 'terverifikasi') : ?>
-                                                <a href="<?= site_url('data_pekerja/edit/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-warning btn-sm">
+                                                <a href="<?= site_url('data_pekerja/edit/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-warning btn-sm rounded-pill px-2">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
                                                 <?php if ($level == 'admin') : ?>
-                                                    <a href="<?= site_url('data_pekerja/delete/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
+                                                    <form action="<?= site_url('data_pekerja/delete/' . $dp['id_pekerja_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($dp['nama']) ?>">
+                                                        <?= csrf_field() ?>
+                                                        <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 <?php endif; ?>
                                                 <?php if ($level != 'admin' && $status == 'menunggu') : ?>
-                                                    <a href="<?= site_url('data_pekerja/delete/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus data ini?')">
-                                                        <i class="fa fa-trash"></i>
-                                                    </a>
+                                                    <form action="<?= site_url('data_pekerja/delete/' . $dp['id_pekerja_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($dp['nama']) ?>">
+                                                        <?= csrf_field() ?>
+                                                        <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         </div>

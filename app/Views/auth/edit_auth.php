@@ -17,7 +17,8 @@
             <h4 class="card-title">Form Edit Data User</h4>
             <p class="card-description">Silakan ubah data yang diperlukan.</p>
 
-            <form class="forms-sample" method="POST" action="<?= site_url('user_update/' . $id_user_encrypted) ?>" enctype="multipart/form-data">
+            <form class="forms-sample" method="POST" action="<?= site_url('user_update/' . $id_user_encrypted) ?>
+                <?= csrf_field() ?>" enctype="multipart/form-data">
                 <?php if (session()->get('level') == 'admin'): ?>
                     <div class="form-group">
                         <label for="input_unit_kerja">Unit Kerja</label>

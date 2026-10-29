@@ -272,13 +272,11 @@ function formatTanggalIndo($tanggal)
         ?>
 
         <script>
+            window.onafterprint = function() {
+                window.location.href = '<?= site_url('laporan') ?>';
+            };
             window.onload = function() {
                 window.print();
-                setTimeout(function() {
-                    window.close();
-                    // arahkan ke halaman utama setelah cetak
-                    window.location.href = '<?= site_url('laporan') ?>';
-                }, 1000);
             };
         </script>
 

@@ -16,7 +16,8 @@
             <h4 class="card-title">Form Tambah Data User</h4>
             <p class="card-description">Tolong Inputkan Semua Data Dengan Benar!!!</p>
 
-            <form class="form-sample" method="POST" action="<?= site_url('store_user') ?>" enctype="multipart/form-data">
+            <form class="form-sample" method="POST" action="<?= site_url('store_user') ?>
+                <?= csrf_field() ?>" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="input_unit_kerja">Unit Kerja</label>
                     <select name="id_unit_kerja" class="form-select" id="input_unit_kerja">

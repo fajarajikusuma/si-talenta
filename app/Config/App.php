@@ -22,18 +22,11 @@ class App extends BaseConfig
     {
         parent::__construct();
 
-        $protocol = 'http://';
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] === 'on' || $_SERVER['SERVER_PORT'] == 443)) {
-            $protocol = 'https://';
+        // baseURL comes from .env (app.baseURL). Never derive from the
+        // user-controlled HTTP_HOST header to prevent Host-header injection.
+        if (empty($this->baseURL)) {
+            $this->baseURL = 'http://localhost/si-talenta/';
         }
-
-        // Gunakan fallback kalau HTTP_HOST tidak ada
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-
-        $this->baseURL = $protocol . $host . '/si-talenta/';
-
-        // Debug log kalau mau cek
-        // error_log("BaseURL: " . $this->baseURL);
     }
 
 

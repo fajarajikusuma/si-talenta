@@ -15,12 +15,6 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title"><?= 'Tabel ' . $subtitle ?></h4>
-                <?php if (session()->getFlashdata('success')) : ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
                 <div id="statusMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
                     <span id="statusText">Status berhasil diubah.</span>
                 </div>
@@ -35,7 +29,7 @@
                                 <th>Tentang</th>
                                 <th>Dokumen</th>
                                 <th class="text-center">Status</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,10 +37,10 @@
                             foreach ($dasar_hukum as $row) : ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
-                                    <td class="text-start"><?= $row['nama_dasar_hukum'] ?></td>
-                                    <td><?= $row['nomor'] ?></td>
-                                    <td><?= $row['tahun'] ?></td>
-                                    <td><?= $row['tentang'] ?></td>
+                                    <td class="text-start"><?= esc($row['nama_dasar_hukum']) ?></td>
+                                    <td><?= esc($row['nomor']) ?></td>
+                                    <td><?= esc($row['tahun']) ?></td>
+                                    <td><?= esc($row['tentang']) ?></td>
                                     <td>
                                         <a href="<?= base_url('uploads/dasar_hukum/' . $row['upload_dokumen']) ?>" target="_blank" class="btn btn-sm btn-info">Lihat</a>
                                     </td>
@@ -61,9 +55,12 @@
                                     </td>
 
                                     <td>
-                                        <div class="d-flex btn-group">
-                                            <a href="<?= site_url('dasar_hukum/edit/' . $row['id_dasar_hukum_encrypted']) ?>" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
-                                            <a href="<?= site_url('dasar_hukum/delete/' . $row['id_dasar_hukum_encrypted']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data <?= $row['nama_dasar_hukum'] . ' Nomor ' . $row['nomor'] . ' Tahun ' . $row['tahun'] . ' Tentang ' . $row['tentang'] ?> ?')"><i class="fa fa-trash"></i></a>
+                                        <div class="d-flex justify-content-center" style="gap:2px;">
+                                            <a href="<?= site_url('dasar_hukum/edit/' . $row['id_dasar_hukum_encrypted']) ?>" class="btn btn-warning btn-sm rounded-pill px-2"><i class="fa fa-edit"></i></a>
+                                            <form action="<?= site_url('dasar_hukum/delete/' . $row['id_dasar_hukum_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($row['nama_dasar_hukum']) ?>">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2"><i class="fa fa-trash"></i></button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

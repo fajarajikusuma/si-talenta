@@ -13,6 +13,7 @@ use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\LoginFilter;
+use App\Filters\AdminFilter;
 
 class Filters extends BaseFilters
 {
@@ -36,6 +37,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'login'         => LoginFilter::class,
+        'admin'         => AdminFilter::class,
     ];
 
     /**
@@ -72,11 +74,12 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             'login' => ['except' => ['/', 'login', 'login_load', 'auth', 'auth/*']],
+            'csrf',
         ],
 
         'after' => [
-            // 'honeypot',
-            // 'secureheaders',
+            'honeypot',
+            'secureheaders',
         ],
     ];
 

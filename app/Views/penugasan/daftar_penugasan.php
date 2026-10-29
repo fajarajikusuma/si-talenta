@@ -33,7 +33,8 @@
             <?php endif; ?>
             <div class="card-body">
                 <?php if (session()->get('level') == 'admin'): ?>
-                    <form method="post" action="<?= site_url('cetak_usulan_tugas_baru') ?>">
+                    <form method="post" action="<?= site_url('cetak_usulan_tugas_baru') ?>
+                        <?= csrf_field() ?>">
                         <div class="row">
                             <div class="col-md-12 mb-4">
                                 <label for="id_unit_kerja" class="form-label"><b>Filter Unit Kerja</b></label>
@@ -51,7 +52,8 @@
                         </div>
                     </form>
                 <?php endif; ?>
-                <form id="formVerifikasi" method="post" action="<?= site_url('verifikasi_penugasan') ?>">
+                <form id="formVerifikasi" method="post" action="<?= site_url('verifikasi_penugasan') ?>
+                    <?= csrf_field() ?>">
                     <div class="table-responsive">
                         <table id="tableDataPekerja" class="table table-bordered table-striped">
                             <thead>
@@ -75,7 +77,7 @@
                                     <tr>
                                         <?php if (session()->get('level') == 'admin'): ?>
                                             <td class="text-center">
-                                                <input type="checkbox" name="verifikasi_id[]" value="<?= $item['id'] ?? $no ?>">
+                                                <input type="checkbox" name="verifikasi_id[]" value="<?= esc($item['id'] ?? $no) ?>">
                                             </td>
                                         <?php endif; ?>
                                         <td class="text-center"><?= $no++ ?></td>

@@ -12,18 +12,6 @@
             <a href="<?= site_url('no-sk/create') ?>" class="btn btn-primary mb-3">
                 <i class="mdi mdi-plus"></i> Tambah Nomor SK
             </a>
-            <?php if (session()->getFlashdata('success')) : ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?= session()->getFlashdata('success') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
-            <?php if (session()->getFlashdata('error')) : ?>
-                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                    <?= session()->getFlashdata('error') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            <?php endif; ?>
             
             <!-- Responsive Table Wrapper -->
             <div class="table-responsive">
@@ -58,7 +46,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center align-middle">
-                                    <div class="btn-group" role="group">
+                                    <div class="d-flex justify-content-center" style="gap:2px;">
                                         <a href="<?= site_url('no-sk/detail/' . $row['id_no_sk_encrypted']) ?>"
                                             class="btn btn-sm btn-info"
                                             title="Detail">
@@ -71,12 +59,14 @@
                                             <i class="mdi mdi-pencil"></i>
                                         </a>
 
-                                        <a href="<?= site_url('no-sk/delete/' . $row['id_no_sk_encrypted']) ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus data?')"
-                                            title="Hapus">
-                                            <i class="mdi mdi-delete"></i>
-                                        </a>
+                                        <form action="<?= site_url('no-sk/delete/' . $row['id_no_sk_encrypted']) ?>" method="post" style="display:contents" data-label="Nomor SK <?= esc($row['kode_sk']) ?> Tahun <?= esc($row['tahun']) ?>">>
+                                            <?= csrf_field() ?>
+                                            <button type="submit"
+                                                class="btn btn-sm btn-danger"
+                                                title="Hapus">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

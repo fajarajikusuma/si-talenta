@@ -16,7 +16,8 @@
             <h4 class="card-title">Form Edit Data <?= $subtitle ?></h4>
             <p class="card-description">Silakan ubah data yang perlu diperbaiki</p>
 
-            <form class="forms-sample" method="POST" action="<?= site_url('daftar_kepala/update/' . $id_kepala_encrypted) ?>">
+            <form class="forms-sample" method="POST" action="<?= site_url('daftar_kepala/update/' . $id_kepala_encrypted) ?>
+                <?= csrf_field() ?>">
                 <div class="form-group">
                     <label for="input_nip">NIP</label>
                     <input type="text" class="form-control" id="input_nip" placeholder="Masukan NIP" name="nip" minlength="18" maxlength="18" value="<?= esc($daftar_kepala['nip']) ?>" required>

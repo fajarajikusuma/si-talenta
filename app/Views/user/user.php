@@ -14,18 +14,6 @@
     <div class="col-lg-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <?php if (session()->getFlashdata('success')) : ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <?php endif; ?>
-                <?php if (session()->getFlashdata('error')) : ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('error') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                <?php endif; ?>
 
                 <div class="table-responsive">
                     <table class="table table-bordered" id="tableDataPekerja">
@@ -38,7 +26,7 @@
                                 <th>Unit Kerja</th>
                                 <th>Level</th>
                                 <th>Status</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -73,11 +61,14 @@
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <div class="btn-group d-flex">
+                                        <div class="d-flex justify-content-center" style="gap:2px;">
                                             <!-- detail -->
                                             <a href="<?= site_url('user_detail/' . $u['id_user_encrypted']) ?>" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
                                             <a href="<?= site_url('user_edit/' . $u['id_user_encrypted']) ?>" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a>
-                                            <a href="<?= site_url('user_delete/' . $u['id_user_encrypted']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin hapus?')"><i class="fa fa-trash"></i></a>
+                                            <form action="<?= site_url('user_delete/' . $u['id_user_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($u['nama_lengkap']) ?>">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

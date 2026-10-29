@@ -23,7 +23,8 @@
             <h4 class="card-title">Form Edit Data <?= $subtitle ?></h4>
             <p class="card-description"> Edit Data dengan Teliti! </p>
 
-            <form class="forms-sample" method="POST" action="<?= site_url('data_pekerja/update/' . $id_pekerja_decrypt) ?>" enctype="multipart/form-data">
+            <form class="forms-sample" method="POST" action="<?= site_url('data_pekerja/update/' . $id_pekerja_decrypt) ?>
+                <?= csrf_field() ?>" enctype="multipart/form-data">
                 <div id="form-step-1" class="form-step">
                     <h4 class="card-title">Data Pribadi</h4>
                     <div class="form-group">

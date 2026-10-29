@@ -74,6 +74,7 @@
                     <?php endif; ?>
 
                     <form action="<?= site_url('login_load') ?>" method="POST" class="space-y-5">
+                        <?= csrf_field() ?>
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-2">Username</label>
                             <div class="relative group">

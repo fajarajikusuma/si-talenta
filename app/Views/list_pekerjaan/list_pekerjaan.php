@@ -28,18 +28,6 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title"><?= 'Tabel ' . $subtitle ?></h4>
-                <?php if (session()->getFlashdata('success')) : ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-                <?php if (session()->getFlashdata('error')) : ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('error') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
                 <div class="table-responsive">
                     <table class="table table-hover" id="tableDataPekerja">
                         <thead>
@@ -47,7 +35,7 @@
                                 <th class="text-start">No</th>
                                 <th>Nama Pekerjaan</th>
                                 <th>Uraian Kerja</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,16 +43,19 @@
                             foreach ($list_pekerjaan as $row) : ?>
                                 <tr>
                                     <td class="text-start"><?= $no++ ?></td>
-                                    <td><?= $row['pekerjaan'] ?></td>
-                                    <td><?= $row['uraian_kerja'] ?></td>
+                                    <td><?= esc($row['pekerjaan']) ?></td>
+                                    <td><?= esc($row['uraian_kerja']) ?></td>
                                     <td>
-                                        <div class="d-flex btn-group">
-                                            <a href="<?= site_url('list_pekerjaan/edit/' . $row['id_list_pekerjaan_encrypted']) ?>" class="btn btn-warning btn-sm">
+                                        <div class="d-flex justify-content-center" style="gap:2px;">
+                                            <a href="<?= site_url('list_pekerjaan/edit/' . $row['id_list_pekerjaan_encrypted']) ?>" class="btn btn-warning btn-sm rounded-pill px-2">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-                                            <a href="<?= site_url('list_pekerjaan/delete/' . $row['id_list_pekerjaan_encrypted']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus data <?= $row['pekerjaan'] ?> ?')">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
+                                            <form action="<?= site_url('list_pekerjaan/delete/' . $row['id_list_pekerjaan_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($row['pekerjaan']) ?>">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

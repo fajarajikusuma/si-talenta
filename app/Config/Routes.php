@@ -20,7 +20,7 @@ $routes->get('/data_pekerja/add', 'DataPekerja::add');
 $routes->post('/data_pekerja/store', 'DataPekerja::store');
 $routes->get('/data_pekerja/edit/(:any)', 'DataPekerja::edit/$1');
 $routes->post('/data_pekerja/update/(:any)', 'DataPekerja::update/$1');
-$routes->get('/data_pekerja/delete/(:any)', 'DataPekerja::delete/$1');
+$routes->post('/data_pekerja/delete/(:any)', 'DataPekerja::delete/$1');
 $routes->get('/data_pekerja/detail/(:any)', 'DataPekerja::detail/$1');
 $routes->get('/data_pekerja/verifikasi/(:any)', 'DataPekerja::verifikasi/$1');
 $routes->post('/data_pekerja/simpan_verifikasi/(:any)', 'DataPekerja::simpan_verifikasi/$1');
@@ -49,33 +49,39 @@ $routes->put(
     'RiwayatKerja::update/$1'
 );
 
-// Unit Kerja
-$routes->get('/unit_kerja', 'UnitKerja::index');
-$routes->get('/unit_kerja/add', 'UnitKerja::add');
-$routes->post('/unit_kerja/store', 'UnitKerja::store');
-$routes->get('/unit_kerja/edit/(:any)', 'UnitKerja::edit/$1');
-$routes->post('/unit_kerja/update/(:any)', 'UnitKerja::update/$1');
-$routes->get('/unit_kerja/delete/(:any)', 'UnitKerja::delete/$1');
+// Unit Kerja (admin only)
+$routes->group('', ['filter' => 'admin'], function ($routes) {
+    $routes->get('/unit_kerja', 'UnitKerja::index');
+    $routes->get('/unit_kerja/add', 'UnitKerja::add');
+    $routes->post('/unit_kerja/store', 'UnitKerja::store');
+    $routes->get('/unit_kerja/edit/(:any)', 'UnitKerja::edit/$1');
+    $routes->post('/unit_kerja/update/(:any)', 'UnitKerja::update/$1');
+    $routes->post('/unit_kerja/delete/(:any)', 'UnitKerja::delete/$1');
+});
 
-// Daftar Kepala
-$routes->get('/daftar_kepala', 'DaftarKepala::index');
-$routes->get('/daftar_kepala/add', 'DaftarKepala::add');
-$routes->post('/daftar_kepala/store', 'DaftarKepala::store');
-$routes->get('/daftar_kepala/edit/(:any)', 'DaftarKepala::edit/$1');
-$routes->post('/daftar_kepala/update/(:any)', 'DaftarKepala::update/$1');
-$routes->get('/daftar_kepala/delete/(:any)', 'DaftarKepala::delete/$1');
-$routes->post('/daftar_kepala/change_status', 'DaftarKepala::change_status');
-$routes->get('daftar_kepala/detail/(:any)', 'DaftarKepala::detail/$1');
+// Daftar Kepala (admin only)
+$routes->group('', ['filter' => 'admin'], function ($routes) {
+    $routes->get('/daftar_kepala', 'DaftarKepala::index');
+    $routes->get('/daftar_kepala/add', 'DaftarKepala::add');
+    $routes->post('/daftar_kepala/store', 'DaftarKepala::store');
+    $routes->get('/daftar_kepala/edit/(:any)', 'DaftarKepala::edit/$1');
+    $routes->post('/daftar_kepala/update/(:any)', 'DaftarKepala::update/$1');
+    $routes->post('/daftar_kepala/delete/(:any)', 'DaftarKepala::delete/$1');
+    $routes->post('/daftar_kepala/change_status', 'DaftarKepala::change_status');
+    $routes->get('daftar_kepala/detail/(:any)', 'DaftarKepala::detail/$1');
+});
 
-// List Pekerjaan
-$routes->get('/list_pekerjaan', 'ListPekerjaan::index');
-$routes->get('/list_pekerjaan/add', 'ListPekerjaan::add');
-$routes->post('/list_pekerjaan/store', 'ListPekerjaan::store');
-$routes->get('/list_pekerjaan/edit/(:any)', 'ListPekerjaan::edit/$1');
-$routes->post('/list_pekerjaan/update/(:any)', 'ListPekerjaan::update/$1');
-$routes->get('/list_pekerjaan/delete/(:any)', 'ListPekerjaan::delete/$1');
-$routes->post('/list_pekerjaan/import_excel', 'ListPekerjaan::import_excel');
-$routes->get('/list_pekerjaan/download_template', 'ListPekerjaan::download_template');
+// List Pekerjaan (admin only)
+$routes->group('', ['filter' => 'admin'], function ($routes) {
+    $routes->get('/list_pekerjaan', 'ListPekerjaan::index');
+    $routes->get('/list_pekerjaan/add', 'ListPekerjaan::add');
+    $routes->post('/list_pekerjaan/store', 'ListPekerjaan::store');
+    $routes->get('/list_pekerjaan/edit/(:any)', 'ListPekerjaan::edit/$1');
+    $routes->post('/list_pekerjaan/update/(:any)', 'ListPekerjaan::update/$1');
+    $routes->post('/list_pekerjaan/delete/(:any)', 'ListPekerjaan::delete/$1');
+    $routes->post('/list_pekerjaan/import_excel', 'ListPekerjaan::import_excel');
+    $routes->get('/list_pekerjaan/download_template', 'ListPekerjaan::download_template');
+});
 
 // Penugasan
 $routes->get('/penugasan', 'Penugasan::index');
@@ -107,24 +113,27 @@ $routes->get('/cetak_pks', 'Laporan::cetak_pks');
 $routes->get('/laporan/cetak_spk/(:any)', 'Laporan::cetak_pks_individu/$1');
 // $routes->get('/laporan/cetak_sp/(:any)', 'Laporan::cetak_spt_individu/$1');
 
-// Dasar Hukum
-$routes->get('/dasar_hukum', 'DasarHukum::index');
-$routes->get('/dasar_hukum/add', 'DasarHukum::add');
-$routes->post('/dasar_hukum/store', 'DasarHukum::store');
-$routes->post('/dasar_hukum/change_status', 'DasarHukum::change_status');
-$routes->get('/dasar_hukum/edit/(:any)', 'DasarHukum::edit/$1');
-$routes->post('/dasar_hukum/update/(:any)', 'DasarHukum::update/$1');
-$routes->get('/dasar_hukum/delete/(:any)', 'DasarHukum::delete/$1');
+// Dasar Hukum (admin only)
+$routes->group('', ['filter' => 'admin'], function ($routes) {
+    $routes->get('/dasar_hukum', 'DasarHukum::index');
+    $routes->get('/dasar_hukum/add', 'DasarHukum::add');
+    $routes->post('/dasar_hukum/store', 'DasarHukum::store');
+    $routes->post('/dasar_hukum/change_status', 'DasarHukum::change_status');
+    $routes->get('/dasar_hukum/edit/(:any)', 'DasarHukum::edit/$1');
+    $routes->post('/dasar_hukum/update/(:any)', 'DasarHukum::update/$1');
+    $routes->post('/dasar_hukum/delete/(:any)', 'DasarHukum::delete/$1');
+});
 
-// Nomor SK
-$routes->get('no-sk', 'NomorSk::index');
-$routes->get('no-sk/create', 'NomorSk::create');
-$routes->post('no-sk/store', 'NomorSk::store');
-$routes->get('no-sk/edit/(:any)', 'NomorSk::edit/$1');
-$routes->post('no-sk/update/(:any)', 'NomorSk::update/$1');
-$routes->get('no-sk/delete/(:any)', 'NomorSk::delete/$1');
-$routes->get('no-sk/detail/(:any)', 'NomorSk::detail/$1');
-// 🔧 PERBAIKAN: Ubah route generate menjadi form, dan tambahkan route process
-$routes->get('no-sk/form-generate/(:any)', 'NomorSk::formGenerate/$1');
-$routes->post('no-sk/generate-process/(:any)', 'NomorSk::generate/$1');
-$routes->post('no-sk/hapus-semua/(:any)', 'NomorSk::hapusSemua/$1');
+// Nomor SK (admin only)
+$routes->group('', ['filter' => 'admin'], function ($routes) {
+    $routes->get('no-sk', 'NomorSk::index');
+    $routes->get('no-sk/create', 'NomorSk::create');
+    $routes->post('no-sk/store', 'NomorSk::store');
+    $routes->get('no-sk/edit/(:any)', 'NomorSk::edit/$1');
+    $routes->post('no-sk/update/(:any)', 'NomorSk::update/$1');
+    $routes->post('no-sk/delete/(:any)', 'NomorSk::delete/$1');
+    $routes->get('no-sk/detail/(:any)', 'NomorSk::detail/$1');
+    $routes->get('no-sk/form-generate/(:any)', 'NomorSk::formGenerate/$1');
+    $routes->post('no-sk/generate-process/(:any)', 'NomorSk::generate/$1');
+    $routes->post('no-sk/hapus-semua/(:any)', 'NomorSk::hapusSemua/$1');
+});

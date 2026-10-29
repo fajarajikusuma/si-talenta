@@ -15,12 +15,6 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title"><?= 'Tabel ' . $subtitle ?></h4>
-                <?php if (session()->getFlashdata('success')) : ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <?= session()->getFlashdata('success') ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
                 <div id="statusMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
                     <span id="statusText">Status berhasil diubah.</span>
                 </div>
@@ -33,7 +27,7 @@
                                 <th>Nama Kepala</th>
                                 <th>Unit Kerja</th>
                                 <th class="text-center">Status</th>
-                                <th>Aksi</th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,9 +35,9 @@
                             foreach ($daftar_kepala as $row) : ?>
                                 <tr>
                                     <td><?= $no++ ?></td>
-                                    <td class="text-start"><?= $row['nip'] ?></td>
-                                    <td><?= $row['nama_kepala'] ?></td>
-                                    <td><?= $row['unit_kerja'] ?></td>
+                                    <td class="text-start"><?= esc($row['nip']) ?></td>
+                                    <td><?= esc($row['nama_kepala']) ?></td>
+                                    <td><?= esc($row['unit_kerja']) ?></td>
                                     <td class="text-center">
                                         <?php if ($row['status'] == 'Aktif') : ?>
                                             <span class="badge bg-success btn-status rounded-1" data-id="<?= $row['id_kepala_encrypted'] ?>" data-status="Aktif" style="cursor: pointer;">Aktif</span>
@@ -53,10 +47,13 @@
                                     </td>
 
                                     <td>
-                                        <div class="d-flex btn-group">
-                                            <a href="<?= site_url('daftar_kepala/detail/' . $row['id_kepala_encrypted']) ?>" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>
-                                            <a href="<?= site_url('daftar_kepala/edit/' . $row['id_kepala_encrypted']) ?>" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
-                                            <a href="<?= site_url('daftar_kepala/delete/' . $row['id_kepala_encrypted']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data <?= $row['nama_kepala'] ?> ?')"><i class="fa fa-trash"></i></a>
+                                        <div class="d-flex justify-content-center" style="gap:2px;">
+                                            <a href="<?= site_url('daftar_kepala/detail/' . $row['id_kepala_encrypted']) ?>" class="btn btn-success btn-sm rounded-pill px-2"><i class="fa fa-eye"></i></a>
+                                            <a href="<?= site_url('daftar_kepala/edit/' . $row['id_kepala_encrypted']) ?>" class="btn btn-warning btn-sm rounded-pill px-2"><i class="fa fa-edit"></i></a>
+                                            <form action="<?= site_url('daftar_kepala/delete/' . $row['id_kepala_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($row['nama_kepala']) ?>">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2"><i class="fa fa-trash"></i></button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

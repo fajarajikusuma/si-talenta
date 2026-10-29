@@ -204,6 +204,19 @@ class RiwayatKerja extends BaseController
         return redirect()->to('/riwayat_kerja/riwayat/' . $id);
     }
 
+    /**
+     * Cek apakah user berhak mengakses/memodifikasi record riwayat tertentu.
+     * Admin boleh semua; user unit hanya boleh menyentuh data pekerja di unitnya.
+     */
+    private function isAuthorizedForRiwayat(array $riwayat): bool
+    {
+        if (session()->get('level') === 'admin') {
+            return true;
+        }
+        $idUnitKerja = session()->get('id_unit_kerja');
+        return (string)$riwayat['id_unit_kerja'] === (string)$idUnitKerja;
+    }
+
     public function hapus()
     {
         $encrypt = \Config\Services::encrypter();
@@ -213,11 +226,15 @@ class RiwayatKerja extends BaseController
         $model = new \App\Models\RiwayatKerjaModel();
         $data = $model->find($id);
 
-        $id_pekerja_encrypted = bin2hex($encrypt->encrypt($data['id_pekerja']));
-
         if (!$data) {
             return redirect()->back()->with('error', 'Data tidak ditemukan.');
         }
+
+        if (!$this->isAuthorizedForRiwayat($data)) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
+        $id_pekerja_encrypted = bin2hex($encrypt->encrypt($data['id_pekerja']));
 
         if ($target === 'spt' && $data['sk_spt']) {
             @unlink(FCPATH . 'uploads/spt/' . $data['sk_spt']);
@@ -432,17 +449,38 @@ class RiwayatKerja extends BaseController
         $type = $this->request->getPost('type');
         $file = $this->request->getFile('fileUpload');
 
-        // Validasi input
-        if (!$file->isValid() || !$id || !$type || !in_array($type, ['spt', 'pks'])) {
+        // Validasi input dasar
+        if (!$id || !$type || !in_array($type, ['spt', 'pks'])) {
             return redirect()->back()->with('error', 'Upload gagal! Data tidak valid.');
+        }
+
+        // Cek IDOR — user hanya boleh upload ke riwayat di unitnya sendiri
+        $riwayatKerjaModel = new \App\Models\RiwayatKerjaModel();
+        $riwayatData = $riwayatKerjaModel->find($id);
+        if (!$riwayatData || !$this->isAuthorizedForRiwayat($riwayatData)) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
+        // Validasi file: hanya PDF, maksimal 2MB
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'fileUpload' => 'uploaded[fileUpload]|max_size[fileUpload,2048]|ext_in[fileUpload,pdf]|mime_in[fileUpload,application/pdf]',
+        ]);
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->with('error', 'Upload gagal! File harus berformat PDF dan maksimal 2MB.');
+        }
+
+        // Defense-in-depth: verifikasi ekstensi server-side
+        if (strtolower($file->getClientExtension()) !== 'pdf') {
+            return redirect()->back()->with('error', 'Upload gagal! Hanya file PDF yang diperbolehkan.');
         }
 
         // Tentukan direktori dan nama kolom berdasarkan tipe
         $uploadPath = WRITEPATH . '../public/uploads/' . $type;
         $fieldName = ($type === 'spt') ? 'sk_spt' : 'sk_pks';
 
-        // Generate nama file unik
-        $newName = $file->getRandomName();
+        // Generate nama file unik dengan ekstensi yang dipaksa .pdf
+        $newName = bin2hex(random_bytes(16)) . '.pdf';
 
         // Pindahkan file
         if (!$file->move($uploadPath, $newName)) {
@@ -486,12 +524,16 @@ class RiwayatKerja extends BaseController
         $gaji = $this->request->getPost('gaji');
         $uraianPekerjaan = $this->request->getPost('uraian_pekerjaan');
 
-        // Validasi sederhana
         if (!$idRiwayat || !$gaji || !$uraianPekerjaan) {
             return redirect()->back()->with('error', 'Semua data wajib diisi.');
         }
 
-        // Update data gaji dan uraian pekerjaan ke tabel riwayat kerja
+        // Cek IDOR
+        $riwayatData = $this->riwayatKerjaModel->find($idRiwayat);
+        if (!$riwayatData || !$this->isAuthorizedForRiwayat($riwayatData)) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
         $this->riwayatKerjaModel->update($idRiwayat, [
             'gaji' => $gaji,
             'uraian_pekerjaan' => $uraianPekerjaan
@@ -505,8 +547,8 @@ class RiwayatKerja extends BaseController
         $idRiwayat = $this->request->getPost('id_riwayat');
         $riwayat = $this->riwayatKerjaModel->find($idRiwayat);
 
-        if (!$riwayat) {
-            return $this->response->setJSON(['error' => 'Data riwayat kerja tidak ditemukan.']);
+        if (!$riwayat || !$this->isAuthorizedForRiwayat($riwayat)) {
+            return $this->response->setJSON(['error' => 'Akses ditolak.']);
         }
 
         return $this->response->setJSON([

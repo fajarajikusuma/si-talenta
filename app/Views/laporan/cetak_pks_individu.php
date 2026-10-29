@@ -547,11 +547,10 @@ function formatTanggalHuruf($tanggal)
 
     </div>
     <script>
-        window.print();
-        setTimeout(function() {
-            window.close();
+        window.onafterprint = function() {
             window.location.href = '<?= site_url('laporan') ?>';
-        }, 1000);
+        };
+        window.print();
     </script>
 
 </body>

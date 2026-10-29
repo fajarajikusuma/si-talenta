@@ -31,6 +31,13 @@ class Auth extends BaseController
     {
         $encrypter = \Config\Services::encrypter();
         if ($this->request->getMethod() === 'POST') {
+            // Rate limit: maks 5 percobaan dalam 5 menit per IP
+            $throttler = \Config\Services::throttler();
+            $ip = $this->request->getIPAddress();
+            if ($throttler->check('login_' . md5($ip), 5, MINUTE * 5) === false) {
+                return redirect()->back()->with('error', 'Terlalu banyak percobaan login. Coba lagi dalam 5 menit.');
+            }
+
             $validation = \Config\Services::validation();
             $validation->setRules([
                 'username' => 'required',
@@ -48,6 +55,7 @@ class Auth extends BaseController
             if ($user && password_verify($this->request->getPost('password'), $user['password'])) {
                 if (strtolower($user['status']) === 'aktif') {
                     $setUser = $this->authModel->getUserById($user['id']);
+                    session()->regenerate(true);
                     session()->set([
                         'isLoggedIn' => true,
                         'userId'     => bin2hex($encrypter->encrypt($setUser['id'])),
@@ -72,10 +80,11 @@ class Auth extends BaseController
                     }
                     return redirect()->to(base_url('dashboard'));
                 } else {
-                    return redirect()->back()->withInput()->with('error', 'User is not active');
+                    // Pesan generik — tidak membocorkan apakah user ada atau statusnya
+                    return redirect()->back()->withInput()->with('error', 'Username atau password salah, atau akun tidak aktif.');
                 }
             } else {
-                return redirect()->back()->withInput()->with('error', 'Invalid username or password');
+                return redirect()->back()->withInput()->with('error', 'Username atau password salah, atau akun tidak aktif.');
             }
         }
     }
@@ -125,6 +134,10 @@ class Auth extends BaseController
 
     public function register()
     {
+        if (session()->get('level') !== 'admin') {
+            return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
+        }
+
         $validation = \Config\Services::validation();
 
         $rules = [
@@ -192,6 +205,10 @@ class Auth extends BaseController
 
     public function update_user($id)
     {
+        $isProfileEdit = session()->get('profile') == 'true';
+        if (!$isProfileEdit && session()->get('level') !== 'admin') {
+            return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
+        }
 
         $encrypter = \Config\Services::encrypter();
         $id_decrypted = $encrypter->decrypt(hex2bin($id));
@@ -239,9 +256,9 @@ class Auth extends BaseController
             'no_hp'          => $this->request->getPost('no_hp'),
             'alamat'         => $this->request->getPost('alamat'),
             'username'       => $this->request->getPost('username'),
-            'level'          => $this->request->getPost('level') ?? $user['level'], // Tetap gunakan level lama jika tidak diubah
-            'status'         => $this->request->getPost('status') ?? $user['status'], // Tetap gunakan status lama jika tidak diubah
-            'id_unit_kerja'  => $this->request->getPost('id_unit_kerja') ?? $user['id_unit_kerja'], // Tetap gunakan id_unit_kerja lama jika tidak diubah
+            'level'          => $isProfileEdit ? $user['level'] : ($this->request->getPost('level') ?? $user['level']),
+            'status'         => $isProfileEdit ? $user['status'] : ($this->request->getPost('status') ?? $user['status']),
+            'id_unit_kerja'  => $isProfileEdit ? $user['id_unit_kerja'] : ($this->request->getPost('id_unit_kerja') ?? $user['id_unit_kerja']),
             'password'       => $this->request->getPost('password') ? password_hash($this->request->getPost('password'), PASSWORD_DEFAULT) : $user['password'],
             'foto'           => $namaFoto
         ]);

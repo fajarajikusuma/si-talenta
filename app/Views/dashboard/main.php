@@ -18,6 +18,9 @@
   <link rel="stylesheet" href="staradmin/dist/assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
   <!-- endinject -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <!-- Plugin css for this page -->
@@ -126,9 +129,21 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
     }
   </style>
+  <!-- btn-group fix: form wrapper uses display:contents so button sits naturally in flex row -->
+  <style>
+    .btn-group-form { display: contents !important; }
+  </style>
+  <!-- CSRF token for AJAX requests -->
+  <meta name="csrf-token" content="<?= csrf_hash() ?>">
 </head>
 
 <body class="with-welcome-text">
+  <?php if (session()->getFlashdata('success')): ?>
+    <span id="swal-flash-success" data-message="<?= esc(session()->getFlashdata('success')) ?>" style="display:none"></span>
+  <?php endif; ?>
+  <?php if (session()->getFlashdata('error')): ?>
+    <span id="swal-flash-error" data-message="<?= esc(session()->getFlashdata('error')) ?>" style="display:none"></span>
+  <?php endif; ?>
   <div class="container-scroller">
     <!-- <div class="row p-0 m-0 proBanner" id="proBanner">
       <div class="col-md-12 p-0 m-0">
@@ -391,6 +406,74 @@
   <!-- Custom JS -->
   <script src="custom/datatables.js"></script>
   <script src="custom/custom.js"></script>
+  <!-- CSRF: send token header with all AJAX POST/PUT/DELETE requests -->
+  <script>
+    $.ajaxSetup({
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+  </script>
+
+  <!-- SweetAlert2: intercept semua form delete + tampilkan flash message -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      // ── 1. KONFIRMASI HAPUS ──────────────────────────────────────────
+      // Intercept semua form yang punya tombol submit btn-danger (tombol hapus)
+      // Ambil data-label dari tombol/form untuk pesan dinamis
+      document.querySelectorAll('form[action*="/delete/"], form[action*="/user_delete/"], form[action*="/hapus"]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          const label = form.dataset.label || 'data ini';
+
+          Swal.fire({
+            title: 'Hapus Data?',
+            html: 'Data <strong>' + label + '</strong> akan dihapus permanen dan tidak bisa dikembalikan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e74c3c',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: '<i class="fa fa-trash"></i> Ya, Hapus',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            focusCancel: true,
+          }).then(function (result) {
+            if (result.isConfirmed) {
+              form.submit();
+            }
+          });
+        });
+      });
+
+      // ── 2. FLASH MESSAGE SUKSES ──────────────────────────────────────
+      const flashSuccess = document.getElementById('swal-flash-success');
+      if (flashSuccess) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: flashSuccess.dataset.message,
+          timer: 2500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          toast: true,
+          position: 'top-end',
+        });
+      }
+
+      // ── 3. FLASH MESSAGE ERROR ───────────────────────────────────────
+      const flashError = document.getElementById('swal-flash-error');
+      if (flashError) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: flashError.dataset.message,
+          confirmButtonColor: '#e74c3c',
+          confirmButtonText: 'Tutup',
+        });
+      }
+
+    });
+  </script>
   <!-- BADGE PENUGASAN -->
   <?php if (session()->get('level') == 'admin'): ?>
     <script>
