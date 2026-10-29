@@ -7,7 +7,7 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
-        <?php if (session()->get('level') == 'admin'): ?>
+        <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])): ?>
             <li class="nav-item nav-category">Master Data</li>
             <li class="nav-item">
                 <a class="nav-link" href="<?= site_url('unit_kerja') ?>">
@@ -40,12 +40,14 @@
                     <span class="menu-title">Nomor SK</span>
                 </a>
             </li>
+            <?php if (session()->get('level') === 'superadmin'): ?>
             <li class="nav-item">
                 <a class="nav-link" href="<?= site_url('user_sistem') ?>">
                     <i class="menu-icon mdi mdi-account-group"></i>
                     <span class="menu-title">Pengguna</span>
                 </a>
             </li>
+            <?php endif; ?>
         <?php endif; ?>
         <li class="nav-item nav-category">Transaction Processes</li>
         <li class="nav-item">
@@ -68,7 +70,7 @@
                 <i class="menu-icon mdi mdi-file-document"></i>
                 <span class="menu-title d-flex align-items-center gap-2">
                     <span>Penugasan</span>
-                    <?php if (session()->get('level') == 'admin'): ?>
+                    <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])): ?>
                         <span id="badge-penugasan"></span>
                     <?php endif; ?>
                 </span>
@@ -80,7 +82,7 @@
                     <?php if (session()->get('level') == 'user'): ?>
                         <li class="nav-item"> <a class="nav-link" href="<?= site_url('cetak_usulan_tugas_baru') ?>">Cetak Usulan</a></li>
                     <?php endif; ?>
-                    <?php if (session()->get('level') == 'admin'): ?>
+                    <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])): ?>
                         <li class="nav-item"> <a class="nav-link" href="<?= site_url('cetak_usulan_tugas_baru') ?>">Verifikasi Pengajuan <span id="badge-penugasan-sub"></a></li>
                     <?php endif; ?>
                 </ul>

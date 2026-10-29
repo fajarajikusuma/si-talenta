@@ -6,8 +6,8 @@
         <div class="card-body">
             <h4 class="card-title">Form Edit Data <?= $subtitle ?></h4>
             <p class="card-description">Silakan perbarui data di bawah ini.</p>
-            <form class="forms-sample" method="POST" action="<?= site_url('list_pekerjaan/update/' . $id_list_pekerjaan_encrypted) ?>
-                <?= csrf_field() ?>">
+            <form class="forms-sample" method="POST" action="<?= site_url('list_pekerjaan/update/' . $id_list_pekerjaan_encrypted) ?>">
+                <?= csrf_field() ?>
                 <div class="form-group">
                     <label for="input_pekerjaan">Pekerjaan</label>
                     <input type="text" class="form-control" id="input_pekerjaan" placeholder="Masukan Nama Pekerjaan" name="pekerjaan" value="<?= esc($pekerjaan['pekerjaan']) ?>">

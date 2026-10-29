@@ -23,8 +23,8 @@
             <!-- end alert -->
             <h4 class="card-title">Form Tambah Data <?= $subtitle ?></h4>
             <p class="card-description"> Tolong Inputkan Semua Data Dengan Benar!!! </p>
-            <form class="forms-sample" method="POST" action="<?= site_url('data_pekerja/store') ?>
-                <?= csrf_field() ?>" enctype="multipart/form-data">
+            <form class="forms-sample" method="POST" action="<?= site_url('data_pekerja/store') ?>" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div id="form-step-1" class="form-step">
                     <h4 class="card-title">Data Pribadi</h4>
                     <!-- Isi form Step 1 seperti NIK, Nama, dll -->

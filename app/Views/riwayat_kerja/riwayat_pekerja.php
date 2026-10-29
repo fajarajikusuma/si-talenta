@@ -5,7 +5,12 @@
     <div class="col-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-body d-flex justify-content-between align-items-center">
-                <h4 class="card-title m-0 fw-bold">Riwayat Pekerjaan - <?= esc($pekerja['nama']) ?></h4>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="<?= site_url('data_pekerja/aktif') ?>" class="btn btn-secondary btn-sm" id="btn-kembali" title="Kembali ke Data Pekerja Aktif">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <h4 class="card-title m-0 fw-bold">Riwayat Pekerjaan - <?= esc($pekerja['nama']) ?></h4>
+                </div>
                 <?php if ($pekerja['status_pekerja'] == 'Terverifikasi'): ?>
                     <a href="<?= site_url('riwayat_kerja/add/' . $id_pekerja_encrypted) ?>" class="btn btn-success"><i class="fa fa-plus"></i></a>
                 <?php endif; ?>
@@ -65,7 +70,7 @@
                                             default         => 'bg-warning text-dark',
                                         };
                                         ?>
-                                        <?php if (session()->get('level') === 'admin') : ?>
+                                        <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])) : ?>
                                             <!-- Admin: badge bisa diklik untuk ganti status -->
                                             <div class="dropdown d-inline-block">
                                                 <span class="badge <?= $statusClass ?> rounded-1 badge-status-riwayat"
@@ -145,7 +150,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu">
                                                         <li class="dropdown-item">
-                                                            <?php if (session()->get('level') == 'admin') : ?>
+                                                            <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])) : ?>
                                                                 <button type="button" class="dropdown-item btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $r['id'] ?>" data-target="all">
                                                                     <i class="fa fa-trash"></i> All
                                                                 </button>
@@ -348,6 +353,17 @@
 </script>
 
 <script>
+// ── Tombol Kembali: bawa search term yang tersimpan ──────────────────────────
+(function () {
+    const search = sessionStorage.getItem('dataPekerja_search') || '';
+    const btn    = document.getElementById('btn-kembali');
+    if (btn && search) {
+        // Tampilkan label search di tombol supaya user tahu akan kembali ke filter apa
+        btn.innerHTML = '<i class="fa fa-arrow-left"></i> Kembali <span class="badge bg-secondary ms-1">' +
+                        search.replace(/</g, '&lt;') + '</span>';
+    }
+})();
+
 // ── Edit Status Riwayat Kerja (Admin only) ────────────────────────────────
 $(document).on('click', '.btn-pilih-status', function (e) {
     e.preventDefault();

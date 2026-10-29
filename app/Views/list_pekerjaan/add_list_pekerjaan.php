@@ -16,8 +16,8 @@
             <h4 class="card-title">Form Tambah Data <?= $subtitle ?></h4>
             <p class="card-description">Tolong Inputkan Semua Data Dengan Benar!!!</p>
 
-            <form class="forms-sample" method="POST" action="<?= site_url('list_pekerjaan/store') ?>
-                <?= csrf_field() ?>">
+            <form class="forms-sample" method="POST" action="<?= site_url('list_pekerjaan/store') ?>">
+                <?= csrf_field() ?>
                 <div class="form-group">
                     <label for="input_pekerjaan">Pekerjaan</label>
                     <input type="text" class="form-control" id="input_pekerjaan" placeholder="Masukan Nama Pekerjaan" name="pekerjaan">

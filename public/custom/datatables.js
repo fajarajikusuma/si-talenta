@@ -21,12 +21,31 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
     document.head.appendChild(style);
 
+    // ── Restore search term dari sessionStorage jika ada ─────────────────────
+    const SEARCH_KEY = 'dataPekerja_search';
+    const savedSearch = sessionStorage.getItem(SEARCH_KEY) || '';
+
     // Inisialisasi DataTable dengan responsive dan tanpa sorting
     const table = new DataTable('#tableDataPekerja', {
         responsive: true,
         ordering: false,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Semua"]],
-        pageLength: 10 // Default awal (bisa diganti ke 25 atau lainnya)
+        pageLength: 10,
+        search: { search: savedSearch }, // langsung isi dengan nilai yang disimpan
+    });
+
+    // Simpan search term setiap kali berubah
+    table.on('search.dt', function () {
+        const currentSearch = table.search();
+        sessionStorage.setItem(SEARCH_KEY, currentSearch);
+    });
+
+    // ── Simpan search saat klik tombol riwayat ────────────────────────────────
+    // Ini memastikan search tersimpan bahkan sebelum event search.dt sempat fire
+    document.querySelectorAll('a[href*="riwayat_kerja/riwayat/"]').forEach(function (link) {
+        link.addEventListener('click', function () {
+            sessionStorage.setItem(SEARCH_KEY, table.search());
+        });
     });
 
     // Hapus label "entries per page" jika ada

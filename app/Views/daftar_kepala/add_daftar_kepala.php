@@ -16,8 +16,8 @@
             <h4 class="card-title">Form Tambah Data <?= $subtitle ?></h4>
             <p class="card-description">Tolong inputkan semua data dengan benar!</p>
 
-            <form class="forms-sample" method="POST" action="<?= site_url('daftar_kepala/store') ?>
-                <?= csrf_field() ?>">
+            <form class="forms-sample" method="POST" action="<?= site_url('daftar_kepala/store') ?>">
+                <?= csrf_field() ?>
                 <div class="form-group">
                     <label for="input_nip">NIP</label>
                     <input type="text" class="form-control" id="input_nip" placeholder="Masukan NIP" name="nip" minlength="18" maxlength="18" value="<?= old('nip') ?>" required>

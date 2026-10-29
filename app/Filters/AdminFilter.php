@@ -14,7 +14,7 @@ class AdminFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (session()->get('level') !== 'admin') {
+        if (! in_array(session()->get('level'), ['admin', 'superadmin'], true)) {
             return redirect()->to(base_url('dashboard'))->with('error', 'Akses ditolak. Halaman ini khusus admin.');
         }
     }

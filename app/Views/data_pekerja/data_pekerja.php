@@ -172,7 +172,7 @@
                                                 <a href="<?= site_url('data_pekerja/edit/' . $dp['id_pekerja_encrypted']) ?>" class="btn btn-warning btn-sm rounded-pill px-2">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
-                                                <?php if ($level == 'admin') : ?>
+                                                <?php if (in_array($level, ['admin', 'superadmin'])) : ?>
                                                     <form action="<?= site_url('data_pekerja/delete/' . $dp['id_pekerja_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($dp['nama']) ?>">
                                                         <?= csrf_field() ?>
                                                         <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2">
@@ -180,7 +180,7 @@
                                                         </button>
                                                     </form>
                                                 <?php endif; ?>
-                                                <?php if ($level != 'admin' && $status == 'menunggu') : ?>
+                                                <?php if (!in_array($level, ['admin', 'superadmin']) && $status == 'menunggu') : ?>
                                                     <form action="<?= site_url('data_pekerja/delete/' . $dp['id_pekerja_encrypted']) ?>" method="post" style="display:contents" data-label="<?= esc($dp['nama']) ?>">
                                                         <?= csrf_field() ?>
                                                         <button type="submit" class="btn btn-danger btn-sm rounded-pill px-2">

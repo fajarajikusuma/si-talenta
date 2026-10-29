@@ -16,9 +16,9 @@
             <h4 class="card-title">Form Edit Data User</h4>
             <p class="card-description">Silakan ubah data yang diperlukan.</p>
 
-            <form class="forms-sample" method="POST" action="<?= site_url('user_update/' . $id_user_encrypted) ?>
-                <?= csrf_field() ?>" enctype="multipart/form-data">
-                <?php if (session()->get('level') == 'admin'): ?>
+            <form class="forms-sample" method="POST" action="<?= site_url('user_update/' . $id_user_encrypted) ?>" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])): ?>
                     <div class="form-group">
                         <label for="input_unit_kerja">Unit Kerja</label>
                         <select name="id_unit_kerja" class="form-select" id="input_unit_kerja">
@@ -70,6 +70,7 @@
                 <div class="form-group">
                     <label for="input_level">Level</label>
                     <select class="form-select" name="level" id="input_level">
+                        <option value="superadmin" <?= $user['level'] == 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
                         <option value="admin" <?= $user['level'] == 'admin' ? 'selected' : '' ?>>Admin</option>
                         <option value="user" <?= $user['level'] == 'user' ? 'selected' : '' ?>>User</option>
                     </select>

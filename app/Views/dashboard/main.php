@@ -475,7 +475,7 @@
     });
   </script>
   <!-- BADGE PENUGASAN -->
-  <?php if (session()->get('level') == 'admin'): ?>
+  <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])): ?>
     <script>
       let lastCount = parseInt(localStorage.getItem('penugasanCount')) || 0;
 
@@ -530,7 +530,7 @@
 
   <!-- End custom js for this page-->
   <!-- Audio Notifikasi (ADMIN SAJA) -->
-  <?php if (session()->get('level') == 'admin'): ?>
+  <?php if (in_array(session()->get('level'), ['admin', 'superadmin'])): ?>
     <audio id="notif-sound"
       src="<?= base_url('assets/sound/notif.mp3') ?>"
       preload="auto">

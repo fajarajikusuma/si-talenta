@@ -98,7 +98,7 @@ class Auth extends BaseController
     public function list_users()
     {
         session()->set('page', 'user_sistem');
-        if (session()->get('level') !== 'admin') {
+        if (! in_array(session()->get('level'), ['admin', 'superadmin'], true)) {
             return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
 
@@ -119,7 +119,7 @@ class Auth extends BaseController
 
     public function add_user()
     {
-        if (session()->get('level') !== 'admin') {
+        if (! in_array(session()->get('level'), ['admin', 'superadmin'], true)) {
             return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
 
@@ -134,7 +134,7 @@ class Auth extends BaseController
 
     public function register()
     {
-        if (session()->get('level') !== 'admin') {
+        if (! in_array(session()->get('level'), ['admin', 'superadmin'], true)) {
             return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
 
@@ -206,7 +206,7 @@ class Auth extends BaseController
     public function update_user($id)
     {
         $isProfileEdit = session()->get('profile') == 'true';
-        if (!$isProfileEdit && session()->get('level') !== 'admin') {
+        if (!$isProfileEdit && ! in_array(session()->get('level'), ['admin', 'superadmin'], true)) {
             return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
 
@@ -269,7 +269,7 @@ class Auth extends BaseController
 
     public function delete_user($id)
     {
-        if (session()->get('level') !== 'admin') {
+        if (! in_array(session()->get('level'), ['admin', 'superadmin'], true)) {
             return redirect()->to(base_url('dashboard'))->with('error', 'Access denied');
         }
         $encrypter = \Config\Services::encrypter();

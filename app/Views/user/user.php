@@ -44,7 +44,9 @@
                                     <td><?= esc($u['unit_kerja']) ?></td>
                                     <!-- buat level dengan badge -->
                                     <td>
-                                        <?php if ($u['level'] == 'admin'): ?>
+                                        <?php if ($u['level'] == 'superadmin'): ?>
+                                            <span class="badge bg-danger rounded"><?= strtoupper(esc($u['level'])) ?></span>
+                                        <?php elseif ($u['level'] == 'admin'): ?>
                                             <span class="badge bg-success rounded"><?= strtoupper(esc($u['level'])) ?></span>
                                         <?php elseif ($u['level'] == 'user'): ?>
                                             <span class="badge bg-primary rounded"><?= strtoupper(esc($u['level'])) ?></span>

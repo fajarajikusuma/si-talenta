@@ -93,14 +93,16 @@ $routes->post('/verifikasi_penugasan', 'Penugasan::verifikasiPenugasan');
 $routes->post('/cetak_usulan_tugas_baru', 'Penugasan::daftarPenugasan');
 $routes->get('ajax/penugasan-badge', 'Ajax::penugasanBadge');
 
-// User Sistem
-$routes->get('/user_sistem', 'Auth::list_users');
-$routes->get('/add_user', 'Auth::add_user');
-$routes->post('/store_user', 'Auth::register');
-$routes->get('/user_edit/(:any)', 'Auth::edit_user/$1');
-$routes->post('/user_update/(:any)', 'Auth::update_user/$1');
-$routes->post('/user_delete/(:any)', 'Auth::delete_user/$1');
-$routes->get('/user_detail/(:any)', 'Auth::detail_user/$1');
+// User Sistem (superadmin only)
+$routes->group('', ['filter' => 'superadmin'], function ($routes) {
+    $routes->get('/user_sistem', 'Auth::list_users');
+    $routes->get('/add_user', 'Auth::add_user');
+    $routes->post('/store_user', 'Auth::register');
+    $routes->get('/user_edit/(:any)', 'Auth::edit_user/$1');
+    $routes->post('/user_update/(:any)', 'Auth::update_user/$1');
+    $routes->post('/user_delete/(:any)', 'Auth::delete_user/$1');
+    $routes->get('/user_detail/(:any)', 'Auth::detail_user/$1');
+});
 
 // Auth
 $routes->get('/login', 'Auth::index');

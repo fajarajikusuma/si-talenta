@@ -14,6 +14,7 @@ use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\LoginFilter;
 use App\Filters\AdminFilter;
+use App\Filters\SuperadminFilter;
 
 class Filters extends BaseFilters
 {
@@ -38,6 +39,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'login'         => LoginFilter::class,
         'admin'         => AdminFilter::class,
+        'superadmin'    => SuperadminFilter::class,
     ];
 
     /**

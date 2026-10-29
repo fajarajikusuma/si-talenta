@@ -16,8 +16,8 @@
             <h4 class="card-title">Form Tambah Data User</h4>
             <p class="card-description">Tolong Inputkan Semua Data Dengan Benar!!!</p>
 
-            <form class="form-sample" method="POST" action="<?= site_url('store_user') ?>
-                <?= csrf_field() ?>" enctype="multipart/form-data">
+            <form class="form-sample" method="POST" action="<?= site_url('store_user') ?>" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div class="form-group">
                     <label for="input_unit_kerja">Unit Kerja</label>
                     <select name="id_unit_kerja" class="form-select" id="input_unit_kerja">
@@ -69,6 +69,7 @@
                     <label for="input_level">Level</label>
                     <select class="form-select" name="level" id="input_level">
                         <option value="" disabled <?= old('level') ? '' : 'selected' ?>>-- Pilih Level --</option>
+                        <option value="superadmin" <?= old('level') == 'superadmin' ? 'selected' : '' ?>>Superadmin</option>
                         <option value="admin" <?= old('level') == 'admin' ? 'selected' : '' ?>>Admin</option>
                         <option value="user" <?= old('level') == 'user' ? 'selected' : '' ?>>User</option>
                     </select>

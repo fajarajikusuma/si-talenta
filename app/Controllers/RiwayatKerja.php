@@ -210,7 +210,7 @@ class RiwayatKerja extends BaseController
      */
     public function updateStatus()
     {
-        if (session()->get('level') !== 'admin') {
+        if (!in_array(session()->get('level'), ['admin', 'superadmin'])) {
             return $this->response->setJSON(['success' => false, 'message' => 'Akses ditolak.']);
         }
 
@@ -241,7 +241,7 @@ class RiwayatKerja extends BaseController
      */
     private function isAuthorizedForRiwayat(array $riwayat): bool
     {
-        if (session()->get('level') === 'admin') {
+        if (in_array(session()->get('level'), ['admin', 'superadmin'])) {
             return true;
         }
         $idUnitKerja = session()->get('id_unit_kerja');

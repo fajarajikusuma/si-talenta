@@ -6,8 +6,8 @@
         <div class="card-body">
             <h4 class="card-title">Form Tambah Data Tenaga Kerja</h4>
             <p class="card-description"> Tolong Inputkan Semua Data Dengan Benar!!! </p>
-            <form class="forms-sample" method="POST" action="<?= site_url('data_pekerja/store') ?>
-                <?= csrf_field() ?>">
+            <form class="forms-sample" method="POST" action="<?= site_url('data_pekerja/store') ?>">
+                <?= csrf_field() ?>
                 <div class="form-group">
                     <label for="input_nik">NIK</label>
                     <input type="text" class="form-control" id="input_nik" placeholder="Masukan NIK" name="nik">
