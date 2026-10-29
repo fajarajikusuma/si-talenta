@@ -53,3 +53,43 @@ Events::on('pre_system', static function (): void {
         }
     }
 });
+
+/*
+ * --------------------------------------------------------------------
+ * Auto Database Backup on Write Operations
+ * --------------------------------------------------------------------
+ * Trigger backup setiap kali ada HTTP POST/PUT/DELETE request.
+ * Script berjalan di background (non-blocking) agar tidak
+ * memperlambat response ke user.
+ * Backup lama otomatis dihapus oleh script backup_db.sh.
+ */
+Events::on('post_controller', static function (): void {
+    // Hanya trigger pada request yang mengubah data (bukan GET/HEAD)
+    $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+    if (! in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
+        return;
+    }
+
+    // Abaikan AJAX read-only endpoints yang tidak mengubah data
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    $readOnlyPatterns = [
+        '/getGajiUraian',
+        '/penugasan-badge',
+        '/ajax_detail_pensiun',
+        '/login_load',  // login bukan perubahan data DB utama
+    ];
+    foreach ($readOnlyPatterns as $pattern) {
+        if (str_contains($uri, $pattern)) {
+            return;
+        }
+    }
+
+    $script = ROOTPATH . 'scripts/backup_db.sh';
+    if (! is_file($script)) {
+        return;
+    }
+
+    // Jalankan di background — tidak menunggu selesai
+    // Output dibuang ke /dev/null agar tidak mengganggu response
+    shell_exec("bash " . escapeshellarg($script) . " >> /dev/null 2>&1 &");
+});

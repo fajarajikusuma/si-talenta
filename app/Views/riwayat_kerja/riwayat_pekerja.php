@@ -56,13 +56,41 @@
                                     <td><?= date('d-m-Y', strtotime($r['tmt_kerja'])) ?></td>
                                     <td><?= $r['tst_kerja'] ? date('d-m-Y', strtotime($r['tst_kerja'])) : '-' ?></td>
                                     <td class="text-center">
-                                        <?php if ($r['status'] == 'Terverifikasi') : ?>
-                                            <span class="badge bg-success rounded-1">Terverifikasi</span>
-                                        <?php elseif ($r['status'] == 'Tidak Aktif') : ?>
-                                            <span class="badge bg-secondary rounded-1">Tidak Aktif</span>
+                                        <?php
+                                        $statusClass = match($r['status']) {
+                                            'Terverifikasi' => 'bg-success',
+                                            'Tidak Aktif'   => 'bg-secondary',
+                                            'Menunggu'      => 'bg-warning text-dark',
+                                            'Pensiun'       => 'bg-danger',
+                                            default         => 'bg-warning text-dark',
+                                        };
+                                        ?>
+                                        <?php if (session()->get('level') === 'admin') : ?>
+                                            <!-- Admin: badge bisa diklik untuk ganti status -->
+                                            <div class="dropdown d-inline-block">
+                                                <span class="badge <?= $statusClass ?> rounded-1 badge-status-riwayat"
+                                                      style="cursor:pointer; user-select:none"
+                                                      data-bs-toggle="dropdown"
+                                                      data-id="<?= $r['id'] ?>"
+                                                      title="Klik untuk ubah status">
+                                                    <?= esc($r['status']) ?> <i class="fa fa-caret-down ms-1"></i>
+                                                </span>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width:160px; font-size:.85rem">
+                                                    <?php foreach (['Terverifikasi','Menunggu','Tidak Aktif','Pensiun'] as $opt) : ?>
+                                                        <li>
+                                                            <button class="dropdown-item btn-pilih-status <?= $r['status'] === $opt ? 'active fw-bold' : '' ?>"
+                                                                    data-id="<?= $r['id'] ?>"
+                                                                    data-status="<?= $opt ?>">
+                                                                <?= $opt ?>
+                                                            </button>
+                                                        </li>
+                                                    <?php endforeach ?>
+                                                </ul>
+                                            </div>
                                         <?php else : ?>
-                                            <span class="badge bg-warning text-dark rounded-1"><?= esc($r['status']) ?></span>
-                                        <?php endif; ?>
+                                            <!-- Non-admin: badge biasa -->
+                                            <span class="badge <?= $statusClass ?> rounded-1"><?= esc($r['status']) ?></span>
+                                        <?php endif ?>
                                     </td>
                                     <td>
                                         <?php if ($r['sk_spt']): ?>
@@ -317,6 +345,70 @@
             }
         });
     });
+</script>
+
+<script>
+// ── Edit Status Riwayat Kerja (Admin only) ────────────────────────────────
+$(document).on('click', '.btn-pilih-status', function (e) {
+    e.preventDefault();
+    e.stopPropagation(); // cegah Bootstrap dropdown menutup dan menelan event
+
+    const $btn   = $(this);
+    const id     = $btn.data('id');
+    const status = $btn.data('status');
+
+    // Tutup dropdown Bootstrap dulu, baru tampilkan SweetAlert
+    const $dropdown = $btn.closest('.dropdown');
+    const bsDropdown = bootstrap.Dropdown.getInstance($dropdown.find('[data-bs-toggle="dropdown"]')[0]);
+    if (bsDropdown) bsDropdown.hide();
+
+    // Beri jeda singkat agar animasi tutup dropdown selesai sebelum SweetAlert muncul
+    setTimeout(function () {
+        Swal.fire({
+            title: 'Ubah Status?',
+            html: 'Status riwayat akan diubah menjadi <strong>' + status + '</strong>.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#0d6efd',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Ubah',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+        }).then(function (result) {
+            if (!result.isConfirmed) return;
+
+            $.post('<?= site_url('riwayat_kerja/update_status') ?>', { id: id, status: status })
+            .done(function (res) {
+                if (res.success) {
+                    const classMap = {
+                        'Terverifikasi': 'bg-success',
+                        'Menunggu'     : 'bg-warning text-dark',
+                        'Tidak Aktif'  : 'bg-secondary',
+                        'Pensiun'      : 'bg-danger',
+                    };
+                    const $badge = $('.badge-status-riwayat[data-id="' + id + '"]');
+                    $badge.removeClass('bg-success bg-warning bg-secondary bg-danger text-dark')
+                          .addClass(classMap[status] || 'bg-warning');
+                    $badge.html(status + ' <i class="fa fa-caret-down ms-1"></i>');
+
+                    $dropdown.find('.btn-pilih-status').removeClass('active fw-bold');
+                    $dropdown.find('[data-status="' + status + '"]').addClass('active fw-bold');
+
+                    Swal.fire({
+                        icon: 'success', title: 'Berhasil!', text: res.message,
+                        timer: 1800, timerProgressBar: true,
+                        showConfirmButton: false, toast: true, position: 'top-end',
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal!', text: res.message });
+                }
+            })
+            .fail(function () {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
+            });
+        });
+    }, 150);
+});
 </script>
 
 <?= $this->endSection() ?>

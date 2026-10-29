@@ -205,6 +205,37 @@ class RiwayatKerja extends BaseController
     }
 
     /**
+     * Update status riwayat kerja via AJAX.
+     * Hanya admin yang boleh mengubah status.
+     */
+    public function updateStatus()
+    {
+        if (session()->get('level') !== 'admin') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Akses ditolak.']);
+        }
+
+        $id     = $this->request->getPost('id');
+        $status = $this->request->getPost('status');
+
+        $allowed = ['Terverifikasi', 'Menunggu', 'Tidak Aktif', 'Pensiun'];
+        if (!$id || !in_array($status, $allowed)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Data tidak valid.']);
+        }
+
+        $data = $this->riwayatKerjaModel->find($id);
+        if (!$data || !$this->isAuthorizedForRiwayat($data)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Data tidak ditemukan.']);
+        }
+
+        $this->riwayatKerjaModel->update($id, [
+            'status'     => $status,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return $this->response->setJSON(['success' => true, 'message' => 'Status berhasil diubah.', 'status' => $status]);
+    }
+
+    /**
      * Cek apakah user berhak mengakses/memodifikasi record riwayat tertentu.
      * Admin boleh semua; user unit hanya boleh menyentuh data pekerja di unitnya.
      */

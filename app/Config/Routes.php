@@ -37,6 +37,7 @@ $routes->get('/riwayat_kerja/download_template', 'RiwayatKerja::download_templat
 $routes->post('/riwayat_kerja/import_excel', 'RiwayatKerja::import_excel');
 $routes->post('riwayat_kerja/upload', 'RiwayatKerja::upload');
 $routes->post('riwayat_kerja/hapus', 'RiwayatKerja::hapus');
+$routes->post('riwayat_kerja/update_status', 'RiwayatKerja::updateStatus');
 $routes->post('riwayat_kerja/input_gaji_uraian', 'RiwayatKerja::input_gaji_uraian');
 $routes->get('riwayat_kerja/detail/(:any)', 'RiwayatKerja::detail/$1');
 $routes->post('riwayat_kerja/getGajiUraian', 'RiwayatKerja::getGajiUraian');

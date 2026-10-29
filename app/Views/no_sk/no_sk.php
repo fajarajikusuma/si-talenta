@@ -59,7 +59,7 @@
                                             <i class="mdi mdi-pencil"></i>
                                         </a>
 
-                                        <form action="<?= site_url('no-sk/delete/' . $row['id_no_sk_encrypted']) ?>" method="post" style="display:contents" data-label="Nomor SK <?= esc($row['kode_sk']) ?> Tahun <?= esc($row['tahun']) ?>">>
+                                        <form action="<?= site_url('no-sk/delete/' . $row['id_no_sk_encrypted']) ?>" method="post" style="display:contents" data-label="Nomor SK <?= esc($row['kode_sk']) ?> Tahun <?= esc($row['tahun']) ?>">
                                             <?= csrf_field() ?>
                                             <button type="submit"
                                                 class="btn btn-sm btn-danger"
