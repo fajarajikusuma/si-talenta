@@ -152,6 +152,19 @@
                                                     <a href="<?= site_url('riwayat_kerja/edit/' . $id_riwayat_kerja_encrypted) ?>" class="btn btn-warning btn-sm" title="Ubah Riwayat Kerja">
                                                         <i class="fa fa-edit mt-1"></i>
                                                     </a>
+                                                    <?php if ($r['status'] === 'Terverifikasi' && !empty($r['nomor_sk'])): ?>
+                                                    <a href="<?= site_url('laporan/cetak_spk_riwayat/' . $id_riwayat_kerja_encrypted) ?>"
+                                                       class="btn btn-dark btn-sm"
+                                                       target="_blank"
+                                                       title="Cetak SPK untuk riwayat ini">
+                                                        <i class="fa fa-print mt-1"></i>
+                                                    </a>
+                                                    <?php elseif ($r['status'] === 'Terverifikasi' && empty($r['nomor_sk'])): ?>
+                                                    <button type="button" class="btn btn-dark btn-sm" disabled
+                                                            title="Nomor SK belum di-generate">
+                                                        <i class="fa fa-print mt-1"></i>
+                                                    </button>
+                                                    <?php endif; ?>
                                                 </div>
                                                 <!-- Example single danger button -->
                                                 <div class="btn-group">

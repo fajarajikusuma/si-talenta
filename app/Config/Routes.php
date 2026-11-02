@@ -114,6 +114,7 @@ $routes->get('/laporan', 'Laporan::index');
 // $routes->get('/cetak_spt', 'Laporan::cetak_spt');
 $routes->get('/cetak_pks', 'Laporan::cetak_pks');
 $routes->get('/laporan/cetak_spk/(:any)', 'Laporan::cetak_pks_individu/$1');
+$routes->get('/laporan/cetak_spk_riwayat/(:any)', 'Laporan::cetak_pks_by_riwayat/$1');
 // $routes->get('/laporan/cetak_sp/(:any)', 'Laporan::cetak_spt_individu/$1');
 
 // Dasar Hukum (admin only)

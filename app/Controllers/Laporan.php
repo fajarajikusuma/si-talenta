@@ -384,4 +384,111 @@ class Laporan extends BaseController
         
         return view('laporan/cetak_pks_individu', $data);
     }
+
+    /**
+     * Cetak PKS/SPK berdasarkan id_riwayat spesifik.
+     * Digunakan dari tombol cetak di tiap baris tabel riwayat kerja.
+     */
+    public function cetak_pks_by_riwayat($id_riwayat_encrypted)
+    {
+        $encryption = \Config\Services::encrypter();
+        $id_riwayat = $encryption->decrypt(hex2bin($id_riwayat_encrypted));
+
+        // Ambil data riwayat
+        $riwayat = $this->riwayatKerjaModel->find($id_riwayat);
+        if (!$riwayat) {
+            return redirect()->back()->with('error', 'Data riwayat kerja tidak ditemukan.');
+        }
+
+        // Validasi status — hanya Terverifikasi yang bisa dicetak
+        if (strtolower($riwayat['status']) !== 'terverifikasi') {
+            return redirect()->back()->with('error', 'SPK hanya bisa dicetak untuk riwayat dengan status Terverifikasi.');
+        }
+
+        // Ambil SK yang terikat ke riwayat ini
+        $skData = $this->skModel
+            ->select('tb_sk.*, tb_no_sk.kode_sk, tb_no_sk.nomor_utama, tb_no_sk.tahun')
+            ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'left')
+            ->where('tb_sk.id_riwayat', $id_riwayat)
+            ->first();
+
+        if (!$skData) {
+            return redirect()->back()->with('error', 'Nomor SK untuk riwayat ini belum di-generate. Silakan generate nomor SK terlebih dahulu.');
+        }
+
+        // Ambil data pekerja
+        $id_pekerja = $riwayat['id_pekerja'];
+        $daftarPekerja = $this->dataPekerjaModel->joinDataPekerjaanAktif();
+        $pekerja = null;
+        foreach ($daftarPekerja as $row) {
+            if ($row['id_pekerja'] == $id_pekerja) {
+                $pekerja = $row;
+                break;
+            }
+        }
+
+        // Jika tidak ada di daftar aktif, ambil langsung dari tabel pekerja
+        if (!$pekerja) {
+            $pekerja = $this->dataPekerjaModel->getDataPekerjaById($id_pekerja);
+            if (!$pekerja) {
+                return redirect()->back()->with('error', 'Data pekerja tidak ditemukan.');
+            }
+        }
+
+        // Override data pekerja dengan data dari riwayat ini
+        $pekerja['tmt_kerja']            = $riwayat['tmt_kerja'];
+        $pekerja['tst_kerja']            = $riwayat['tst_kerja'];
+        $pekerja['gaji']                 = $riwayat['gaji'];
+        $pekerja['gaji_pokok']           = $riwayat['gaji_pokok'];
+        $pekerja['status_pegawai']       = $riwayat['status_pegawai'];
+        $pekerja['jenis_pegawai']        = $riwayat['jenis_pegawai'];
+        $pekerja['tanggal_penetapan_sk'] = $skData['tanggal_penetapan'];
+        $pekerja['nomor_sk']             = $skData['nomor_sk'];
+        $pekerja['kode_sk']              = $skData['kode_sk'] ?? '';
+        $pekerja['masa_percobaan_mulai']  = $riwayat['masa_percobaan_mulai'];
+        $pekerja['masa_percobaan_selesai'] = $riwayat['masa_percobaan_selesai'];
+        $pekerja['uraian_pekerjaan']     = $riwayat['uraian_pekerjaan'];
+
+        // Hitung bulan kerja dari riwayat ini
+        if (!empty($riwayat['tmt_kerja']) && !empty($riwayat['tst_kerja'])) {
+            $tmt = strtotime($riwayat['tmt_kerja']);
+            $tst = strtotime($riwayat['tst_kerja']);
+            $pekerja['bulan_kerja'] = floor(($tst - $tmt) / (30 * 24 * 60 * 60));
+        } else {
+            $pekerja['bulan_kerja'] = 0;
+        }
+
+        // Ambil pekerjaan dari riwayat (bukan dari join aktif)
+        $pekerjaan = $this->listPekerjaanModel->find($riwayat['id_nama_pekerjaan']);
+        if ($pekerjaan) {
+            $pekerja['pekerjaan']      = $pekerjaan['pekerjaan'];
+            $pekerja['uraian_singkat'] = $pekerjaan['uraian_singkat'] ?? '';
+        }
+
+        // Unit kerja dari riwayat
+        $unitKerja = (new \App\Models\UnitKerjaModel())->find($riwayat['id_unit_kerja']);
+        if ($unitKerja) {
+            $pekerja['unit_kerja']    = $unitKerja['unit_kerja'];
+            $pekerja['id_unit_kerja'] = $riwayat['id_unit_kerja'];
+        }
+
+        // Kepala unit dari riwayat
+        $kepala = $this->daftarKepalaModel
+            ->where('id_unit_kerja', $riwayat['id_unit_kerja'])
+            ->first();
+        $pekerja['jabatan_short'] = $kepala['jabatan_short'] ?? 'Tidak Diketahui';
+        $pekerja['nama_kepala']   = $kepala['nama_kepala']   ?? 'Tidak Diketahui';
+        $pekerja['nip_kepala']    = $kepala['nip']           ?? '';
+
+        $data = [
+            'title'       => 'Cetak SPK',
+            'pekerja'     => $pekerja,
+            'riwayatKerja' => [$riwayat],
+            'unitKerja'   => $this->unitKerjaModel->findAll(),
+            'listPekerjaan' => $this->listPekerjaanModel->findAll(),
+            'daftarKepala'  => $this->daftarKepalaModel->getDaftarKepala(),
+        ];
+
+        return view('laporan/cetak_pks_individu', $data);
+    }
 }
