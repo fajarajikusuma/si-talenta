@@ -495,10 +495,10 @@ class RiwayatKerja extends BaseController
         // Validasi file: hanya PDF, maksimal 2MB
         $validation = \Config\Services::validation();
         $validation->setRules([
-            'fileUpload' => 'uploaded[fileUpload]|max_size[fileUpload,2048]|ext_in[fileUpload,pdf]|mime_in[fileUpload,application/pdf]',
+            'fileUpload' => 'uploaded[fileUpload]|max_size[fileUpload,10240]|ext_in[fileUpload,pdf]|mime_in[fileUpload,application/pdf]',
         ]);
         if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('error', 'Upload gagal! File harus berformat PDF dan maksimal 2MB.');
+            return redirect()->back()->with('error', 'Upload gagal! File harus berformat PDF dan maksimal 10MB.');
         }
 
         // Defense-in-depth: verifikasi ekstensi server-side

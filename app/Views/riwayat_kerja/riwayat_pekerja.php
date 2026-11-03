@@ -217,6 +217,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= site_url('riwayat_kerja/input_gaji_uraian') ?>" method="post">
+                <?= csrf_field() ?>
                 <div class="modal-body">
                     <input type="hidden" name="id_riwayat" id="id_riwayat">
                     <div class="mb-3">
@@ -249,6 +250,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= site_url('riwayat_kerja/upload') ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
                 <div class="modal-body">
                     <input type="hidden" name="id_riwayat" id="id_riwayat">
                     <input type="hidden" name="type" id="type">
@@ -270,6 +272,7 @@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <form action="<?= site_url('riwayat_kerja/hapus') ?>" method="post">
+            <?= csrf_field() ?>
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteModalLabel">Hapus Data</h5>
