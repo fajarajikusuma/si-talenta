@@ -237,7 +237,7 @@ function formatTanggalHuruf($tanggal)
         // foreach ($pekerjaIndividu as $pekerja) : 
         ?>
         <div class="<?= $i > 0 ? 'page-break' : '' ?>">
-            <img src="<?= base_url('assets/kop/dlh.png') ?>" alt="KOP SK" class="img-fluid mb-4">
+            <img src="<?= base_url('assets/kop/dlh_ok.png') ?>" alt="KOP SK" class="img-fluid mb-4">
             <div class="judul">PERJANJIAN KERJA</div>
             <div class="judul">ANTARA</div>
             <div class="judul">DINAS LINGKUNGAN HIDUP KOTA PEKALONGAN</div>

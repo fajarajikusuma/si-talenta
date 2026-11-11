@@ -93,7 +93,7 @@ function formatTanggalIndo($tanggal)
 
 <body>
     <div class="<?= $i > 0 ? 'page-break' : '' ?>">
-        <img src="<?= base_url('assets/kop/dlh.png') ?>" alt="KOP SK" class="img-fluid">
+        <img src="<?= base_url('assets/kop/dlh_ok.png') ?>" alt="KOP SK" class="img-fluid">
 
         <h5 class="text-center mt-3 m-0"><u>SURAT PERINTAH TUGAS</u></h5>
         <div class="text-center mb-3">

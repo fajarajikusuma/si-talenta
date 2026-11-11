@@ -143,7 +143,7 @@ class Laporan extends BaseController
             $skData = null;
             if ($riwayatAktif) {
                 $skData = $this->skModel
-                    ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun')
+                    ->select('tb_sk.*, tb_no_sk.id_no_sk, tb_no_sk.tahun, tb_no_sk.kode_sk')
                     ->join('tb_no_sk', 'tb_no_sk.id_no_sk = tb_sk.id_no_sk', 'inner')
                     ->where('tb_sk.id_riwayat', $riwayatAktif['id'])
                     ->first();
