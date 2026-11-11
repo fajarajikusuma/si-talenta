@@ -38,11 +38,18 @@
                     <form action="<?= site_url('data_pekerja/pensiun') ?>" method="get">
                         <div class="d-flex align-items-center gap-3">
                             <label for="tahun" class="mb-0">Pilih Tahun</label>
-                            <select name="tahun_cari" id="tahun" class="form-select" onchange="this.form.submit()" style="width: auto;">
-                                <?php for ($i = $tahunSekarang - 50; $i <= $tahunSekarang + 50; $i++) : ?>
-                                    <option value="<?= $i ?>" <?= ($tahunDipilih == $i) ? 'selected' : '' ?>><?= $i ?></option>
-                                <?php endfor; ?>
-                            </select>
+                            <input
+                                type="number"
+                                name="tahun_cari"
+                                id="tahun"
+                                class="form-control"
+                                value="<?= esc($tahunDipilih) ?>"
+                                min="<?= $tahunSekarang - 50 ?>"
+                                max="<?= $tahunSekarang + 50 ?>"
+                                style="width: 100px;"
+                                placeholder="Tahun"
+                            >
+                            <button type="submit" class="btn btn-primary btn-sm">Cari</button>
                         </div>
                     </form>
                 </div>

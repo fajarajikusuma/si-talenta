@@ -118,10 +118,83 @@ class DataPekerjaModel extends Model
         // $cekUnit = $this->db->table('tb_riwayat_pekerjaan')
         //     ->where('id_unit_kerja', $id_unit_kerja)->countAllResults();
 
-        $subquery = $this->db->table('tb_riwayat_pekerjaan')
-            ->select('id_pekerja, MAX(id) as id')
-            ->where('deleted_at', null)
-            ->groupBy('id_pekerja');
+        // Subquery: ambil riwayat kerja terbaru (MAX id) per pegawai pensiun.
+        // Prioritas: riwayat dengan tmt_kerja <= tanggal pensiun.
+        // Fallback: jika semua riwayat ada di atas tanggal pensiun (data kotor),
+        //           ambil riwayat dengan tmt_kerja terkecil (paling lama).
+        // Tanggal pensiun = tanggal 1 bulan berikutnya setelah ulang tahun ke-58.
+        $subquerySQL = "
+            SELECT
+                riwayat_pilihan.id_pekerja,
+                riwayat_pilihan.id
+            FROM (
+                -- Prioritas: riwayat dengan tmt_kerja <= tanggal pensiun, ambil MAX(id)
+                SELECT r.id_pekerja,
+                       MAX(r.id) AS id,
+                       1 AS prioritas
+                FROM tb_riwayat_pekerjaan r
+                INNER JOIN tb_data_pekerja p ON p.id_pekerja = r.id_pekerja
+                WHERE r.deleted_at IS NULL
+                  AND p.deleted_at IS NULL
+                  AND p.status_pekerja = 'Pensiun'
+                  AND r.tmt_kerja <= DATE_FORMAT(
+                        DATE_ADD(DATE_ADD(p.tanggal_lahir, INTERVAL 58 YEAR), INTERVAL 1 MONTH),
+                        '%Y-%m-01'
+                      )
+                GROUP BY r.id_pekerja
+
+                UNION ALL
+
+                -- Fallback: pegawai yang TIDAK punya riwayat <= tanggal pensiun,
+                --           ambil riwayat dengan tmt_kerja terkecil
+                SELECT r.id_pekerja,
+                       r.id,
+                       2 AS prioritas
+                FROM tb_riwayat_pekerjaan r
+                INNER JOIN tb_data_pekerja p ON p.id_pekerja = r.id_pekerja
+                WHERE r.deleted_at IS NULL
+                  AND p.deleted_at IS NULL
+                  AND p.status_pekerja = 'Pensiun'
+                  AND r.tmt_kerja = (
+                        SELECT MIN(r2.tmt_kerja)
+                        FROM tb_riwayat_pekerjaan r2
+                        WHERE r2.id_pekerja = r.id_pekerja
+                          AND r2.deleted_at IS NULL
+                      )
+                  AND NOT EXISTS (
+                        SELECT 1
+                        FROM tb_riwayat_pekerjaan r3
+                        WHERE r3.id_pekerja = r.id_pekerja
+                          AND r3.deleted_at IS NULL
+                          AND r3.tmt_kerja <= DATE_FORMAT(
+                                DATE_ADD(DATE_ADD(p.tanggal_lahir, INTERVAL 58 YEAR), INTERVAL 1 MONTH),
+                                '%Y-%m-01'
+                              )
+                      )
+            ) AS riwayat_pilihan
+            INNER JOIN (
+                SELECT id_pekerja, MIN(prioritas) AS min_prioritas
+                FROM (
+                    SELECT r.id_pekerja, 1 AS prioritas
+                    FROM tb_riwayat_pekerjaan r
+                    INNER JOIN tb_data_pekerja p ON p.id_pekerja = r.id_pekerja
+                    WHERE r.deleted_at IS NULL AND p.deleted_at IS NULL
+                      AND p.status_pekerja = 'Pensiun'
+                      AND r.tmt_kerja <= DATE_FORMAT(
+                            DATE_ADD(DATE_ADD(p.tanggal_lahir, INTERVAL 58 YEAR), INTERVAL 1 MONTH),
+                            '%Y-%m-01'
+                          )
+                    UNION ALL
+                    SELECT r.id_pekerja, 2 AS prioritas
+                    FROM tb_riwayat_pekerjaan r
+                    INNER JOIN tb_data_pekerja p ON p.id_pekerja = r.id_pekerja
+                    WHERE r.deleted_at IS NULL AND p.deleted_at IS NULL
+                      AND p.status_pekerja = 'Pensiun'
+                ) AS all_p
+                GROUP BY id_pekerja
+            ) AS best ON best.id_pekerja = riwayat_pilihan.id_pekerja
+                     AND best.min_prioritas = riwayat_pilihan.prioritas
+        ";
 
         $builder = $this->db->table('tb_data_pekerja');
         $builder->select('
@@ -131,11 +204,11 @@ class DataPekerjaModel extends Model
             tb_unit_kerja.unit_kerja
         ');
 
-        // Join subquery sebagai latest_riwayat
-        $builder->join('(' . $subquery->getCompiledSelect() . ') as latest_riwayat', 'latest_riwayat.id_pekerja = tb_data_pekerja.id_pekerja');
+        // Join subquery sebagai latest_riwayat_pensiun
+        $builder->join('(' . $subquerySQL . ') AS latest_riwayat_pensiun', 'latest_riwayat_pensiun.id_pekerja = tb_data_pekerja.id_pekerja', 'left');
 
-        // Join tb_riwayat_pekerjaan berdasarkan ID riwayat kerja terbaru
-        $builder->join('tb_riwayat_pekerjaan', 'tb_riwayat_pekerjaan.id = latest_riwayat.id', 'left');
+        // Join tb_riwayat_pekerjaan berdasarkan ID riwayat yang valid
+        $builder->join('tb_riwayat_pekerjaan', 'tb_riwayat_pekerjaan.id = latest_riwayat_pensiun.id', 'left');
         $builder->join('tb_nama_pekerjaan', 'tb_nama_pekerjaan.id_nama_pekerjaan = tb_riwayat_pekerjaan.id_nama_pekerjaan', 'left');
         $builder->join('tb_unit_kerja', 'tb_unit_kerja.id_unit_kerja = tb_riwayat_pekerjaan.id_unit_kerja', 'left');
 
@@ -147,31 +220,32 @@ class DataPekerjaModel extends Model
         if ($unit_kerja_nama != 'dinas lingkungan hidup') {
             $builder->where('tb_riwayat_pekerjaan.id_unit_kerja', $id_unit_kerja);
         }
-        // $builder->where('DATE_ADD(tb_data_pekerja.tanggal_lahir, INTERVAL 58 YEAR) >= NOW()');
-        $builder->orderBy('tb_data_pekerja.created_at', 'ASC');
-        
+
         $result = $builder->get()->getResultArray();
-        
-        // Hitung tanggal pensiun yang benar untuk setiap pegawai
+
+        // Hitung tanggal pensiun dan koreksi tmt_kerja untuk setiap pegawai
         foreach ($result as &$row) {
             $tanggal_lahir = $row['tanggal_lahir'];
-            $bulan_lahir = date('m', strtotime($tanggal_lahir));
-            $tahun_lahir = date('Y', strtotime($tanggal_lahir));
-            
-            // Hitung tahun pensiun
+            $bulan_lahir   = date('m', strtotime($tanggal_lahir));
+            $tahun_lahir   = date('Y', strtotime($tanggal_lahir));
+
+            // Hitung tahun & bulan pensiun
             $tahun_pensiun = $tahun_lahir + 58;
             $bulan_pensiun = (int)$bulan_lahir + 1;
-            
-            // Jika bulan pensiun lebih dari 12, reset ke Januari dan tambah 1 tahun
             if ($bulan_pensiun > 12) {
                 $bulan_pensiun = 1;
                 $tahun_pensiun += 1;
             }
-            
+
             // Format tanggal pensiun: YYYY-MM-01
             $row['tanggal_pensiun'] = sprintf('%04d-%02d-01', $tahun_pensiun, $bulan_pensiun);
         }
-        
+
+        // Urutkan berdasarkan tanggal pensiun terbaru (yang pensiun terakhir di atas)
+        usort($result, function ($a, $b) {
+            return strtotime($b['tanggal_pensiun']) - strtotime($a['tanggal_pensiun']);
+        });
+
         return $result;
     }
 
@@ -326,17 +400,28 @@ class DataPekerjaModel extends Model
         $resultPensiun = $builderPensiun->get()->getResult();
         
         foreach ($resultPensiun as $row) {
-            // Cek apakah riwayat kerja terakhir masih aktif
+            // Cek apakah riwayat kerja terakhir (berdasarkan tmt <= tanggal pensiun) masih aktif
+            $tanggal_pensiun_cek = date('Y-m-d', strtotime('+' . (58 * 12) . ' months', strtotime($row->tanggal_lahir)));
+
+            $bulan_lahir_cek   = date('m', strtotime($row->tanggal_lahir));
+            $tahun_lahir_cek   = date('Y', strtotime($row->tanggal_lahir));
+            $tahun_pensiun_cek = $tahun_lahir_cek + 58;
+            $bulan_pensiun_cek = (int)$bulan_lahir_cek + 1;
+            if ($bulan_pensiun_cek > 12) { $bulan_pensiun_cek = 1; $tahun_pensiun_cek++; }
+            $tanggal_pensiun_cek = sprintf('%04d-%02d-01', $tahun_pensiun_cek, $bulan_pensiun_cek);
+
             $riwayatTerakhir = $this->db->table('tb_riwayat_pekerjaan')
                 ->where('id_pekerja', $row->id_pekerja)
                 ->where('deleted_at', null)
+                ->where('tmt_kerja <=', $tanggal_pensiun_cek)
+                ->orderBy('tmt_kerja', 'DESC')
                 ->orderBy('id', 'DESC')
                 ->limit(1)
                 ->get()
                 ->getRow();
-            
-            // Jika riwayat kerja masih aktif (bukan "Tidak Aktif"), perbaiki
-            if ($riwayatTerakhir && $riwayatTerakhir->status_pegawai != 'Tidak Aktif') {
+
+            // Jika tidak ada riwayat valid atau riwayat terakhir statusnya belum Tidak Aktif, perbaiki
+            if (!$riwayatTerakhir || $riwayatTerakhir->status !== 'Tidak Aktif') {
                 $this->prosesStatusPensiun($row->id_pekerja, $row->tanggal_lahir);
             }
         }
@@ -351,43 +436,67 @@ class DataPekerjaModel extends Model
         $bulan_lahir = date('m', strtotime($tanggal_lahir));
         $tahun_lahir = date('Y', strtotime($tanggal_lahir));
         
-        // Tahun pensiun adalah tahun lahir + 58 tahun
         $tahun_pensiun = $tahun_lahir + 58;
         $bulan_pensiun = (int)$bulan_lahir + 1;
-        
-        // Jika bulan pensiun lebih dari 12, reset ke Januari dan tambah 1 tahun
         if ($bulan_pensiun > 12) {
             $bulan_pensiun = 1;
             $tahun_pensiun += 1;
         }
         
-        // Format tanggal pensiun: YYYY-MM-01
         $tanggal_pensiun = sprintf('%04d-%02d-01', $tahun_pensiun, $bulan_pensiun);
-        
+        // TMT yang benar: 01-01 pada tahun pensiun (kontrak terakhir berlaku setahun)
+        $tmt_benar = sprintf('%04d-01-01', $tahun_pensiun);
+
         // Update status pekerja menjadi Pensiun
         $this->db->table('tb_data_pekerja')
             ->where('id_pekerja', $id_pekerja)
             ->update([
                 'status_pekerja' => 'Pensiun',
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at'     => date('Y-m-d H:i:s'),
             ]);
-        
-        // Update riwayat kerja terakhir: set status_pegawai = Tidak Aktif dan tst_kerja = tanggal pensiun
-        $riwayatTerakhir = $this->db->table('tb_riwayat_pekerjaan')
+
+        // Ambil riwayat kerja yang tmt_kerja-nya <= tanggal pensiun (riwayat yang berlaku saat pensiun)
+        // Jika tidak ada (data kotor), fallback ke riwayat dengan tmt_kerja terkecil
+        $riwayatValid = $this->db->table('tb_riwayat_pekerjaan')
             ->where('id_pekerja', $id_pekerja)
             ->where('deleted_at', null)
+            ->where('tmt_kerja <=', $tanggal_pensiun)
+            ->orderBy('tmt_kerja', 'DESC')
             ->orderBy('id', 'DESC')
             ->limit(1)
             ->get()
             ->getRow();
-        
-        if ($riwayatTerakhir) {
+
+        if (!$riwayatValid) {
+            // Fallback: ambil riwayat paling lama
+            $riwayatValid = $this->db->table('tb_riwayat_pekerjaan')
+                ->where('id_pekerja', $id_pekerja)
+                ->where('deleted_at', null)
+                ->orderBy('tmt_kerja', 'ASC')
+                ->orderBy('id', 'ASC')
+                ->limit(1)
+                ->get()
+                ->getRow();
+        }
+
+        if ($riwayatValid) {
             $this->db->table('tb_riwayat_pekerjaan')
-                ->where('id', $riwayatTerakhir->id)
+                ->where('id', $riwayatValid->id)
                 ->update([
-                    'status' => 'Tidak Aktif',
-                    'tst_kerja' => $tanggal_pensiun,
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'tmt_kerja'  => $tmt_benar,
+                    'tst_kerja'  => $tanggal_pensiun,
+                    'status'     => 'Tidak Aktif',
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+
+            // Nonaktifkan semua riwayat lain milik pegawai ini yang bukan riwayat yang dipilih
+            $this->db->table('tb_riwayat_pekerjaan')
+                ->where('id_pekerja', $id_pekerja)
+                ->where('id !=', $riwayatValid->id)
+                ->where('deleted_at', null)
+                ->update([
+                    'status'     => 'Tidak Aktif',
+                    'updated_at' => date('Y-m-d H:i:s'),
                 ]);
         }
     }
