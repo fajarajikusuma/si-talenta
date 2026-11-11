@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth dark">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -167,12 +167,6 @@
                     <a href="#statistik" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-semibold text-sm tracking-wide">STATISTIK</a>
                     <a href="#kontak" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors font-semibold text-sm tracking-wide">KONTAK</a>
                     
-                    <!-- Theme Toggle -->
-                    <button id="themeToggleBtn" class="text-slate-500 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors p-2 rounded-full bg-slate-200/50 dark:bg-white/5 border border-slate-300 dark:border-white/10">
-                        <i class="fas fa-moon dark:hidden text-lg"></i>
-                        <i class="fas fa-sun hidden dark:block text-lg"></i>
-                    </button>
-
                     <a href="<?= base_url('login') ?>" class="px-6 py-2.5 rounded-full bg-white dark:bg-white/5 border border-slate-300 dark:border-white/10 text-slate-800 dark:text-white font-semibold text-sm shadow-md hover:bg-primary-50 dark:hover:bg-primary-500 hover:border-primary-400 dark:hover:shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all duration-300 group">
                         <i class="fas fa-lock mr-2 text-primary-500 dark:text-primary-400 group-hover:text-primary-600 dark:group-hover:text-white"></i>Login
                     </a>
@@ -180,10 +174,6 @@
 
                 <!-- Mobile Button -->
                 <div class="md:hidden flex items-center space-x-4">
-                    <button id="themeToggleBtnMobile" class="text-slate-500 dark:text-slate-300 p-2">
-                        <i class="fas fa-moon dark:hidden text-xl"></i>
-                        <i class="fas fa-sun hidden dark:block text-xl"></i>
-                    </button>
                     <button @click="open = !open" class="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white p-2">
                         <i class="fas fa-bars text-2xl" x-show="!open"></i>
                         <i class="fas fa-times text-2xl" x-show="open"></i>
@@ -565,30 +555,6 @@
     <!-- Script Libraries Initialization -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // --- THEME TOGGLE LOGIC ---
-        const themeToggleBtns = document.querySelectorAll('#themeToggleBtn, #themeToggleBtnMobile');
-        const htmlElement = document.documentElement;
-        
-        let isDark = true;
-        if (localStorage.getItem('theme') === 'light' || (!('theme' in localStorage) && !window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            isDark = false;
-            htmlElement.classList.remove('dark');
-        }
-
-        themeToggleBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                isDark = !isDark;
-                if (isDark) {
-                    htmlElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    htmlElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                }
-                updateChartsTheme();
-            });
-        });
-
         // Initialize Animate On Scroll
         AOS.init({
             duration: 800,
@@ -607,14 +573,14 @@
         
         let chartUmurInst, chartJenisKelaminInst, chartPendidikanInst, miniAiChartInst;
 
-        // Function to init/update charts based on current theme
+        // Function to init charts (light mode fixed)
         function updateChartsTheme() {
-            const textColor = isDark ? '#94a3b8' : '#475569'; 
-            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
-            const tooltipBg = isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)';
-            const tooltipTitleColor = isDark ? '#ffffff' : '#0f172a';
-            const tooltipBodyColor = isDark ? '#e2e8f0' : '#334155';
-            const tooltipBorderColor = isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.2)';
+            const textColor = '#475569'; 
+            const gridColor = 'rgba(0, 0, 0, 0.05)';
+            const tooltipBg = 'rgba(255, 255, 255, 0.95)';
+            const tooltipTitleColor = '#0f172a';
+            const tooltipBodyColor = '#334155';
+            const tooltipBorderColor = 'rgba(14, 165, 233, 0.2)';
             
             Chart.defaults.color = textColor;
             Chart.defaults.plugins.tooltip.backgroundColor = tooltipBg;
@@ -633,7 +599,7 @@
                         data: dataUmur.values,
                         backgroundColor: ['#38bdf8', '#818cf8', '#fbbf24', '#f472b6', '#34d399'],
                         borderWidth: 3,
-                        borderColor: isDark ? '#060913' : '#ffffff',
+                        borderColor: '#ffffff',
                         hoverOffset: 8,
                     }]
                 },
@@ -652,7 +618,7 @@
                         data: dataJenisKelamin.values,
                         backgroundColor: ['#0ea5e9', '#c084fc'],
                         borderWidth: 3,
-                        borderColor: isDark ? '#060913' : '#ffffff',
+                        borderColor: '#ffffff',
                         hoverOffset: 8
                     }]
                 },
@@ -688,13 +654,12 @@
                 }
             });
 
-            // NEW: Mini Line Chart for AI Mockup
+            // Mini Line Chart for Live Activity
             if(miniAiChartInst) miniAiChartInst.destroy();
             const ctxMini = document.getElementById('miniAiChart').getContext('2d');
             
-            // Create nice gradient fill under the line
             let gradientFill = ctxMini.createLinearGradient(0, 0, 0, 150);
-            gradientFill.addColorStop(0, isDark ? 'rgba(56, 189, 248, 0.4)' : 'rgba(14, 165, 233, 0.3)');
+            gradientFill.addColorStop(0, 'rgba(14, 165, 233, 0.3)');
             gradientFill.addColorStop(1, 'rgba(56, 189, 248, 0)');
 
             miniAiChartInst = new Chart(ctxMini, {
@@ -704,7 +669,7 @@
                     datasets: [{
                         label: 'Traffic',
                         data: [12, 19, 15, 25, 22, 30, 28, 35],
-                        borderColor: isDark ? '#38bdf8' : '#0ea5e9',
+                        borderColor: '#0ea5e9',
                         borderWidth: 2,
                         backgroundColor: gradientFill,
                         fill: true,
