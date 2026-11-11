@@ -217,7 +217,7 @@ class RiwayatKerja extends BaseController
         $id     = $this->request->getPost('id');
         $status = $this->request->getPost('status');
 
-        $allowed = ['Terverifikasi', 'Menunggu', 'Tidak Aktif', 'Pensiun'];
+        $allowed = ['Terverifikasi', 'Menunggu', 'Tidak Aktif'];
         if (!$id || !in_array($status, $allowed)) {
             return $this->response->setJSON(['success' => false, 'message' => 'Data tidak valid.']);
         }

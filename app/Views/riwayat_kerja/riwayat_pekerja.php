@@ -91,7 +91,7 @@
                                                     <?= esc($r['status']) ?> <i class="fa fa-caret-down ms-1"></i>
                                                 </span>
                                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width:160px; font-size:.85rem">
-                                                    <?php foreach (['Terverifikasi','Menunggu','Tidak Aktif','Pensiun'] as $opt) : ?>
+                                                    <?php foreach (['Terverifikasi','Menunggu','Tidak Aktif'] as $opt) : ?>
                                                         <li>
                                                             <button class="dropdown-item btn-pilih-status <?= $r['status'] === $opt ? 'active fw-bold' : '' ?>"
                                                                     data-id="<?= $r['id'] ?>"
